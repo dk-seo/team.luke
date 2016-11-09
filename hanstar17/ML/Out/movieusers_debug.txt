@@ -1,0 +1,206 @@
+For user U1: 
+Missing attributes: M1, M4, M5, M7, M9, M10
+Valid attributes: M2, M3, M6, M8
+
+
+For product M1: 
+Critic R1: score=3, similarity=0.152259, score*sim=0.456776, 
+Critic R2: score=7, similarity=0.128496, score*sim=0.899474, 
+Critic R3: score=7, similarity=0.154387, score*sim=1.08071, 
+Critic R4: score=5, similarity=0.25, score*sim=1.25, 
+Critic R5: score=5, similarity=0.138026, score*sim=0.690131, 
+Critic R6: score=7, similarity=0.240253, score*sim=1.68177, 
+--------------------------------------
+total score: 6.05886
+normalized score: 5.69752
+
+For product M4: 
+Critic R1: score=9, similarity=0.152259, score*sim=1.37033, 
+Critic R2: score=3, similarity=0.128496, score*sim=0.385489, 
+Critic R3: score=0, similarity=0.154387, score*sim=0, 
+Critic R4: score=5, similarity=0.25, score*sim=1.25, 
+Critic R5: score=8, similarity=0.138026, score*sim=1.10421, 
+Critic R6: score=4, similarity=0.240253, score*sim=0.961012, 
+--------------------------------------
+total score: 5.07104
+normalized score: 4.76861
+
+For product M5: 
+Critic R1: score=9, similarity=0.152259, score*sim=1.37033, 
+Critic R2: score=8, similarity=0.128496, score*sim=1.02797, 
+Critic R3: score=8, similarity=0.154387, score*sim=1.2351, 
+Critic R4: score=9, similarity=0.25, score*sim=2.25, 
+Critic R5: score=10, similarity=0.138026, score*sim=1.38026, 
+Critic R6: score=7, similarity=0.240253, score*sim=1.68177, 
+--------------------------------------
+total score: 8.94543
+normalized score: 8.41193
+
+For product M7: 
+Critic R1: score=6, similarity=0.152259, score*sim=0.913553, 
+Critic R2: score=7, similarity=0.128496, score*sim=0.899474, 
+Critic R3: score=8, similarity=0.154387, score*sim=1.2351, 
+Critic R4: score=5, similarity=0.25, score*sim=1.25, 
+Critic R5: score=7, similarity=0.138026, score*sim=0.966184, 
+Critic R6: score=6, similarity=0.240253, score*sim=1.44152, 
+--------------------------------------
+total score: 6.70583
+normalized score: 6.3059
+
+For product M9: 
+Critic R1: score=8, similarity=0.152259, score*sim=1.21807, 
+Critic R2: score=9, similarity=0.128496, score*sim=1.15647, 
+Critic R3: score=7, similarity=0.154387, score*sim=1.08071, 
+Critic R4: score=10, similarity=0.25, score*sim=2.5, 
+Critic R5: score=9, similarity=0.138026, score*sim=1.24224, 
+Critic R6: score=7, similarity=0.240253, score*sim=1.68177, 
+--------------------------------------
+total score: 8.87925
+normalized score: 8.3497
+
+For product M10: 
+Critic R1: score=8, similarity=0.152259, score*sim=1.21807, 
+Critic R2: score=5, similarity=0.128496, score*sim=0.642481, 
+Critic R3: score=9, similarity=0.154387, score*sim=1.38948, 
+Critic R4: score=7, similarity=0.25, score*sim=1.75, 
+Critic R5: score=8, similarity=0.138026, score*sim=1.10421, 
+Critic R6: score=8, similarity=0.240253, score*sim=1.92202, 
+--------------------------------------
+total score: 8.02627
+normalized score: 7.54759
+
+
+--------------------------------------
+Recommend: M5(score=8.41193)
+
+======================================
+
+For user U2: 
+Missing attributes: M2, M4, M6, M8, M10
+Valid attributes: M1, M3, M5, M7, M9
+
+
+For product M2: 
+Critic R1: score=7, similarity=0.102904, score*sim=0.720328, 
+Critic R2: score=5, similarity=0.136527, score*sim=0.682635, 
+Critic R3: score=5, similarity=0.148268, score*sim=0.741338, 
+Critic R4: score=6, similarity=0.118818, score*sim=0.712911, 
+Critic R5: score=8, similarity=0.125, score*sim=1, 
+Critic R6: score=7, similarity=0.186605, score*sim=1.30624, 
+--------------------------------------
+total score: 5.16345
+normalized score: 6.31134
+
+For product M4: 
+Critic R1: score=9, similarity=0.102904, score*sim=0.926136, 
+Critic R2: score=3, similarity=0.136527, score*sim=0.409581, 
+Critic R3: score=0, similarity=0.148268, score*sim=0, 
+Critic R4: score=5, similarity=0.118818, score*sim=0.594092, 
+Critic R5: score=8, similarity=0.125, score*sim=1, 
+Critic R6: score=4, similarity=0.186605, score*sim=0.746422, 
+--------------------------------------
+total score: 3.67623
+normalized score: 4.4935
+
+For product M6: 
+Critic R1: score=7, similarity=0.102904, score*sim=0.720328, 
+Critic R2: score=8, similarity=0.136527, score*sim=1.09222, 
+Critic R3: score=4, similarity=0.148268, score*sim=0.59307, 
+Critic R4: score=8, similarity=0.118818, score*sim=0.950548, 
+Critic R5: score=9, similarity=0.125, score*sim=1.125, 
+Critic R6: score=8, similarity=0.186605, score*sim=1.49284, 
+--------------------------------------
+total score: 5.97401
+normalized score: 7.30209
+
+For product M8: 
+Critic R1: score=7, similarity=0.102904, score*sim=0.720328, 
+Critic R2: score=4, similarity=0.136527, score*sim=0.546108, 
+Critic R3: score=6, similarity=0.148268, score*sim=0.889605, 
+Critic R4: score=7, similarity=0.118818, score*sim=0.831729, 
+Critic R5: score=4, similarity=0.125, score*sim=0.5, 
+Critic R6: score=7, similarity=0.186605, score*sim=1.30624, 
+--------------------------------------
+total score: 4.79401
+normalized score: 5.85977
+
+For product M10: 
+Critic R1: score=8, similarity=0.102904, score*sim=0.823232, 
+Critic R2: score=5, similarity=0.136527, score*sim=0.682635, 
+Critic R3: score=9, similarity=0.148268, score*sim=1.33441, 
+Critic R4: score=7, similarity=0.118818, score*sim=0.831729, 
+Critic R5: score=8, similarity=0.125, score*sim=1, 
+Critic R6: score=8, similarity=0.186605, score*sim=1.49284, 
+--------------------------------------
+total score: 6.16485
+normalized score: 7.53536
+
+
+--------------------------------------
+Recommend: M10(score=7.53536)
+
+======================================
+
+For user U3: 
+Missing attributes: M1, M3, M5, M7, M9
+Valid attributes: M2, M4, M6, M8, M10
+
+
+For product M1: 
+Critic R1: score=3, similarity=0.190744, score*sim=0.572231, 
+Critic R2: score=7, similarity=0.118818, score*sim=0.831729, 
+Critic R3: score=7, similarity=0.0836509, score*sim=0.585556, 
+Critic R4: score=5, similarity=0.16139, score*sim=0.806952, 
+Critic R5: score=5, similarity=0.135078, score*sim=0.675391, 
+Critic R6: score=7, similarity=0.131006, score*sim=0.917041, 
+--------------------------------------
+total score: 4.3889
+normalized score: 5.34783
+
+For product M3: 
+Critic R1: score=4, similarity=0.190744, score*sim=0.762974, 
+Critic R2: score=5, similarity=0.118818, score*sim=0.594092, 
+Critic R3: score=5, similarity=0.0836509, score*sim=0.418254, 
+Critic R4: score=8, similarity=0.16139, score*sim=1.29112, 
+Critic R5: score=8, similarity=0.135078, score*sim=1.08062, 
+Critic R6: score=8, similarity=0.131006, score*sim=1.04805, 
+--------------------------------------
+total score: 5.19512
+normalized score: 6.3302
+
+For product M5: 
+Critic R1: score=9, similarity=0.190744, score*sim=1.71669, 
+Critic R2: score=8, similarity=0.118818, score*sim=0.950548, 
+Critic R3: score=8, similarity=0.0836509, score*sim=0.669207, 
+Critic R4: score=9, similarity=0.16139, score*sim=1.45251, 
+Critic R5: score=10, similarity=0.135078, score*sim=1.35078, 
+Critic R6: score=7, similarity=0.131006, score*sim=0.917041, 
+--------------------------------------
+total score: 7.05678
+normalized score: 8.59863
+
+For product M7: 
+Critic R1: score=6, similarity=0.190744, score*sim=1.14446, 
+Critic R2: score=7, similarity=0.118818, score*sim=0.831729, 
+Critic R3: score=8, similarity=0.0836509, score*sim=0.669207, 
+Critic R4: score=5, similarity=0.16139, score*sim=0.806952, 
+Critic R5: score=7, similarity=0.135078, score*sim=0.945547, 
+Critic R6: score=6, similarity=0.131006, score*sim=0.786035, 
+--------------------------------------
+total score: 5.18393
+normalized score: 6.31657
+
+For product M9: 
+Critic R1: score=8, similarity=0.190744, score*sim=1.52595, 
+Critic R2: score=9, similarity=0.118818, score*sim=1.06937, 
+Critic R3: score=7, similarity=0.0836509, score*sim=0.585556, 
+Critic R4: score=10, similarity=0.16139, score*sim=1.6139, 
+Critic R5: score=9, similarity=0.135078, score*sim=1.2157, 
+Critic R6: score=7, similarity=0.131006, score*sim=0.917041, 
+--------------------------------------
+total score: 6.92752
+normalized score: 8.44112
+
+
+--------------------------------------
+Recommend: M5(score=8.59863)

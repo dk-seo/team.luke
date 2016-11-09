@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="csvparser.c">
+      <Filter>FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="OneRule.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="Gain.cpp">
+      <Filter>ML\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="KmeansClustering.cpp">
+      <Filter>ML\Clustering</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomSampler.cpp">
+      <Filter>ML\Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="Dataframe.cpp">
+      <Filter>ML\Dataframe</Filter>
+    </ClCompile>
+    <ClCompile Include="DecisionTree.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="CoverageRule.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassCounter.cpp">
+      <Filter>ML\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="RecommenderSystem.cpp">
+      <Filter>ML\RecommenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Similarity.cpp">
+      <Filter>ML\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="KMeansClusteringTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="RecommenderSystemTest.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="csvparser.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="OneRule.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="Gain.h">
+      <Filter>ML\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="KmeansClustering.h">
+      <Filter>ML\Clustering</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomSampler.h">
+      <Filter>ML\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="Dataframe.h">
+      <Filter>ML\Dataframe</Filter>
+    </ClInclude>
+    <ClInclude Include="DecisionTree.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="CoverageRule.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassCounter.h">
+      <Filter>ML\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="RecommenderSystem.h">
+      <Filter>ML\RecommenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Similarity.h">
+      <Filter>ML\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="KMeansClusteringTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="RecommenderSystemTest.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Outputs">
+      <UniqueIdentifier>{cf9c791d-6099-4838-8e64-f3b37fa16394}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FileIO">
+      <UniqueIdentifier>{8037ce9b-4d8f-4659-93e4-e5c01f124a16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{3287f56d-de7c-47b1-906e-b1e0cdde98d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML">
+      <UniqueIdentifier>{9ac23292-81ac-4c9b-b68e-6f86d8e1daab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Clustering">
+      <UniqueIdentifier>{2e9bdfd2-8164-4f4a-a5a5-58889df0137d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Classification">
+      <UniqueIdentifier>{962f4190-bc50-498c-a7e0-31a91f7248aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Dataframe">
+      <UniqueIdentifier>{bc19258a-c2c1-4dae-83e8-48ec460fd8aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Sampler">
+      <UniqueIdentifier>{5eacb0d9-7153-4f39-80d5-7b80f6593b0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Utility">
+      <UniqueIdentifier>{50b21333-c6e6-46bd-a09c-9fb79e2c70f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\RecommenderSystem">
+      <UniqueIdentifier>{f40ddf71-b448-4547-bd74-62c45bddde13}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Q1_ShirtsData.txt">
+      <Filter>Outputs</Filter>
+    </Text>
+    <Text Include="Q1_XY.txt">
+      <Filter>Outputs</Filter>
+    </Text>
+    <Text Include="Q1_ShirtsData_DEBUG.txt">
+      <Filter>Outputs</Filter>
+    </Text>
+    <Text Include="Q1_XY_DEBUG.txt">
+      <Filter>Outputs</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
