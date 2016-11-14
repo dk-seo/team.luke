@@ -20,9 +20,8 @@ void DecisionTree::SetDebugOutput(std::ofstream* o)
 	_o = o;
 }
 
-std::vector<std::string> GetAttributeClasses(
-	const std::vector<Instance*>& instances, 
-	int att)
+static std::vector<std::string> GetAttributeClasses(
+	const std::vector<Instance*>& instances, size_t att)
 {
 	std::set< std::string> set;
 	for (auto& i : instances)
@@ -37,12 +36,12 @@ std::vector<std::string> GetAttributeClasses(
 
 struct Condition
 {
-	Condition(int a, std::string v) :att(a), value(v) {}
+	Condition(size_t a, std::string v) :att(a), value(v) {}
 	bool operator()(const Instance* instance) const
 	{
 		return instance->GetAttribute(att).AsString() == value;
 	}
-	int att;
+	size_t att;
 	std::string value;
 };
 
@@ -72,14 +71,16 @@ void DecisionTree::BuildTree(const std::vector<Instance*>& instances,
 	{
 		if (_o)
 		{
-			*_o << tabs << "* Leaf Node(" << instances[0]->GetAttribute(answerIdx).AsString() << ", " << instances.size() << ")" << std::endl;
+			*_o << tabs << "* Leaf Node("
+				<< instances[0]->GetAttribute(answerIdx).AsString()
+				<< ", " << instances.size() << ")" << std::endl;
 		}
 
 		return;
 	}
 
 	// calculate children and per each attribute and find the best attribute
-	int bestGainIdx = 0;
+	size_t bestGainIdx = 0;
 	double bestGain = 0;
 	std::vector<std::string> bestAttributeClasses;
 	typedef std::unordered_map<std::string, ClassCounter> ChildClassCounter;
@@ -90,8 +91,7 @@ void DecisionTree::BuildTree(const std::vector<Instance*>& instances,
 			continue;
 
 		std::vector<std::string> attClasses = std::move(
-			GetAttributeClasses(instances, i)
-		);
+			GetAttributeClasses(instances, i));
 
 		std::vector<std::vector<int>> childVectors;
 		std::vector<ChildClassCounter> childrenCounters;
@@ -111,7 +111,10 @@ void DecisionTree::BuildTree(const std::vector<Instance*>& instances,
 			);
 		}
 
-		double gain = Gain(_o, _dataframe.GetAttributeName(i), parentV, attClasses, childVectors, true, tabs);
+		double gain = Gain(
+			_o, _dataframe.GetAttributeName(i), parentV, 
+			attClasses, childVectors, true, tabs);
+
 		if (gain > bestGain)
 		{
 			bestGain = gain;
@@ -124,7 +127,8 @@ void DecisionTree::BuildTree(const std::vector<Instance*>& instances,
 	if (_o)
 	{
 		*_o << std::endl;
-		*_o << tabs << "Choose: " << _dataframe.GetAttributeName(bestGainIdx) << "(" << bestGain << ")" << std::endl << std::endl;
+		*_o << tabs << "Choose: " << _dataframe.GetAttributeName(bestGainIdx)
+			<< "(" << bestGain << ")" << std::endl << std::endl;
 	}
 
 	attMarker[bestGainIdx] = true;
@@ -133,7 +137,9 @@ void DecisionTree::BuildTree(const std::vector<Instance*>& instances,
 		std::vector<Instance*> instances =
 			bestChildrenCounters[i][bestAttributeClasses[i]].GetInstances();
 
-		BuildTree(instances, attMarker, answerIdx, _dataframe.GetAttributeName(bestGainIdx), bestAttributeClasses[i], tabs + "\t");
+		BuildTree(instances, attMarker, answerIdx, 
+			_dataframe.GetAttributeName(bestGainIdx), bestAttributeClasses[i], 
+			tabs + "\t");
 	}
 }
 

@@ -7,7 +7,7 @@ class Instance;
 
 struct ClassCounter
 {
-	void Inc(Instance* instance, int att);
+	void Inc(Instance* instance, size_t att);
 
 	int Get(const std::string& classname);
 

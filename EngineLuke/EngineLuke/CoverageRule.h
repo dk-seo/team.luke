@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "ClassCounter.h"
 
 class Instance;
 class Dataframe;
@@ -28,13 +29,23 @@ public:
 	void Build();
 
 private:
-	bool CoverageRule::MakeRule(
+	bool MakeRule(
 		std::vector<Instance*>& instances_original,
 		std::string forClass,
 		std::vector<SubRule> subrules,
 		std::string tabs,
 		int ruleNum
 	);
+
+	int CountClass(const std::vector<Instance*>& instances,
+		int index,
+		const std::string& forClass);
+
+	void CalculateCoverageInfo(const std::vector<Instance*>& instances,
+		const std::vector<SubRule>& rulesSoFar,
+		const std::string& answerClass,
+		std::vector<ClassCounter>& attributeCounters,
+		std::vector<ClassCounter>& conceptCounters);
 
 private:
 	struct AttributeMetadata {

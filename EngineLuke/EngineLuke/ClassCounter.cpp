@@ -9,7 +9,7 @@ std::vector<std::string> ClassCounter::GetClasses() const
 	return std::move(classes);
 }
 
-void ClassCounter::Inc(Instance* instance, int att)
+void ClassCounter::Inc(Instance* instance, size_t att)
 {
 	std::string className = instance->GetAttribute(att).AsString();
 	map[className].emplace_back(instance);
