@@ -27,29 +27,6 @@ void Instance::AddAttribute(const std::string& attribute)
 	_attributes.push_back(Attribute(attribute));
 }
 
-InstanceBuilder::InstanceBuilder(Instance& instance, int attributeCount)
-	:_instance(instance), _attributeCount(attributeCount)
-{
-}
-
-
-/////////////////////////////////////////////////////////////// 
-// Instance Builder
-InstanceBuilder::InstanceBuilder(const InstanceBuilder& rhs)
-	: _instance(rhs._instance), _attributeCount(rhs._attributeCount)
-{
-}
-
-bool InstanceBuilder::AddAttribute(const std::string& attribute)
-{
-	if (_instance.GetAttributeCount() >= _attributeCount)
-		return false;
-
-	_instance.AddAttribute(attribute);
-	return true;
-}
-
-
 /////////////////////////////////////////////////////////////// 
 // Dataframe
 
@@ -60,13 +37,13 @@ Dataframe::~Dataframe()
 }
 size_t Dataframe::GetAttributeCount() const
 {
-	return _attributes.size();
+	return _attributeNames.size();
 }
 
 
 bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 {
-	// I am using open csv parser.
+	// I am using open-source csv parser.
 	CsvParser *csvParser = CsvParser_new(filename.c_str(), ",", int(hasHeader));
 
 	CsvRow* header = CsvParser_getHeader(csvParser);
@@ -80,23 +57,15 @@ bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 	int attributeCount = CsvParser_getNumFields(header);
 	const char **parsedHeader = CsvParser_getFields(header);
 	for (int i = 0; i < attributeCount; ++i)
-	{
 		AddAttribute(parsedHeader[i]);
-	}
 
 	// build instances
 	while (CsvRow* row = CsvParser_getRow(csvParser))
 	{
 		const char **parsedRow = CsvParser_getFields(row);
-		InstanceBuilder builder = CreateInstance();
+		Instance* instance = CreateInstance();
 		for (int i = 0; i < attributeCount; ++i)
-		{
-			if (!builder.AddAttribute(parsedRow[i]))
-			{
-				_errormsg = "No!! Number of attribute exceeded!";
-				return false;
-			}
-		}
+			instance->AddAttribute(parsedRow[i]);
 	}
 
 	_errormsg = "";
@@ -108,22 +77,23 @@ bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 const std::string& Dataframe::GetAttributeName(size_t i)
 {
 	assert(i < GetAttributeCount());
-	return _attributes[i];
+	return _attributeNames[i];
 }
 
-InstanceBuilder Dataframe::CreateInstance()
+Instance* Dataframe::CreateInstance()
 {
 	_instances.emplace_back(new Instance);
-	return InstanceBuilder(*_instances.back(), int(_attributes.size()));
+	return _instances.back();
 }
 
 void Dataframe::AddAttribute(const std::string& attributeName)
 {
-	_attributes.emplace_back(attributeName);
-	_attributeMap.emplace(attributeName, (unsigned)_attributes.size() - 1);
+	_attributeNames.emplace_back(attributeName);
+	_attributeMap.emplace(attributeName, (unsigned)_attributeNames.size() - 1);
 }
 
-const Attribute& Dataframe::GetInstanceAttribute(const Instance* instance, const std::string& attName)
+const Attribute& Dataframe::GetInstanceAttribute(
+	const Instance* instance, const std::string& attName)
 {
 	return instance->GetAttribute(int(_attributeMap[attName]));
 }
@@ -141,4 +111,40 @@ const Instance& Dataframe::GetInstance(size_t idx)
 std::string Dataframe::GetErrorMessage() const
 {
 	return _errormsg;
+}
+
+bool Dataframe::Merge(Dataframe& rhs)
+{
+	if (_attributeNames != rhs._attributeNames)
+		return false;
+
+	_instances.insert(
+		_instances.end(),
+		std::make_move_iterator(rhs._instances.begin()),
+		std::make_move_iterator(rhs._instances.end()));
+	rhs._instances.clear();
+	return true;
+	
+}
+
+void Dataframe::ToCsv(std::ostream& o)
+{
+	for (size_t i = 0; i < _attributeNames.size(); ++i)
+	{
+		if (i > 0)
+			o << ",";
+		o << _attributeNames[i];
+	}
+	o << std::endl;
+
+	for (auto instance : _instances)
+	{
+		for (size_t i = 0; i < _attributeNames.size(); ++i)
+		{
+			if (i > 0)
+				o << ",";
+			o << instance->GetAttribute(i).AsString();
+		}
+		o << std::endl;
+	}
 }

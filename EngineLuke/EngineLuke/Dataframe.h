@@ -25,36 +25,11 @@ class Instance
 public:
 	int GetAttributeCount() const;
 	const Attribute& GetAttribute(size_t idx) const;
+	void AddAttribute(const std::string& attribute);
 
 private:
 	std::vector<Attribute> _attributes;
-
-private:
-	friend class InstanceBuilder;
-	
-	void AddAttribute(const std::string& attribute);
 };
-
-// This class Helps build instance in private way
-// so that once built the instance
-// cannot be modified any more (as its public interface
-// doesn't allow it)
-class InstanceBuilder
-{
-public:
-	InstanceBuilder(const InstanceBuilder& rhs);
-
-	// add attribute for instance. It checks attribute limit.
-	bool AddAttribute(const std::string& attribute);
-
-private:
-	Instance& _instance;
-	int _attributeCount;
-
-private:
-	friend class Dataframe;
-	InstanceBuilder(Instance& instance, int attributeCount);
-};	
 
 class Dataframe
 {
@@ -65,7 +40,10 @@ public:
 	// if fails, call GetErrorMessage to check the error
 	bool BuildFromCsv(const std::string& filename, bool hasHeader);
 
-	// get attribute name of index i
+	// Add an attribute with name
+	void AddAttribute(const std::string& attributeName);
+
+	// get name of ith column attribute
 	const std::string& GetAttributeName(size_t i);
 
 	// get number of attributes
@@ -86,20 +64,19 @@ public:
 	// get error message
 	std::string GetErrorMessage() const;
 
-private:
-	// Create Instance and returns instance builder.
-	// InstanceBuilder was introduced at first to open this api to public,
-	// but decided to hide it after implementing BuildFromCsv.
-	// I am leaving this as it is in case I have to open this api to public at
-	// later expansion.
-	InstanceBuilder CreateInstance();
+	// Merge two data frames (rhs get invalidated after this operation)
+	bool Merge(Dataframe& rhs);
 
-	// Add an attribute with name
-	void AddAttribute(const std::string& attributeName);
+	void ToCsv(std::ostream& o);
 
 private:
-	std::vector<std::string> _attributes;
+	Instance* CreateInstance();
+
+private:
 	typedef std::unordered_map<std::string, unsigned> AttributeMap;
+
+private:
+	std::vector<std::string> _attributeNames;
 	AttributeMap _attributeMap;
 	std::vector<Instance*> _instances;
 	std::string _errormsg;
