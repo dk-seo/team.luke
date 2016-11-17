@@ -41,6 +41,7 @@
     <ClCompile Include="RecommenderSystemTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
+    <ClCompile Include="DecisionTreeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="csvparser.h">
@@ -82,6 +83,7 @@
     <ClInclude Include="RecommenderSystemTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="DecisionTreeTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Outputs">
@@ -114,19 +116,16 @@
     <Filter Include="ML\RecommenderSystem">
       <UniqueIdentifier>{f40ddf71-b448-4547-bd74-62c45bddde13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Inputs">
+      <UniqueIdentifier>{0b6caf0f-1ba0-4af4-bcb9-d9b543587587}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Q1_ShirtsData.txt">
-      <Filter>Outputs</Filter>
-    </Text>
-    <Text Include="Q1_XY.txt">
-      <Filter>Outputs</Filter>
-    </Text>
-    <Text Include="Q1_ShirtsData_DEBUG.txt">
-      <Filter>Outputs</Filter>
-    </Text>
-    <Text Include="Q1_XY_DEBUG.txt">
-      <Filter>Outputs</Filter>
-    </Text>
+    <None Include="Data\winequality-red_Output.csv">
+      <Filter>Inputs</Filter>
+    </None>
+    <None Include="Data\winequality-white_Output.csv">
+      <Filter>Inputs</Filter>
+    </None>
   </ItemGroup>
 </Project>

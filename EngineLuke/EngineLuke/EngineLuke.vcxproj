@@ -148,6 +148,7 @@
     <ClCompile Include="csvparser.c" />
     <ClCompile Include="Dataframe.cpp" />
     <ClCompile Include="DecisionTree.cpp" />
+    <ClCompile Include="DecisionTreeTest.cpp" />
     <ClCompile Include="Gain.cpp" />
     <ClCompile Include="KmeansClustering.cpp" />
     <ClCompile Include="KMeansClusteringTest.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="csvparser.h" />
     <ClInclude Include="Dataframe.h" />
     <ClInclude Include="DecisionTree.h" />
+    <ClInclude Include="DecisionTreeTest.h" />
     <ClInclude Include="Gain.h" />
     <ClInclude Include="KmeansClustering.h" />
     <ClInclude Include="KMeansClusteringTest.h" />
@@ -174,10 +176,8 @@
     <ClInclude Include="Similarity.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Q1_ShirtsData.txt" />
-    <Text Include="Q1_ShirtsData_DEBUG.txt" />
-    <Text Include="Q1_XY.txt" />
-    <Text Include="Q1_XY_DEBUG.txt" />
+    <None Include="Data\winequality-red_Output.csv" />
+    <None Include="Data\winequality-white_Output.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
