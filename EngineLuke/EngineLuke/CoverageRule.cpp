@@ -180,6 +180,8 @@ bool CoverageRule::MakeRule(
 		}
 	}
 
+	rulesSoFar.emplace_back(best.AttIndex, best.ClassName);
+
 	if (_o)
 	{
 		(*_o).setf(std::ios::fixed);
@@ -196,7 +198,6 @@ bool CoverageRule::MakeRule(
 
 	if (best.Nominator == best.Denominator)
 	{
-		rulesSoFar.emplace_back(best.AttIndex, best.ClassName);
 		if(_o)
 		{
 			*_o << std::endl;
@@ -220,7 +221,6 @@ bool CoverageRule::MakeRule(
 		return false;
 	}
 	
-	rulesSoFar.emplace_back(best.AttIndex, best.ClassName);
 	return MakeRule(
 		instances_original, answerClass, rulesSoFar, tabs + "\t", ruleNum);
 }
