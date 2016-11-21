@@ -26,9 +26,6 @@
     <ClCompile Include="CoverageRule.cpp">
       <Filter>ML\Classification</Filter>
     </ClCompile>
-    <ClCompile Include="ClassCounter.cpp">
-      <Filter>ML\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="RecommenderSystem.cpp">
       <Filter>ML\RecommenderSystem</Filter>
     </ClCompile>
@@ -42,6 +39,9 @@
       <Filter>Tests</Filter>
     </ClCompile>
     <ClCompile Include="DecisionTreeTest.cpp" />
+    <ClCompile Include="InstanceCategorizer.cpp">
+      <Filter>ML\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="csvparser.h">
@@ -68,9 +68,6 @@
     <ClInclude Include="CoverageRule.h">
       <Filter>ML\Classification</Filter>
     </ClInclude>
-    <ClInclude Include="ClassCounter.h">
-      <Filter>ML\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="RecommenderSystem.h">
       <Filter>ML\RecommenderSystem</Filter>
     </ClInclude>
@@ -84,6 +81,9 @@
       <Filter>Tests</Filter>
     </ClInclude>
     <ClInclude Include="DecisionTreeTest.h" />
+    <ClInclude Include="InstanceCategorizer.h">
+      <Filter>ML\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Outputs">

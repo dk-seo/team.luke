@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "ClassCounter.h"
+#include "InstanceCategorizer.h"
 
 class Instance;
 class Dataframe;
@@ -44,8 +44,8 @@ private:
 	void CalculateCoverageInfo(const std::vector<Instance*>& instances,
 		const std::vector<SubRule>& rulesSoFar,
 		const std::string& answerClass,
-		std::vector<ClassCounter>& attributeCounters,
-		std::vector<ClassCounter>& conceptCounters);
+		std::vector<InstanceCategorizer>& attributeCounters,
+		std::vector<InstanceCategorizer>& conceptCounters);
 
 private:
 	struct AttributeMetadata {

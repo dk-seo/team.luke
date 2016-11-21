@@ -84,8 +84,8 @@ void CoverageRule::CalculateCoverageInfo(
 	const std::vector<Instance*>& instances,
 	const std::vector<SubRule>& rulesSoFar,
 	const std::string& answerClass,
-	std::vector<ClassCounter>& attributeCounters, 
-	std::vector<ClassCounter>& conceptCounters)
+	std::vector<InstanceCategorizer>& attributeCounters,
+	std::vector<InstanceCategorizer>& conceptCounters)
 {
 	std::vector<Instance*> filteredInstances = std::move(
 		Filter(instances, SubruleInclusiveFunc(rulesSoFar)));
@@ -120,9 +120,9 @@ bool CoverageRule::MakeRule(
 		return true;
 
 	// calculates coverage Info for every attribute
-	std::vector<ClassCounter> attributeCounters;
+	std::vector<InstanceCategorizer> attributeCounters;
 	attributeCounters.reserve(_dataframe.GetAttributeCount());
-	std::vector<ClassCounter> conceptCounters;
+	std::vector<InstanceCategorizer> conceptCounters;
 	conceptCounters.reserve(_dataframe.GetAttributeCount());
 	for (size_t i = 0; i < _dataframe.GetAttributeCount(); ++i)
 	{
@@ -236,7 +236,7 @@ bool CoverageRule::MakeRule(
 void CoverageRule::Build()
 {
 	std::vector<Instance*> originalInstances = _dataframe.GetInstances();
-	ClassCounter counter(_answerIdx);
+	InstanceCategorizer counter(_answerIdx);
 	for (auto& instance : originalInstances)
 		counter.Inc(instance);
 

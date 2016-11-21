@@ -5,9 +5,9 @@
 
 class Instance;
 
-struct ClassCounter
+struct InstanceCategorizer
 {
-	ClassCounter(size_t idx);
+	InstanceCategorizer(size_t idx);
 
 	void Inc(Instance* instance);
 

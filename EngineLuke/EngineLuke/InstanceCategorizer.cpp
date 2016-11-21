@@ -1,23 +1,23 @@
-#include "ClassCounter.h"
+#include "InstanceCategorizer.h"
 #include "Dataframe.h"
 
-ClassCounter::ClassCounter(size_t attIdx)
+InstanceCategorizer::InstanceCategorizer(size_t attIdx)
 	:_attributeIdx(attIdx)
 {
 }
 
-void ClassCounter::Inc(Instance* instance)
+void InstanceCategorizer::Inc(Instance* instance)
 {
 	std::string className = instance->GetAttribute(_attributeIdx).AsString();
 	_map[className].emplace_back(instance);
 }
 
-int ClassCounter::Get(const std::string& className)
+int InstanceCategorizer::Get(const std::string& className)
 {
 	return int(_map[className].size());
 }
 
-std::vector<int> ClassCounter::GetEntropyVector() const
+std::vector<int> InstanceCategorizer::GetEntropyVector() const
 {
 	std::vector<int> v;
 	for (auto& it : _map)
@@ -28,7 +28,7 @@ std::vector<int> ClassCounter::GetEntropyVector() const
 	return std::move(v);
 }
 
-std::vector<Instance*> ClassCounter::GetInstances() const
+std::vector<Instance*> InstanceCategorizer::GetInstances() const
 {
 	std::vector<Instance*> instances;
 	for (auto inst : _map)
@@ -39,13 +39,13 @@ std::vector<Instance*> ClassCounter::GetInstances() const
 	return std::move(instances);
 }
 
-std::vector<Instance*> ClassCounter::GetInstances(
+std::vector<Instance*> InstanceCategorizer::GetInstances(
 	const std::string& classname)
 {
 	return _map[classname];
 }
 
-std::vector<std::string> ClassCounter::GetClasses() const
+std::vector<std::string> InstanceCategorizer::GetClasses() const
 {
 	std::vector<std::string> classes;
 	for (auto inst : _map)

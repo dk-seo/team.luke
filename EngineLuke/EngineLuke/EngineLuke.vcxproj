@@ -143,7 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ClassCounter.cpp" />
+    <ClCompile Include="InstanceCategorizer.cpp" />
     <ClCompile Include="CoverageRule.cpp" />
     <ClCompile Include="csvparser.c" />
     <ClCompile Include="Dataframe.cpp" />
@@ -160,7 +160,7 @@
     <ClCompile Include="Similarity.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ClassCounter.h" />
+    <ClInclude Include="InstanceCategorizer.h" />
     <ClInclude Include="CoverageRule.h" />
     <ClInclude Include="csvparser.h" />
     <ClInclude Include="Dataframe.h" />

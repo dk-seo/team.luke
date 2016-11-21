@@ -5,10 +5,17 @@
 #include <set>
 #include <unordered_map>
 #include "Gain.h"
-#include "ClassCounter.h"
+#include "InstanceCategorizer.h"
 #include "Dataframe.h"
 
-typedef ClassCounter InstanceCategorizer;
+static std::vector<std::vector<int>> ToChildrenEntropyVec(
+	const std::vector<InstanceCategorizer>& childCategorizers)
+{
+	std::vector<std::vector<int>> entropyVecs;
+	for (const auto& categorizer : childCategorizers)
+		entropyVecs.emplace_back(std::move(categorizer.GetEntropyVector()));
+	return std::move(entropyVecs);
+}
 
 DecisionTree::DecisionTree(Dataframe& dataframe, int answerIdx)
 	: _dataframe_original(dataframe)
@@ -21,40 +28,6 @@ DecisionTree::DecisionTree(Dataframe& dataframe, int answerIdx)
 void DecisionTree::SetDebugOutput(std::ofstream* o)
 {
 	_o = o;
-}
-
-static std::vector<std::string> ExtractClasses(
-	const std::vector<Instance*>& instances, size_t att)
-{
-	std::set< std::string> set;
-	for (auto& i : instances)
-		set.insert(i->GetAttribute(att).AsString());
-
-	std::vector<std::string> classes;
-	for (auto& i : set)
-		classes.emplace_back(i);
-
-	return std::move(classes);
-}
-
-struct Condition
-{
-	Condition(size_t a, std::string v) :att(a), value(v) {}
-	bool operator()(const Instance* instance) const
-	{
-		return instance->GetAttribute(att).AsString() == value;
-	}
-	size_t att;
-	std::string value;
-};
-
-static std::vector<std::vector<int>> ToChildrenEntropyVec(
-	const std::vector<InstanceCategorizer>& childCategorizers)
-{
-	std::vector<std::vector<int>> entropyVecs;
-	for (const auto& categorizer : childCategorizers)
-		entropyVecs.emplace_back(std::move(categorizer.GetEntropyVector()));
-	return std::move(entropyVecs);
 }
 
 DecisionTree::Node* DecisionTree::BuildTree(
