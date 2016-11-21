@@ -97,9 +97,9 @@ void CoverageRule::CalculateCoverageInfo(
 				continue;
 
 			if (instance->GetAttribute(_answerIdx).AsString() == answerClass)
-				attributeCounters[att].Inc(instance, att);
+				attributeCounters[att].Inc(instance);
 
-			conceptCounters[att].Inc(instance, att);
+			conceptCounters[att].Inc(instance);
 		}
 	}
 }
@@ -120,8 +120,16 @@ bool CoverageRule::MakeRule(
 		return true;
 
 	// calculates coverage Info for every attribute
-	std::vector<ClassCounter> attributeCounters(_dataframe.GetAttributeCount());
-	std::vector<ClassCounter> conceptCounters(_dataframe.GetAttributeCount());
+	std::vector<ClassCounter> attributeCounters;
+	attributeCounters.reserve(_dataframe.GetAttributeCount());
+	std::vector<ClassCounter> conceptCounters;
+	conceptCounters.reserve(_dataframe.GetAttributeCount());
+	for (size_t i = 0; i < _dataframe.GetAttributeCount(); ++i)
+	{
+		attributeCounters.emplace_back(i);
+		conceptCounters.emplace_back(i);
+	}
+
 	CalculateCoverageInfo(
 		instances_original, rulesSoFar, answerClass,
 		attributeCounters, conceptCounters);
@@ -129,7 +137,7 @@ bool CoverageRule::MakeRule(
 	// find the best coverage
 	struct SubRuleInfo
 	{
-		int AttIndex = 0;
+		size_t AttIndex = 0;
 		std::string ClassName = "";
 		int Nominator = 0;
 		int Denominator = 0;
@@ -228,9 +236,9 @@ bool CoverageRule::MakeRule(
 void CoverageRule::Build()
 {
 	std::vector<Instance*> originalInstances = _dataframe.GetInstances();
-	ClassCounter counter;
+	ClassCounter counter(_answerIdx);
 	for (auto& instance : originalInstances)
-		counter.Inc(instance, _answerIdx);
+		counter.Inc(instance);
 
 	std::vector<std::string> conceptClasses = std::move(counter.GetClasses());
 	int ruleNum = 1;

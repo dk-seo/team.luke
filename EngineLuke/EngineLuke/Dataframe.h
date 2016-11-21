@@ -27,6 +27,7 @@ public:
 	const Attribute& GetAttribute(size_t idx) const;
 	void AddAttribute(const std::string& attribute);
 
+
 private:
 	std::vector<Attribute> _attributes;
 };
@@ -34,7 +35,14 @@ private:
 class Dataframe
 {
 public:
+	Dataframe() {}
 	~Dataframe();
+
+	Dataframe(Dataframe&& rhs);
+
+	Dataframe& operator=(Dataframe&& rhs);
+
+	Dataframe Clone();
 
 	// build dataframe from csv file
 	// if fails, call GetErrorMessage to check the error
@@ -67,7 +75,9 @@ public:
 	// Merge two data frames (rhs get invalidated after this operation)
 	bool Merge(Dataframe& rhs);
 
+	// exports in csv format to o
 	void ToCsv(std::ostream& o);
+
 
 private:
 	Instance* CreateInstance();

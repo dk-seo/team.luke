@@ -40,6 +40,34 @@ size_t Dataframe::GetAttributeCount() const
 	return _attributeNames.size();
 }
 
+Dataframe::Dataframe(Dataframe&& rhs)
+{
+	_attributeMap = std::move(rhs._attributeMap);
+	_attributeNames = std::move(rhs._attributeNames);
+	_instances = std::move(rhs._instances); rhs._instances.clear();
+}
+
+Dataframe& Dataframe::operator=(Dataframe&& rhs)
+{
+	_attributeMap = std::move(rhs._attributeMap);
+	_attributeNames = std::move(rhs._attributeNames);
+	_instances = std::move(rhs._instances); rhs._instances.clear();
+	return *this;
+}
+
+Dataframe Dataframe::Clone()
+{
+	Dataframe clone;
+	clone._attributeNames = _attributeNames;
+	clone._attributeMap = _attributeMap;
+	clone._instances.reserve(_instances.size());
+	for (auto instance : _instances)
+	{
+		Instance* inst = clone.CreateInstance();
+		*inst = *instance;
+	}
+	return std::move(clone);
+}
 
 bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 {

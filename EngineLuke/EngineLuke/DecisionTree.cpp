@@ -8,10 +8,13 @@
 #include "ClassCounter.h"
 #include "Dataframe.h"
 
+typedef ClassCounter InstanceCategorizer;
+
 DecisionTree::DecisionTree(Dataframe& dataframe, int answerIdx)
-	:_dataframe(dataframe)
-	,_answerIdx(answerIdx)
-	,_o(nullptr)
+	: _dataframe_original(dataframe)
+	, _answerIdx(answerIdx)
+	, _o(nullptr)
+	, _root(nullptr)
 {
 }
 
@@ -20,7 +23,7 @@ void DecisionTree::SetDebugOutput(std::ofstream* o)
 	_o = o;
 }
 
-static std::vector<std::string> GetAttributeClasses(
+static std::vector<std::string> ExtractClasses(
 	const std::vector<Instance*>& instances, size_t att)
 {
 	std::set< std::string> set;
@@ -45,107 +48,118 @@ struct Condition
 	std::string value;
 };
 
-void DecisionTree::BuildTree(const std::vector<Instance*>& instances, 
-	std::vector<bool> attMarker, 
-	int answerIdx,
-	const std::string& nodeName, 
-	const std::string& parentBranchName, 
-	const std::string& tabs)
+static std::vector<std::vector<int>> ToChildrenEntropyVec(
+	const std::vector<InstanceCategorizer>& childCategorizers)
 {
-	// my node information
-	ClassCounter parentCounter;
+	std::vector<std::vector<int>> entropyVecs;
+	for (const auto& categorizer : childCategorizers)
+		entropyVecs.emplace_back(std::move(categorizer.GetEntropyVector()));
+	return std::move(entropyVecs);
+}
+
+DecisionTree::Node* DecisionTree::BuildTree(
+	const std::vector<Instance*>& instances, 
+	std::vector<bool>& attNoded)
+{
+	// classfy instances by answer classes for parent node entropy vector 
+	// calculation
+	InstanceCategorizer parentCategorizer(_answerIdx);
 	for (auto& instance : instances)
-		parentCounter.Inc(instance, answerIdx);
-	std::vector<int> parentV = std::move(parentCounter.GetVector());
+		parentCategorizer.Inc(instance);
 
-	if (_o)
+	// if one or less classes exist, purity is 1 -> leaf node
+	if (parentCategorizer.GetClassCount() <= 1)
 	{
-		(*_o).setf(std::ios::fixed);
-		(*_o).precision(2);
-
-		*_o << tabs << "------" << std::endl;
-		*_o << tabs << nodeName << "=" << parentBranchName << std::endl;
+		Node* node = new Node;
+		node->_conceptClass = instances[0]->GetAttribute(_answerIdx).AsString();
+		return node;
 	}
 
-	if (parentV.size() <= 1)
-	{
-		if (_o)
-		{
-			*_o << tabs << "* Leaf Node("
-				<< instances[0]->GetAttribute(answerIdx).AsString()
-				<< ", " << instances.size() << ")" << std::endl;
-		}
+	// extract parent node's entropy vector
+	std::vector<int> parentEntropyVec =
+		std::move(parentCategorizer.GetEntropyVector());
 
-		return;
-	}
-
-	// calculate children and per each attribute and find the best attribute
-	size_t bestGainIdx = 0;
+	// calculate gain per each attribute and find the attribute with the highest
+	// gain
 	double bestGain = 0;
-	std::vector<std::string> bestAttributeClasses;
-	typedef std::unordered_map<std::string, ClassCounter> ChildClassCounter;
-	std::vector<ChildClassCounter> bestChildrenCounters;
-	for (size_t i = 0; i < _dataframe.GetAttributeCount(); ++i)
+	size_t bestGainAttIdx = 0;
+	std::vector<InstanceCategorizer> bestGainAttChildCategorizers;
+	
+	for (size_t attIdx = 0; attIdx < _dataframe.GetAttributeCount(); ++attIdx)
 	{
-		if (attMarker[i])
+		if (attNoded[attIdx])
 			continue;
 
-		std::vector<std::string> attClasses = std::move(
-			GetAttributeClasses(instances, i));
+		// categorize instances by current attribute
+		InstanceCategorizer categorizerByAtt(attIdx);
+		for (auto& instance : instances)
+			categorizerByAtt.Inc(instance);
 
-		std::vector<std::vector<int>> childVectors;
-		std::vector<ChildClassCounter> childrenCounters;
-		for (size_t j = 0; j < attClasses.size(); ++j)
+		// for instances in each attribute class, categorize by concept
+		// so that child entropy vector can be calculated
+		std::vector<std::string> classes =
+			std::move(categorizerByAtt.GetClasses());
+		std::vector<InstanceCategorizer> childAnswerCategorizers;
+		for (auto& classname : classes)
 		{
-			std::vector<Instance*> filtered = std::move(
-				Filter(instances, Condition(i, attClasses[j]))
-			);
-			ChildClassCounter childCounter;
-			for (auto& instance : filtered)
-				childCounter[attClasses[j]].Inc(instance, answerIdx);
+			std::vector<Instance*> currentClassInstances =
+				std::move(categorizerByAtt.GetInstances(classname));
 
-			childrenCounters.emplace_back(childCounter);
-			childVectors.push_back({});
-			childVectors.back() = std::move(
-				childCounter[attClasses[j]].GetVector()
-			);
+			childAnswerCategorizers.emplace_back(_answerIdx);
+			InstanceCategorizer& categorizerByAnswer = 
+				childAnswerCategorizers.back();
+
+			for (auto& instance : currentClassInstances)
+				categorizerByAnswer.Inc(instance);
 		}
 
-		double gain = Gain(
-			_o, _dataframe.GetAttributeName(i), parentV, 
-			attClasses, childVectors, true, tabs);
+		// with classified instances for each class of current attribute,
+		// generates children entropy vectors.
+		std::vector<std::vector<int>> childrenEntropyVecs = 
+			ToChildrenEntropyVec(childAnswerCategorizers);
 
+		// calculate gain with calculated parent/children entropy vectors.s
+		double gain = Gain(
+			nullptr, _dataframe.GetAttributeName(attIdx), parentEntropyVec, 
+			classes, childrenEntropyVecs, true, ""
+		);
+
+		// if current gain is better than previous attribute, update.
 		if (gain > bestGain)
 		{
 			bestGain = gain;
-			bestGainIdx = i;
-			bestAttributeClasses = attClasses;
-			bestChildrenCounters = childrenCounters;
+			bestGainAttIdx = attIdx;
+			bestGainAttChildCategorizers = std::move(childAnswerCategorizers);
 		}
 	}
-	
-	if (_o)
+
+	// create a node.
+	Node* node = new Node;
+	// assign attribute it will use to classify instances
+	node->_attributeName = _dataframe.GetAttributeName(bestGainAttIdx);
+
+	attNoded[bestGainAttIdx] = true;
+
+	// build child nodes and add to node.
+	for (auto& childCategorizer : bestGainAttChildCategorizers)
 	{
-		*_o << std::endl;
-		*_o << tabs << "Choose: " << _dataframe.GetAttributeName(bestGainIdx)
-			<< "(" << bestGain << ")" << std::endl << std::endl;
+		std::vector<Instance*> childInstances =
+			std::move(childCategorizer.GetInstances());
+
+		if (Node* childNode = BuildTree(childInstances, attNoded))
+			node->_children.push_back(childNode);
 	}
 
-	attMarker[bestGainIdx] = true;
-	for (size_t i = 0; i < bestChildrenCounters.size(); ++i)
-	{
-		std::vector<Instance*> instances =
-			bestChildrenCounters[i][bestAttributeClasses[i]].GetInstances();
+	attNoded[bestGainAttIdx] = false;
 
-		BuildTree(instances, attMarker, answerIdx, 
-			_dataframe.GetAttributeName(bestGainIdx), bestAttributeClasses[i], 
-			tabs + "\t");
-	}
+	// return node.
+	return node;
 }
 
 void DecisionTree::Build()
 {
+	_dataframe = std::move(_dataframe_original.Clone());
 	std::vector<bool> attMarker(_dataframe.GetAttributeCount(), false);
 	attMarker[_answerIdx] = true;
-	BuildTree(_dataframe.GetInstances(), attMarker, _answerIdx, "ROOT", "", "");
+	_root = BuildTree(_dataframe.GetInstances(), attMarker);
 }

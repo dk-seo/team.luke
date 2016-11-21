@@ -38,15 +38,6 @@ static void AddWineAttribute(
 	}
 }
 
-
-static void DiscritizeDataframe(
-	Dataframe& dataframe,
-	std::vector<size_t> attToDiscretize,
-	size_t answerIdx)
-{
-
-}
-
 void DecisionTreeTest_Wines()
 {
 	// build red/white data frames and merge them with wine type column added
@@ -93,7 +84,6 @@ void DecisionTreeTest_Wines()
 		WineAttribute::sulphates,
 		WineAttribute::alcohol
 	};
-	DiscritizeDataframe(wines, attToDiscretize, WineAttribute::wine_type);
 
 	// build decision tree with discritized attributes
 	DecisionTree decisiontree(wines, WineAttribute::wine_type);

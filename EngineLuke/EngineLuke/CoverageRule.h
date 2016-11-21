@@ -9,9 +9,9 @@ class Dataframe;
 
 struct SubRule
 {
-	SubRule(int a, std::string c) : att(a), classValue(c) {}
+	SubRule(size_t a, std::string c) : att(a), classValue(c) {}
 
-	int att;
+	size_t att;
 	std::string classValue;
 
 	bool Satisfy(const Instance* instance) const;

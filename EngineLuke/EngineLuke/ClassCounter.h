@@ -7,16 +7,23 @@ class Instance;
 
 struct ClassCounter
 {
-	void Inc(Instance* instance, size_t att);
+	ClassCounter(size_t idx);
+
+	void Inc(Instance* instance);
 
 	int Get(const std::string& classname);
 
-	std::vector<int> GetVector() const;
+	std::vector<int> GetEntropyVector() const;
 
 	std::vector<Instance*> GetInstances() const;
+	
+	std::vector<Instance*> GetInstances(const std::string& classname);
 
 	std::vector<std::string> GetClasses() const;
 
+	size_t GetClassCount() const { return _map.size(); }
+
 private:
-	std::unordered_map<std::string, std::vector<Instance*>> map;
+	size_t _attributeIdx;
+	std::unordered_map<std::string, std::vector<Instance*>> _map;
 };
