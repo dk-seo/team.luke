@@ -44,6 +44,7 @@ Dataframe::Dataframe(Dataframe&& rhs)
 {
 	_attributeMap = std::move(rhs._attributeMap);
 	_attributeNames = std::move(rhs._attributeNames);
+	_attributeTypes = std::move(rhs._attributeTypes);
 	_instances = std::move(rhs._instances); rhs._instances.clear();
 }
 
@@ -51,6 +52,7 @@ Dataframe& Dataframe::operator=(Dataframe&& rhs)
 {
 	_attributeMap = std::move(rhs._attributeMap);
 	_attributeNames = std::move(rhs._attributeNames);
+	_attributeTypes = std::move(rhs._attributeTypes);
 	_instances = std::move(rhs._instances); rhs._instances.clear();
 	return *this;
 }
@@ -60,6 +62,7 @@ Dataframe Dataframe::Clone()
 	Dataframe clone;
 	clone._attributeNames = _attributeNames;
 	clone._attributeMap = _attributeMap;
+	clone._attributeTypes = _attributeTypes;
 	clone._instances.reserve(_instances.size());
 	for (auto instance : _instances)
 	{
@@ -85,7 +88,7 @@ bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 	int attributeCount = CsvParser_getNumFields(header);
 	const char **parsedHeader = CsvParser_getFields(header);
 	for (int i = 0; i < attributeCount; ++i)
-		AddAttribute(parsedHeader[i]);
+		AddAttribute(parsedHeader[i], AttributeType::Nominal); // nominal by default
 
 	// build instances
 	while (CsvRow* row = CsvParser_getRow(csvParser))
@@ -102,10 +105,16 @@ bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 	return true;
 }
 
-const std::string& Dataframe::GetAttributeName(size_t i)
+const std::string& Dataframe::GetAttributeName(size_t i) const
 {
 	assert(i < GetAttributeCount());
 	return _attributeNames[i];
+}
+
+AttributeType::Enum Dataframe::GetAttributeType(size_t i) const
+{
+	assert(i < GetAttributeCount());
+	return _attributeTypes[i];
 }
 
 Instance* Dataframe::CreateInstance()
@@ -114,9 +123,11 @@ Instance* Dataframe::CreateInstance()
 	return _instances.back();
 }
 
-void Dataframe::AddAttribute(const std::string& attributeName)
+void Dataframe::AddAttribute(
+	const std::string& attributeName, AttributeType::Enum type)
 {
 	_attributeNames.emplace_back(attributeName);
+	_attributeTypes.emplace_back(type);
 	_attributeMap.emplace(attributeName, (unsigned)_attributeNames.size() - 1);
 }
 

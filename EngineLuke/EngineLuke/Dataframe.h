@@ -4,6 +4,15 @@
 #include <cstdlib>
 #include <unordered_map>
 
+namespace AttributeType
+{
+	enum Enum
+	{
+		Nominal,
+		Numeric
+	};
+}
+
 // Attribute.
 // In order to make room for reading in many other forms than string.
 class Attribute
@@ -27,7 +36,6 @@ public:
 	const Attribute& GetAttribute(size_t idx) const;
 	void AddAttribute(const std::string& attribute);
 
-
 private:
 	std::vector<Attribute> _attributes;
 };
@@ -49,10 +57,18 @@ public:
 	bool BuildFromCsv(const std::string& filename, bool hasHeader);
 
 	// Add an attribute with name
-	void AddAttribute(const std::string& attributeName);
+	void Dataframe::AddAttribute(
+		const std::string& attributeName, 
+		AttributeType::Enum type);
 
-	// get name of ith column attribute
-	const std::string& GetAttributeName(size_t i);
+	// get name of ith attribute
+	const std::string& GetAttributeName(size_t i) const;
+
+	// get type of ith attribute
+	AttributeType::Enum GetAttributeType(size_t i) const;
+
+	void SetAttributeType(size_t i, AttributeType::Enum type) {
+		_attributeTypes[i] = type; }
 
 	// get number of attributes
 	size_t GetAttributeCount() const;
@@ -61,7 +77,8 @@ public:
 	const std::vector<Instance*>& GetInstances() const { return _instances; }
 
 	// Get attribute of a specific instance
-	const Attribute& GetInstanceAttribute(const Instance* instance, const std::string& attName);
+	const Attribute& GetInstanceAttribute(
+		const Instance* instance, const std::string& attName);
 
 	// get instance count
 	size_t GetInstanceCount() const;
@@ -87,6 +104,7 @@ private:
 
 private:
 	std::vector<std::string> _attributeNames;
+	std::vector<AttributeType::Enum> _attributeTypes;
 	AttributeMap _attributeMap;
 	std::vector<Instance*> _instances;
 	std::string _errormsg;

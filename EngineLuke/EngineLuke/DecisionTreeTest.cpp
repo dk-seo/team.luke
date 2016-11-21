@@ -8,7 +8,8 @@ namespace WineAttribute
 {
 	enum Enum
 	{
-		fixed_acidity_,
+		BEGIN,
+		fixed_acidity_ = BEGIN,
 		volatile_acidity,
 		citric_acid,
 		residual_sugar,
@@ -25,12 +26,29 @@ namespace WineAttribute
 	};
 }
 
+static AttributeType::Enum attributeTypes[WineAttribute::COUNT] = {
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Numeric,
+	AttributeType::Nominal, // quality
+	AttributeType::Nominal // wine type
+};
+
 static void AddWineAttribute(
 	Dataframe& dataframe, 
 	const std::string& attributeName,
-	const std::string& desiredClass)
+	const std::string& desiredClass,
+	AttributeType::Enum attType)
 {
-	dataframe.AddAttribute(attributeName);
+	dataframe.AddAttribute(attributeName, attType);
 	for (auto instance : dataframe.GetInstances())
 	{
 		instance->AddAttribute(desiredClass);
@@ -48,7 +66,8 @@ void DecisionTreeTest_Wines()
 		std::cout << "loading red-wine data failed!" << std::endl;
 		return;
 	}
-	AddWineAttribute(wines, "wine type", "red");
+	AddWineAttribute(
+		wines, "wine type", "red", attributeTypes[WineAttribute::wine_type]);
 
 	{
 		Dataframe whitewines;
@@ -58,37 +77,24 @@ void DecisionTreeTest_Wines()
 			std::cout << "loading red-wine data failed!" << std::endl;
 			return;
 		}
-		AddWineAttribute(whitewines, "wine type", "white");
+		AddWineAttribute(
+			whitewines, "wine type", "white", 
+			attributeTypes[WineAttribute::wine_type]);
 
 		wines.Merge(whitewines);
 	}
 
-	std::ofstream of("wine_both_red_n_white.csv", std::ios::out);
-	wines.ToCsv(of);
+
+
+	std::ofstream mergedCsv("wine_both_red_n_white.csv", std::ios::out);
+	wines.ToCsv(mergedCsv);
+
+	for (size_t i = WineAttribute::BEGIN; i < WineAttribute::COUNT; ++i)
+		wines.SetAttributeType(i, attributeTypes[i]);
 
 	// do feature selection (if time allowed)
-	// ...
 
-	// discritize each attribute
-	std::vector<size_t> attToDiscretize =
-	{
-		WineAttribute::fixed_acidity_,
-		WineAttribute::volatile_acidity,
-		WineAttribute::citric_acid,
-		WineAttribute::residual_sugar,
-		WineAttribute::chlorides,
-		WineAttribute::free_sulfur_dioxide,
-		WineAttribute::total_sulfur_dioxide,
-		WineAttribute::density,
-		WineAttribute::pH,
-		WineAttribute::sulphates,
-		WineAttribute::alcohol
-	};
-
-	// build decision tree with discritized attributes
+	// build decision tree with discretized attributes
 	DecisionTree decisiontree(wines, WineAttribute::wine_type);
 	decisiontree.Build();
-
-	// test
-	// ...
 }
