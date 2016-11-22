@@ -148,15 +148,18 @@
     <ClCompile Include="csvparser.c" />
     <ClCompile Include="Dataframe.cpp" />
     <ClCompile Include="DecisionTree.cpp" />
+    <ClCompile Include="Equation.cpp" />
     <ClCompile Include="Gain.cpp" />
     <ClCompile Include="KmeansClustering.cpp" />
     <ClCompile Include="KMeansClusteringTest.cpp" />
+    <ClCompile Include="LinearRegression.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OneRule.cpp" />
     <ClCompile Include="RandomSampler.cpp" />
     <ClCompile Include="RecommenderSystem.cpp" />
     <ClCompile Include="RecommenderSystemTest.cpp" />
     <ClCompile Include="Similarity.cpp" />
+    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassCounter.h" />
@@ -164,14 +167,17 @@
     <ClInclude Include="csvparser.h" />
     <ClInclude Include="Dataframe.h" />
     <ClInclude Include="DecisionTree.h" />
+    <ClInclude Include="Equation.h" />
     <ClInclude Include="Gain.h" />
     <ClInclude Include="KmeansClustering.h" />
     <ClInclude Include="KMeansClusteringTest.h" />
+    <ClInclude Include="LinearRegression.h" />
     <ClInclude Include="OneRule.h" />
     <ClInclude Include="RandomSampler.h" />
     <ClInclude Include="RecommenderSystem.h" />
     <ClInclude Include="RecommenderSystemTest.h" />
     <ClInclude Include="Similarity.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Q1_ShirtsData.txt" />
