@@ -48,12 +48,10 @@ public:
 	TreePrinter(std::ostream& o) : _o(o) {}
 	virtual bool Visit(DecisionTree::Node* node)
 	{
-		_o << _tabs <<
-			node->_attributeName;
 		if (node->_children.empty())
-			_o << "==>" << node->_conceptClass;
+			_o << _tabs << "==>" << node->_conceptClass;
 		else
-			
+			_o << _tabs << node->_attributeName;
 		_o << std::endl;
 
 		_tabs += "\t";

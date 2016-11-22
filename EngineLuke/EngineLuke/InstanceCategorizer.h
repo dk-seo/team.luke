@@ -32,6 +32,8 @@ public:
 
 	MultiIntegralDiscretizer* GetDiscretizer() { return _discretizer.get(); }
 
+	MultiIntegralDiscretizer* ReleaseDiscretizer() { return _discretizer.release(); }
+
 	size_t GetClassCount() const { return _map.size(); }
 
 private:

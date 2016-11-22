@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+
 class Instance;
 class InstanceCategorizer;
 
