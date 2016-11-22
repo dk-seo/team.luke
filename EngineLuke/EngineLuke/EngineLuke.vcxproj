@@ -148,10 +148,12 @@
     <ClCompile Include="csvparser.c" />
     <ClCompile Include="Dataframe.cpp" />
     <ClCompile Include="DecisionTree.cpp" />
+    <ClCompile Include="Equation.cpp" />
     <ClCompile Include="DecisionTreeTest.cpp" />
     <ClCompile Include="Gain.cpp" />
     <ClCompile Include="KmeansClustering.cpp" />
     <ClCompile Include="KMeansClusteringTest.cpp" />
+    <ClCompile Include="LinearRegression.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MultiIntegralDiscretizer.cpp" />
     <ClCompile Include="OneRule.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="RecommenderSystem.cpp" />
     <ClCompile Include="RecommenderSystemTest.cpp" />
     <ClCompile Include="Similarity.cpp" />
+    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InstanceCategorizer.h" />
@@ -166,6 +169,8 @@
     <ClInclude Include="csvparser.h" />
     <ClInclude Include="Dataframe.h" />
     <ClInclude Include="DecisionTree.h" />
+    <ClInclude Include="Equation.h" />
+    <ClInclude Include="LinearRegression.h" />
     <ClInclude Include="DecisionTreeTest.h" />
     <ClInclude Include="Gain.h" />
     <ClInclude Include="KmeansClustering.h" />
@@ -176,6 +181,7 @@
     <ClInclude Include="RecommenderSystem.h" />
     <ClInclude Include="RecommenderSystemTest.h" />
     <ClInclude Include="Similarity.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\winequality-red_Output.csv" />

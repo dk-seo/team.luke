@@ -38,6 +38,14 @@
     <ClCompile Include="RecommenderSystemTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
+    <ClCompile Include="LinearRegression.cpp">
+      <Filter>ML\LinearRegression</Filter>
+    </ClCompile>
+    <ClCompile Include="Equation.cpp">
+      <Filter>ML\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector.cpp">
+      <Filter>ML\Utility</Filter>
     <ClCompile Include="InstanceCategorizer.cpp">
       <Filter>ML\Utility</Filter>
     </ClCompile>
@@ -85,6 +93,14 @@
     <ClInclude Include="RecommenderSystemTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="LinearRegression.h">
+      <Filter>ML\LinearRegression</Filter>
+    </ClInclude>
+    <ClInclude Include="Equation.h">
+      <Filter>ML\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>ML\Utility</Filter>
     <ClInclude Include="InstanceCategorizer.h">
       <Filter>ML\Utility</Filter>
     </ClInclude>
@@ -126,6 +142,8 @@
     <Filter Include="ML\RecommenderSystem">
       <UniqueIdentifier>{f40ddf71-b448-4547-bd74-62c45bddde13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ML\LinearRegression">
+      <UniqueIdentifier>{2dd00bb0-68a5-43e5-8595-63cb0586ba6c}</UniqueIdentifier>
     <Filter Include="Inputs">
       <UniqueIdentifier>{0b6caf0f-1ba0-4af4-bcb9-d9b543587587}</UniqueIdentifier>
     </Filter>
