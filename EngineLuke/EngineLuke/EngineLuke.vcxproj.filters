@@ -26,9 +26,6 @@
     <ClCompile Include="CoverageRule.cpp">
       <Filter>ML\Classification</Filter>
     </ClCompile>
-    <ClCompile Include="ClassCounter.cpp">
-      <Filter>ML\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="RecommenderSystem.cpp">
       <Filter>ML\RecommenderSystem</Filter>
     </ClCompile>
@@ -49,6 +46,14 @@
     </ClCompile>
     <ClCompile Include="Vector.cpp">
       <Filter>ML\Utility</Filter>
+    <ClCompile Include="InstanceCategorizer.cpp">
+      <Filter>ML\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiIntegralDiscretizer.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="DecisionTreeTest.cpp">
+      <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +81,6 @@
     <ClInclude Include="CoverageRule.h">
       <Filter>ML\Classification</Filter>
     </ClInclude>
-    <ClInclude Include="ClassCounter.h">
-      <Filter>ML\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="RecommenderSystem.h">
       <Filter>ML\RecommenderSystem</Filter>
     </ClInclude>
@@ -99,6 +101,14 @@
     </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>ML\Utility</Filter>
+    <ClInclude Include="InstanceCategorizer.h">
+      <Filter>ML\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiIntegralDiscretizer.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="DecisionTreeTest.h">
+      <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -134,20 +144,16 @@
     </Filter>
     <Filter Include="ML\LinearRegression">
       <UniqueIdentifier>{2dd00bb0-68a5-43e5-8595-63cb0586ba6c}</UniqueIdentifier>
+    <Filter Include="Inputs">
+      <UniqueIdentifier>{0b6caf0f-1ba0-4af4-bcb9-d9b543587587}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Q1_ShirtsData.txt">
-      <Filter>Outputs</Filter>
-    </Text>
-    <Text Include="Q1_XY.txt">
-      <Filter>Outputs</Filter>
-    </Text>
-    <Text Include="Q1_ShirtsData_DEBUG.txt">
-      <Filter>Outputs</Filter>
-    </Text>
-    <Text Include="Q1_XY_DEBUG.txt">
-      <Filter>Outputs</Filter>
-    </Text>
+    <None Include="Data\winequality-red_Output.csv">
+      <Filter>Inputs</Filter>
+    </None>
+    <None Include="Data\winequality-white_Output.csv">
+      <Filter>Inputs</Filter>
+    </None>
   </ItemGroup>
 </Project>

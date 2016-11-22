@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <fstream>
 #include "Dataframe.h"
-#include "ClassCounter.h"
 
 bool SubRule::Satisfy(const Instance* instance) const
 {
@@ -18,13 +17,14 @@ struct CoverageInfo
 };
 struct SubruleInclusiveFunc
 {
-	SubruleInclusiveFunc(std::vector<SubRule>& subrules) : rules(subrules) {}
+	SubruleInclusiveFunc(const std::vector<SubRule>& subrules)
+		: rules(subrules) {}
 
 	bool operator()(const Instance* instance) const
 	{
 		if (rules.empty())
 			return true;
-		for (auto& rule : rules)
+		for (const auto& rule : rules)
 		{
 			if (!rule.Satisfy(instance))
 				return false;
@@ -32,7 +32,7 @@ struct SubruleInclusiveFunc
 		return true;
 	}
 
-	std::vector<SubRule>& rules;
+	const std::vector<SubRule>& rules;
 };
 
 struct SubruleExclusiveFunc
@@ -67,27 +67,28 @@ void CoverageRule::SetDebugOutput(std::ofstream* o)
 	_o = o;
 }
 
-bool CoverageRule::MakeRule(
-	std::vector<Instance*>& instances_original,
-	std::string forClass,
-	std::vector<SubRule> subrules,
-	std::string tabs,
-	int ruleNum
-)
+int CoverageRule::CountClass(const std::vector<Instance*>& instances,
+	int index,
+	const std::string& forClass)
 {
-	// calculates coverage for each attribute
-	std::vector<ClassCounter> attributeCounters(_dataframe.GetAttributeCount());
-	std::vector<ClassCounter> conceptCounters(_dataframe.GetAttributeCount());
-
-	int totalClass = 0;
-	for (auto& instance : instances_original)
+	int count = 0;
+	for (const auto& instance : instances)
 	{
-		if (instance->GetAttribute(_answerIdx).AsString() == forClass)
-			++totalClass;
+		if (instance->GetAttribute(index).AsString() == forClass)
+			++count;
 	}
-	std::vector<Instance*> instances = std::move(
-		Filter(instances_original, SubruleInclusiveFunc(subrules)));
+	return count;
+}
 
+void CoverageRule::CalculateCoverageInfo(
+	const std::vector<Instance*>& instances,
+	const std::vector<SubRule>& rulesSoFar,
+	const std::string& answerClass,
+	std::vector<InstanceCategorizer>& attributeCounters,
+	std::vector<InstanceCategorizer>& conceptCounters)
+{
+	std::vector<Instance*> filteredInstances = std::move(
+		Filter(instances, SubruleInclusiveFunc(rulesSoFar)));
 	for (auto& instance : instances)
 	{
 		for (size_t att = 0; att < _dataframe.GetAttributeCount(); ++att)
@@ -95,103 +96,149 @@ bool CoverageRule::MakeRule(
 			if (att == _answerIdx)
 				continue;
 
-			if (instance->GetAttribute(_answerIdx).AsString() == forClass)
-				attributeCounters[att].Inc(instance, att);
+			if (instance->GetAttribute(_answerIdx).AsString() == answerClass)
+				attributeCounters[att].Add(instance);
 
-			conceptCounters[att].Inc(instance, att);
+			conceptCounters[att].Add(instance);
 		}
 	}
+}
 
-	if (totalClass == 0)
+bool CoverageRule::MakeRule(
+	std::vector<Instance*>& instances_original,
+	std::string answerClass,
+	std::vector<SubRule> rulesSoFar,
+	std::string tabs,
+	int ruleNum
+)
+{
+	// if give class is entirely covered, finish rules for the class.
+	int totalAnswerClassCount = CountClass(
+		instances_original, _answerIdx, answerClass);
+
+	if (totalAnswerClassCount == 0)
 		return true;
 
+	// calculates coverage Info for every attribute
+	std::vector<InstanceCategorizer> attributeCounters;
+	attributeCounters.reserve(_dataframe.GetAttributeCount());
+	std::vector<InstanceCategorizer> conceptCounters;
+	conceptCounters.reserve(_dataframe.GetAttributeCount());
+	for (size_t i = 0; i < _dataframe.GetAttributeCount(); ++i)
+	{
+		attributeCounters.emplace_back(i);
+		conceptCounters.emplace_back(i);
+	}
+
+	CalculateCoverageInfo(
+		instances_original, rulesSoFar, answerClass,
+		attributeCounters, conceptCounters);
+
 	// find the best coverage
-	int bestCoverAtt = 0;
-	std::string bestCoverClass = "";
-	int bestNominator = 0;
-	int bestDenominator = 0;
-	double bestCoverness = 0;
+	struct SubRuleInfo
+	{
+		size_t AttIndex = 0;
+		std::string ClassName = "";
+		int Nominator = 0;
+		int Denominator = 0;
+		double Coverness = 0;
+	};
+
+	SubRuleInfo best;
 	for (size_t att = 0; att < _dataframe.GetAttributeCount(); ++att)
 	{
 		if (att == _answerIdx)
 			continue;
 
-		std::vector<std::string> classes = attributeCounters[att].GetClasses();
+		std::vector<std::string> classes = std::move(
+			attributeCounters[att].GetClasses());
 		for (size_t i = 0; i < classes.size(); ++i)
 		{
-			int nominator = attributeCounters[att].Get(classes[i]);
-			int denominator = conceptCounters[att].Get(classes[i]);
+			int nominator = attributeCounters[att].GetCount(classes[i]);
+			int denominator = conceptCounters[att].GetCount(classes[i]);
 			double coverness = double(nominator) / denominator;
 
 			bool updateBest = false;
-			if (bestCoverness == coverness)
+			if (best.Coverness == coverness)
 			{
-				if (bestNominator < nominator)
+				if (best.Nominator < nominator)
 					updateBest = true;
 			}
-			else if (bestCoverness < coverness)
+			else if (best.Coverness < coverness)
 			{
 				updateBest = true;
 			}
 
 			if (updateBest)
 			{
-				bestCoverAtt = att;
-				bestCoverClass = classes[i];
-				bestNominator = nominator;
-				bestDenominator = denominator;
-				bestCoverness = coverness;
+				best.AttIndex = att;
+				best.ClassName = classes[i];
+				best.Nominator = nominator;
+				best.Denominator = denominator;
+				best.Coverness = coverness;
 			}
 			if (_o)
 			{
-				*_o << tabs << _dataframe.GetAttributeName(att) << " = " << classes[i] << ", then " << forClass
-					<< " (" << nominator << "/" << denominator << ")" << std::endl;
+				*_o << tabs
+					<< _dataframe.GetAttributeName(att) 
+					<< " = " << classes[i] << ", then " << answerClass
+					<< " (" << nominator << "/" << denominator << ")"
+					<< std::endl;
 			}
 		}
 	}
+
+	rulesSoFar.emplace_back(best.AttIndex, best.ClassName);
 
 	if (_o)
 	{
 		(*_o).setf(std::ios::fixed);
 		(*_o).precision(2);
 		(*_o) << std::endl;
-		(*_o) << tabs << "Choose : " << _dataframe.GetAttributeName(bestCoverAtt) << " = " << bestCoverClass
-			<< "( Highest Coverage : " << bestNominator << "/" << bestDenominator
-			<< " = " << double(bestNominator) / bestDenominator << ")" << std::endl << std::endl;
+		(*_o) << tabs << "Choose : " 
+			<< _dataframe.GetAttributeName(best.AttIndex)
+			<< " = " << best.ClassName
+			<< "( Highest Coverage : " << 
+			best.Nominator << "/" << best.Denominator
+			<< " = " << double(best.Nominator) / best.Denominator << ")"
+			<< std::endl << std::endl;
 	}
 
-	if (bestNominator == bestDenominator)
+	if (best.Nominator == best.Denominator)
 	{
-		subrules.emplace_back(bestCoverAtt, bestCoverClass);
 		if(_o)
 		{
 			*_o << std::endl;
 			*_o << "-- RULE " << ruleNum << " : ";
-			for (size_t i = 0; i < subrules.size(); ++i)
+			for (size_t i = 0; i < rulesSoFar.size(); ++i)
 			{
 				if (i > 0)
 					*_o << " and ";
 
-				*_o << _dataframe.GetAttributeName(subrules[i].att) << " = " << subrules[i].classValue;
+				*_o << _dataframe.GetAttributeName(rulesSoFar[i].att)
+					<< " = " << rulesSoFar[i].classValue;
 			}
-			*_o << ", then " << forClass << "( " << bestNominator << "/" << totalClass << " Covered )" << std::endl << std::endl;
+			*_o << ", then " << answerClass
+				<< "( " << best.Nominator << "/"
+				<< totalAnswerClassCount << " Covered )" 
+				<< std::endl << std::endl;
 		}
-		std::vector<Instance*> filtered = 
+
 		instances_original = std::move(
-			Filter(instances_original, SubruleExclusiveFunc(subrules)));
+			Filter(instances_original, SubruleExclusiveFunc(rulesSoFar)));
 		return false;
 	}
 	
-	subrules.emplace_back(bestCoverAtt, bestCoverClass);
-	return MakeRule(instances_original, forClass, subrules, tabs + "\t", ruleNum);
+	return MakeRule(
+		instances_original, answerClass, rulesSoFar, tabs + "\t", ruleNum);
 }
 
 void CoverageRule::Build()
 {
 	std::vector<Instance*> originalInstances = _dataframe.GetInstances();
-	ClassCounter counter;
+	InstanceCategorizer counter(_answerIdx);
 	for (auto& instance : originalInstances)
-		counter.Inc(instance, _answerIdx);
+		counter.Add(instance);
 
 	std::vector<std::string> conceptClasses = std::move(counter.GetClasses());
 	int ruleNum = 1;

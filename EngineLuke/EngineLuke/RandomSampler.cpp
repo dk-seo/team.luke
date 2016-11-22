@@ -12,7 +12,8 @@ void RandomSampler::Sample(Dataframe& dataframe, int sampleSize)
 
 	static std::random_device rd;
 	static std::default_random_engine randomGenerator(rd());
-	static std::uniform_int_distribution<int> distribution(0, dataframe.GetInstanceCount() - 1);
+	static std::uniform_int_distribution<int> distribution(
+		0, int(dataframe.GetInstanceCount()) - 1);
 
 	// until designated number of instances are sampled
 	int sampledSize = 0;

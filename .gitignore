@@ -1,2 +1,8 @@
+EngineLuke/x64/
+EngineLuke/EngineLuke/x64/
 *.suo
+EngineLuke/EngineLuke.VC.VC.opendb
+EngineLuke/EngineLuke.VC.db
+CS399_jiyun/CS399.VC.db
 DK_Seo/CS399_deok-hwa.seo.VC.db
+*.obj

@@ -8,6 +8,10 @@ class Instance;
 class RecommenderSystem
 {
 public:
+  // rename type of vector layout of unsigned integer
+  typedef std::vector<unsigned int> IndexList;
+
+public:
 	// initialize with critics dataframe to be used for recommendation
 	RecommenderSystem(Dataframe& critics);
 	~RecommenderSystem();
@@ -22,6 +26,9 @@ public:
 	std::vector<std::vector<double>>
 		RecommenderSystem::RecommendFor(const Dataframe& users);
 
+  // recommend winses 
+  std::vector<unsigned int> RedcommendWines(const IndexList & userFavors);
+
 private:
 	// return double vector that consists only with attributes of given indices
 	std::vector<double> GetFeatureVector(
@@ -31,7 +38,7 @@ private:
 	void PrintAttributes(const std::vector<int>& attIndices);
 
 private:
-	Dataframe& _critics; // reference ot critics dataframe
+	Dataframe& _critics; // reference of critics dataframe
 	std::ostream* _o; // debug output stream
 };
 

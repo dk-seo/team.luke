@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "InstanceCategorizer.h"
 
 class Instance;
 class Dataframe;
@@ -8,9 +9,9 @@ class Dataframe;
 
 struct SubRule
 {
-	SubRule(int a, std::string c) : att(a), classValue(c) {}
+	SubRule(size_t a, std::string c) : att(a), classValue(c) {}
 
-	int att;
+	size_t att;
 	std::string classValue;
 
 	bool Satisfy(const Instance* instance) const;
@@ -28,13 +29,23 @@ public:
 	void Build();
 
 private:
-	bool CoverageRule::MakeRule(
+	bool MakeRule(
 		std::vector<Instance*>& instances_original,
 		std::string forClass,
 		std::vector<SubRule> subrules,
 		std::string tabs,
 		int ruleNum
 	);
+
+	int CountClass(const std::vector<Instance*>& instances,
+		int index,
+		const std::string& forClass);
+
+	void CalculateCoverageInfo(const std::vector<Instance*>& instances,
+		const std::vector<SubRule>& rulesSoFar,
+		const std::string& answerClass,
+		std::vector<InstanceCategorizer>& attributeCounters,
+		std::vector<InstanceCategorizer>& conceptCounters);
 
 private:
 	struct AttributeMetadata {

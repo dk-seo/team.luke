@@ -191,6 +191,12 @@ RecommenderSystem::RecommendFor(const Dataframe& testdata)
 	return std::move(userScoreTables);
 }
 
+std::vector<unsigned int> RecommenderSystem::RedcommendWines(const IndexList & userFavors)
+{
+
+  return std::vector<unsigned int>();
+}
+
 // return double feature vector of given instance that only consists of 
 // given attributes of indices
 std::vector<double> RecommenderSystem::GetFeatureVector(
