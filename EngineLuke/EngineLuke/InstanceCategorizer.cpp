@@ -1,18 +1,50 @@
 #include "InstanceCategorizer.h"
 #include "Dataframe.h"
+#include "MultiIntegralDiscretizer.h"
 
-InstanceCategorizer::InstanceCategorizer(size_t attIdx)
-	:_attributeIdx(attIdx)
+InstanceCategorizer::InstanceCategorizer(
+	size_t attIdx, MultiIntegralDiscretizer* discretizer)
+	: _attributeIdx(attIdx)
+	, _discretizer(discretizer)
 {
 }
 
-void InstanceCategorizer::Inc(Instance* instance)
+InstanceCategorizer::~InstanceCategorizer()
+{
+}
+
+InstanceCategorizer::InstanceCategorizer(InstanceCategorizer&& rhs)
+{
+	_attributeIdx = rhs._attributeIdx;
+	_map = std::move(rhs._map);
+	_discretizer = std::move(rhs._discretizer);
+}
+
+InstanceCategorizer& InstanceCategorizer::operator=(InstanceCategorizer&& rhs)
+{
+	_attributeIdx = rhs._attributeIdx;
+	_map = std::move(rhs._map);
+	_discretizer = std::move(rhs._discretizer);
+	return *this;
+}
+
+void InstanceCategorizer::Add(Instance* instance)
 {
 	std::string className = instance->GetAttribute(_attributeIdx).AsString();
-	_map[className].emplace_back(instance);
+	if (_discretizer)
+		_map[_discretizer->Discretize(instance)].emplace_back(instance);
+	else
+		_map[className].emplace_back(instance);
 }
 
-int InstanceCategorizer::Get(const std::string& className)
+int InstanceCategorizer::GetCount()
+{
+	int totalcount = 0;
+	for (auto& classtypes : _map)
+		totalcount += int(classtypes.second.size());
+	return totalcount;
+}
+int InstanceCategorizer::GetCount(const std::string& className)
 {
 	return int(_map[className].size());
 }

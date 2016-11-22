@@ -97,9 +97,9 @@ void CoverageRule::CalculateCoverageInfo(
 				continue;
 
 			if (instance->GetAttribute(_answerIdx).AsString() == answerClass)
-				attributeCounters[att].Inc(instance);
+				attributeCounters[att].Add(instance);
 
-			conceptCounters[att].Inc(instance);
+			conceptCounters[att].Add(instance);
 		}
 	}
 }
@@ -154,8 +154,8 @@ bool CoverageRule::MakeRule(
 			attributeCounters[att].GetClasses());
 		for (size_t i = 0; i < classes.size(); ++i)
 		{
-			int nominator = attributeCounters[att].Get(classes[i]);
-			int denominator = conceptCounters[att].Get(classes[i]);
+			int nominator = attributeCounters[att].GetCount(classes[i]);
+			int denominator = conceptCounters[att].GetCount(classes[i]);
 			double coverness = double(nominator) / denominator;
 
 			bool updateBest = false;
@@ -238,7 +238,7 @@ void CoverageRule::Build()
 	std::vector<Instance*> originalInstances = _dataframe.GetInstances();
 	InstanceCategorizer counter(_answerIdx);
 	for (auto& instance : originalInstances)
-		counter.Inc(instance);
+		counter.Add(instance);
 
 	std::vector<std::string> conceptClasses = std::move(counter.GetClasses());
 	int ruleNum = 1;

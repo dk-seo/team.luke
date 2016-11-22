@@ -38,9 +38,14 @@
     <ClCompile Include="RecommenderSystemTest.cpp">
       <Filter>Tests</Filter>
     </ClCompile>
-    <ClCompile Include="DecisionTreeTest.cpp" />
     <ClCompile Include="InstanceCategorizer.cpp">
       <Filter>ML\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiIntegralDiscretizer.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="DecisionTreeTest.cpp">
+      <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,9 +85,14 @@
     <ClInclude Include="RecommenderSystemTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
-    <ClInclude Include="DecisionTreeTest.h" />
     <ClInclude Include="InstanceCategorizer.h">
       <Filter>ML\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiIntegralDiscretizer.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="DecisionTreeTest.h">
+      <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

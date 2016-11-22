@@ -153,6 +153,7 @@
     <ClCompile Include="KmeansClustering.cpp" />
     <ClCompile Include="KMeansClusteringTest.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MultiIntegralDiscretizer.cpp" />
     <ClCompile Include="OneRule.cpp" />
     <ClCompile Include="RandomSampler.cpp" />
     <ClCompile Include="RecommenderSystem.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Gain.h" />
     <ClInclude Include="KmeansClustering.h" />
     <ClInclude Include="KMeansClusteringTest.h" />
+    <ClInclude Include="MultiIntegralDiscretizer.h" />
     <ClInclude Include="OneRule.h" />
     <ClInclude Include="RandomSampler.h" />
     <ClInclude Include="RecommenderSystem.h" />

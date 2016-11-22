@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "Gain.h"
 #include "InstanceCategorizer.h"
+#include "MultiIntegralDiscretizer.h"
 #include "Dataframe.h"
 
 static std::vector<std::vector<int>> ToChildrenEntropyVec(
@@ -15,6 +16,16 @@ static std::vector<std::vector<int>> ToChildrenEntropyVec(
 	for (const auto& categorizer : childCategorizers)
 		entropyVecs.emplace_back(std::move(categorizer.GetEntropyVector()));
 	return std::move(entropyVecs);
+}
+
+
+void DecisionTree::Node::Walk(IDTVisitor* visitor, bool visit)
+{
+	if (visit && !visitor->Visit(this))
+		return;
+
+	for (auto& child : _children)
+		child->Walk(visitor, true);
 }
 
 DecisionTree::DecisionTree(Dataframe& dataframe, int answerIdx)
@@ -38,7 +49,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	// calculation
 	InstanceCategorizer parentCategorizer(_answerIdx);
 	for (auto& instance : instances)
-		parentCategorizer.Inc(instance);
+		parentCategorizer.Add(instance);
 
 	// if one or less classes exist, purity is 1 -> leaf node
 	if (parentCategorizer.GetClassCount() <= 1)
@@ -56,6 +67,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	// gain
 	double bestGain = 0;
 	size_t bestGainAttIdx = 0;
+	InstanceCategorizer bestGainAttCategorizer(0);
 	std::vector<InstanceCategorizer> bestGainAttChildCategorizers;
 	
 	for (size_t attIdx = 0; attIdx < _dataframe.GetAttributeCount(); ++attIdx)
@@ -64,12 +76,17 @@ DecisionTree::Node* DecisionTree::BuildTree(
 			continue;
 
 		// categorize instances by current attribute
-		InstanceCategorizer categorizerByAtt(attIdx);
-		for (auto& instance : instances)
-			categorizerByAtt.Inc(instance);
+		MultiIntegralDiscretizer* discretizer = 
+			new MultiIntegralDiscretizer(attIdx, _answerIdx);
+		discretizer->Build(instances);
 
-		// for instances in each attribute class, categorize by concept
-		// so that child entropy vector can be calculated
+		InstanceCategorizer categorizerByAtt(attIdx, discretizer);
+		for (auto& instance : instances)
+			categorizerByAtt.Add(instance);
+
+		// categorize instances of each attribute clsas by concept
+		// and save their states so that children entropy vectors can be
+		// calculated
 		std::vector<std::string> classes =
 			std::move(categorizerByAtt.GetClasses());
 		std::vector<InstanceCategorizer> childAnswerCategorizers;
@@ -83,7 +100,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 				childAnswerCategorizers.back();
 
 			for (auto& instance : currentClassInstances)
-				categorizerByAnswer.Inc(instance);
+				categorizerByAnswer.Add(instance);
 		}
 
 		// with classified instances for each class of current attribute,
@@ -102,6 +119,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 		{
 			bestGain = gain;
 			bestGainAttIdx = attIdx;
+			bestGainAttCategorizer = std::move(categorizerByAtt);
 			bestGainAttChildCategorizers = std::move(childAnswerCategorizers);
 		}
 	}
@@ -110,10 +128,11 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	Node* node = new Node;
 	// assign attribute it will use to classify instances
 	node->_attributeName = _dataframe.GetAttributeName(bestGainAttIdx);
+	node->_cutpoints = bestGainAttCategorizer.GetDiscretizer()->GetCutPoints();
 
 	attNoded[bestGainAttIdx] = true;
 
-	// build child nodes and add to node.
+	// build child nodes recursively and add them to node.
 	for (auto& childCategorizer : bestGainAttChildCategorizers)
 	{
 		std::vector<Instance*> childInstances =
@@ -135,4 +154,13 @@ void DecisionTree::Build()
 	std::vector<bool> attMarker(_dataframe.GetAttributeCount(), false);
 	attMarker[_answerIdx] = true;
 	_root = BuildTree(_dataframe.GetInstances(), attMarker);
+}
+
+void DecisionTree::Walk(IDTVisitor* visitor, bool visit)
+{
+	if (visit && !visitor->Visit(this))
+		return;
+
+	if (_root)
+		_root->Walk(visitor, true);
 }

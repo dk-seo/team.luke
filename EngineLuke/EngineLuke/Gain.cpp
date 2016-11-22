@@ -94,7 +94,7 @@ double Gain(
 	std::vector<double> infos;
 	for (size_t i = 0; i < children.size(); ++i)
 	{
-		double info = Info(o, childrenNames[i], tabs, children[i]);
+		double info = Info(o, i < childrenNames.size() ? childrenNames[i] : "", tabs, children[i]);
 		infos.emplace_back(info);
 		coefficients.emplace_back(Sum(children[i]), totalSum);
 	}
