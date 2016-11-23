@@ -145,6 +145,9 @@ Dataframe OpenMergedWineDataframe()
 void DecisionTreeTest_Wines()
 {
 	Dataframe wines = std::move(OpenMergedWineDataframe());
+	// @hanstar17 todo:
+	// balance the wine dataset such that # instances of red wine/white wine
+	// are the same or similar. USE SAMPLING
 
 	// build decision tree with discretized attributes
 	DecisionTree decisiontree(wines, WineAttribute::wine_type);
