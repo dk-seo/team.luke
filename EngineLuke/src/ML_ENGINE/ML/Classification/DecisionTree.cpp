@@ -72,6 +72,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	{
 		Node* node = new Node;
 		node->_conceptClass = instances[0]->GetAttribute(_answerIdx).AsString();
+		node->_childrenCountByConcept[node->_conceptClass] = instances.size();
 		return node;
 	}
 
@@ -82,11 +83,11 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	// calculate gain per each attribute and find the attribute with the highest
 	// gain
 	double bestGain = 0;
-	size_t bestGainAttIdx = 0;
+	int bestGainAttIdx = -1;
 	InstanceCategorizer bestGainAttCategorizer(0);
 	std::vector<InstanceCategorizer> bestGainAttChildCategorizers;
 	std::vector<std::string> bestGainClasses;
-	for (size_t attIdx = 0; attIdx < _dataframe.GetAttributeCount(); ++attIdx)
+	for (int attIdx = 0; attIdx < int(_dataframe.GetAttributeCount()); ++attIdx)
 	{
 		if (attNoded[attIdx])
 			continue;
@@ -122,7 +123,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 		// with classified instances for each class of current attribute,
 		// generates children entropy vectors.
 		std::vector<std::vector<int>> childrenEntropyVecs =
-			ToChildrenEntropyVec(childAnswerCategorizers);
+			std::move(ToChildrenEntropyVec(childAnswerCategorizers));
 
 		// calculate gain with calculated parent/children entropy vectors.s
 		double gain = Gain(
@@ -141,11 +142,23 @@ DecisionTree::Node* DecisionTree::BuildTree(
 		}
 	}
 
+	if (bestGainAttIdx < 0)
+		return nullptr;
+
 	// create a node.
 	Node* node = new Node;
 	// assign attribute it will use to classify instances
 	node->_attributeName = _dataframe.GetAttributeName(bestGainAttIdx);
 	node->_discretizer.reset(bestGainAttCategorizer.ReleaseDiscretizer());
+
+	std::vector<std::string> parentClasses = 
+		std::move(parentCategorizer.GetClasses());
+	for (auto& parentClass : parentClasses)
+	{
+		node->_childrenCountByConcept[parentClass] =
+			parentCategorizer.GetCount(parentClass);
+	}
+
 	attNoded[bestGainAttIdx] = true;
 
 	// build child nodes recursively and add them to node.

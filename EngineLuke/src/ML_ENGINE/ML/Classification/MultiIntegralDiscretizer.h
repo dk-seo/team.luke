@@ -16,7 +16,7 @@ public:
 	const std::vector<double>& GetCutPoints() const { return _cutPoints; }
 
 private:
-	void Split(InstanceCategorizer& totalInstanceCategorizer);
+	void Split(InstanceCategorizer& totalInstanceCategorizer, size_t depth);
 
 	bool ShouldAccept(
 		double gain,
@@ -27,6 +27,7 @@ private:
 private:
 	size_t _attributeIdx;
 	size_t _answerIdx;
+	size_t _maxSplitDepth;
 	std::vector<double> _cutPoints;
 };
 

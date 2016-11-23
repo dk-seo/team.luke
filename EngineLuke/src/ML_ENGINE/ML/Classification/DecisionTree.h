@@ -16,8 +16,9 @@ public:
 	struct Node
 	{
 		std::map<std::string, Node*> _children;
+		std::map<std::string, size_t> _childrenCountByConcept;
 		std::string _attributeName;
-		std::string _conceptClass;
+		std::string _conceptClass; // only leaf node has this value
 		std::unique_ptr<MultiIntegralDiscretizer> _discretizer;
 
 		Node();

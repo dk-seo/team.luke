@@ -5,15 +5,13 @@
 #include "../Utilities/InstanceCategorizer.h"
 #include "../Utilities/Gain.h"
 
-
-
 MultiIntegralDiscretizer::MultiIntegralDiscretizer(
 	size_t attributeIdx, size_t answerIdx)
 	: _attributeIdx(attributeIdx)
 	, _answerIdx(answerIdx)
+	, _maxSplitDepth(100)
 {
 }
-
 
 MultiIntegralDiscretizer::~MultiIntegralDiscretizer()
 {
@@ -24,9 +22,9 @@ std::string MultiIntegralDiscretizer::Discretize(Instance* instance)
 	for (size_t i = 0; i < _cutPoints.size(); ++i)
 	{
 		if (instance->GetAttribute(_attributeIdx).AsDouble() < _cutPoints[i])
-			return std::string("Category ") + std::to_string(i);
+			return std::string("Category ") + char('A' + i);
 	}
-	return std::string("Category ") + std::to_string(_cutPoints.size());
+	return std::string("Category ") + char('A' + _cutPoints.size());
 }
 
 void MultiIntegralDiscretizer::Build(const std::vector<Instance*>& instances)
@@ -35,7 +33,7 @@ void MultiIntegralDiscretizer::Build(const std::vector<Instance*>& instances)
 	for (Instance* instance : instances)
 		parentCategorizer.Add(instance);
 
-	Split(parentCategorizer);
+	Split(parentCategorizer, 0);
 }
 
 bool MultiIntegralDiscretizer::ShouldAccept(
@@ -62,7 +60,7 @@ bool MultiIntegralDiscretizer::ShouldAccept(
 		(
 			(log2l(n - 1) +
 			log2l(powl(3, k) - 2.0) -
-			(k*entropy_total + k1 * entropy_s1 + k2 * entropy_s2))/n
+			(k * entropy_total + k1 * entropy_s1 + k2 * entropy_s2))/n
 		);
 }
 
@@ -75,8 +73,11 @@ struct ReducedInstanceRef
 };
 
 void MultiIntegralDiscretizer::Split(
-	InstanceCategorizer& totalCategorizer)
+	InstanceCategorizer& totalCategorizer, size_t depth)
 {
+	if (depth >= _maxSplitDepth)
+		return;
+
 	std::vector<Instance*> instances =
 		std::move(totalCategorizer.GetInstances());
 
@@ -154,17 +155,23 @@ void MultiIntegralDiscretizer::Split(
 		right.pop_back();
 	}
 
+	if (bestGainLeftChildCategorizer.GetCount() == 0 ||
+		bestGainRightChildCategorizer.GetCount() == 0)
+	{
+		return;
+	}
+
 	// decide whether to cut or not to cut
 	if (ShouldAccept(
 		bestGain, totalCategorizer,
 		bestGainLeftChildCategorizer, bestGainRightChildCategorizer))
 	{
 		if(bestGainLeftChildCategorizer.GetClassCount() > 1)
-			Split(bestGainLeftChildCategorizer);
+			Split(bestGainLeftChildCategorizer, depth + 1);
 
 		_cutPoints.push_back(bestGainCutpoint);
 
 		if (bestGainRightChildCategorizer.GetClassCount() > 1)
-			Split(bestGainRightChildCategorizer);
+			Split(bestGainRightChildCategorizer, depth + 1);
 	}
 }

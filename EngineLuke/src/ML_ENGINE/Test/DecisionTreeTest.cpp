@@ -40,13 +40,21 @@ public:
 	virtual bool Visit(DecisionTree::Node* node)
 	{
 		_o << node->_attributeName;
-		if (node->_children.empty())
 		{
-			_o << "==>" << node->_conceptClass << std::endl;
-			return false;
+			_o << " (";
+			bool notFirst = false;
+			for (auto it : node->_childrenCountByConcept)
+			{
+				if (notFirst)		_o << ", ";
+				else				notFirst = true;
+				_o << it.first << "=" << it.second;
+			}
+			_o << ")" << std::endl;
 		}
 
-		_o << std::endl;
+		if (node->_children.empty())
+			return false;
+
 
 		_tabs += "\t\t";
 		auto& cutpoints = node->_discretizer->GetCutPoints();
