@@ -4,6 +4,6 @@
 
 int main()
 {
-	DecisionTreeTest_Wines();
+	//DecisionTreeTest_Wines();
 	return 0;
 }
