@@ -1,4 +1,5 @@
 EngineLuke/build/vs2013/
 EngineLuke/EngineLuke/
+EngineLuke/bin/Out/tree.txt
 *.suo
 *.obj
