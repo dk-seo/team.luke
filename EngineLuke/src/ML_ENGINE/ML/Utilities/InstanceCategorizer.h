@@ -25,12 +25,14 @@ public:
 	std::vector<int> GetEntropyVector() const;
 
 	std::vector<Instance*> GetInstances() const;
-	
+
 	std::vector<Instance*> GetInstances(const std::string& classname);
 
 	std::vector<std::string> GetClasses() const;
 
 	MultiIntegralDiscretizer* GetDiscretizer() { return _discretizer.get(); }
+
+	MultiIntegralDiscretizer* ReleaseDiscretizer() { return _discretizer.release(); }
 
 	size_t GetClassCount() const { return _map.size(); }
 

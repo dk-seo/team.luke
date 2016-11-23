@@ -1,7 +1,7 @@
 #include "DecisionTreeTest.h"
-#include "../Dataframe/Dataframe.h"
-#include "../Classification/DecisionTree.h"
-#include "MultiIntegralDiscretizer.h"
+#include "../ML/Dataframe/Dataframe.h"
+#include "../ML/Classification/DecisionTree.h"
+#include "../ML/Classification/MultiIntegralDiscretizer.h"
 #include <iostream>
 #include <cassert>
 
@@ -75,7 +75,7 @@ private:
 };
 
 static void AddWineAttribute(
-	Dataframe& dataframe, 
+	Dataframe& dataframe,
 	const std::string& attributeName,
 	const std::string& desiredClass,
 	AttributeType::Enum attType)
@@ -117,10 +117,10 @@ Dataframe OpenMergedWineDataframe()
 	// wines.ToCsv(mergedCsv);
 	//}
 
-	std::vector<size_t> selectiveAttributes = {0, 1, 3, 4, 6, 8, 9, 12};
+	std::vector<size_t> selectiveAttributes = { 0, 1, 3, 4, 6, 8, 9, 12 };
 
 	Dataframe wines;
-	if (!wines.BuildFromCsv("wine_both_red_n_white.csv", true, selectiveAttributes))
+	if (!wines.BuildFromCsv("Data/wine_both_red_n_white.csv", true, selectiveAttributes))
 	{
 		std::cout << "no file wine_both_red_n_white.csv" << std::endl;
 	}
