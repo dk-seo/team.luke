@@ -1,3 +1,3 @@
 @echo off
 
-rmdir /s /q vs2013
+rmdir /s /q vs2015

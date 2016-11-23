@@ -2,7 +2,7 @@
 
 echo Hold on while I just build this for Visual Studios 2013
 echo.
-"../tools/premake5" --file=premake/premake5-prj.lua vs2013
+"../tools/premake5" --file=premake/premake5-prj.lua vs2015
 goto quit
 
 :quit
