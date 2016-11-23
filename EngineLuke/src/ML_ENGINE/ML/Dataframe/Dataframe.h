@@ -54,7 +54,10 @@ public:
 
 	// build dataframe from csv file
 	// if fails, call GetErrorMessage to check the error
-	bool BuildFromCsv(const std::string& filename, bool hasHeader);
+	bool BuildFromCsv(
+		const std::string& filename,
+		bool hasHeader,
+		const std::vector<size_t>& selectedFeatures = {});
 
 	// Add an attribute with name
 	void Dataframe::AddAttribute(
