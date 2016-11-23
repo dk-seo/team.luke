@@ -24,10 +24,9 @@ std::string MultiIntegralDiscretizer::Discretize(Instance* instance)
 	for (size_t i = 0; i < _cutPoints.size(); ++i)
 	{
 		if (instance->GetAttribute(_attributeIdx).AsDouble() < _cutPoints[i])
-			return std::string("Category ") + char('0' + i);
+			return std::string("Category ") + std::to_string(i);
 	}
-	return std::string("Category ") + char('0' + _cutPoints.size());
-
+	return std::string("Category ") + std::to_string(_cutPoints.size());
 }
 
 void MultiIntegralDiscretizer::Build(const std::vector<Instance*>& instances)

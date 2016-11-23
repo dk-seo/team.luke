@@ -1,6 +1,7 @@
 #include "DecisionTreeTest.h"
 #include "Dataframe.h"
 #include "DecisionTree.h"
+#include "MultiIntegralDiscretizer.h"
 #include <iostream>
 #include <cassert>
 
@@ -11,16 +12,11 @@ namespace WineAttribute
 		BEGIN,
 		fixed_acidity_ = BEGIN,
 		volatile_acidity,
-		citric_acid,
 		residual_sugar,
 		chlorides,
-		free_sulfur_dioxide,
 		total_sulfur_dioxide,
-		density,
 		pH,
 		sulphates,
-		alcohol,
-		quality,
 		wine_type,
 		COUNT
 	};
@@ -34,12 +30,7 @@ static AttributeType::Enum attributeTypes[WineAttribute::COUNT] = {
 	AttributeType::Numeric,
 	AttributeType::Numeric,
 	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Nominal, // quality
-	AttributeType::Nominal // wine type
+	AttributeType::Nominal
 };
 
 class TreePrinter : public IDTVisitor
@@ -48,14 +39,32 @@ public:
 	TreePrinter(std::ostream& o) : _o(o) {}
 	virtual bool Visit(DecisionTree::Node* node)
 	{
+		_o << node->_attributeName;
 		if (node->_children.empty())
-			_o << _tabs << "==>" << node->_conceptClass;
-		else
-			_o << _tabs << node->_attributeName;
+		{
+			_o << "==>" << node->_conceptClass << std::endl;
+			return false;
+		}
+
 		_o << std::endl;
 
-		_tabs += "\t";
-		node->Walk(this, false);
+		_tabs += "\t\t";
+		auto& cutpoints = node->_discretizer->GetCutPoints();
+		auto& itCutpoint = cutpoints.begin();
+		auto& rightBeforeEnd = std::prev(node->_children.end());
+		for (auto child = node->_children.begin(); child != rightBeforeEnd;
+			++child)
+		{
+			_o << _tabs << "[ < " << *(itCutpoint++) << " ]";
+			child->second->Walk(this, true);
+		}
+		for (auto child = rightBeforeEnd; child != node->_children.end(); ++child)
+		{
+			_o << _tabs << "[ > " << cutpoints.back() << " ]";
+			child->second->Walk(this, true);
+		}
+
+		_tabs.pop_back();
 		_tabs.pop_back();
 		return false;
 	}
@@ -108,8 +117,10 @@ Dataframe OpenMergedWineDataframe()
 	// wines.ToCsv(mergedCsv);
 	//}
 
+	std::vector<size_t> selectiveAttributes = {0, 1, 3, 4, 6, 8, 9, 12};
+
 	Dataframe wines;
-	if (!wines.BuildFromCsv("wine_both_red_n_white.csv", true))
+	if (!wines.BuildFromCsv("wine_both_red_n_white.csv", true, selectiveAttributes))
 	{
 		std::cout << "no file wine_both_red_n_white.csv" << std::endl;
 	}
