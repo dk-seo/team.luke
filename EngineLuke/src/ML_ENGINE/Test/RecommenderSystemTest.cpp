@@ -1,8 +1,8 @@
 #include "RecommenderSystemTest.h"
 #include <iostream>
 #include <fstream>
-#include "../Dataframe/Dataframe.h"
-#include "../Recommender/RecommenderSystem.h"
+#include "../ML/Dataframe/Dataframe.h"
+#include "../ML/Recommender/RecommenderSystem.h"
 
 // prints table to out stream in csv format
 void PrintTable(std::ostream& out,

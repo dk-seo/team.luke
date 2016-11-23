@@ -1,5 +1,5 @@
 #include "Dataframe.h"
-#include "../FileIO/csvparser.h"
+#include "FileIO\csvparser.h"
 #include <cassert>
 /////////////////////////////////////////////////////////////// 
 // attribute
@@ -72,7 +72,10 @@ Dataframe Dataframe::Clone()
 	return std::move(clone);
 }
 
-bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
+bool Dataframe::BuildFromCsv(
+	const std::string& filename, 
+	bool hasHeader, 
+	const std::vector<size_t>& selectedFeatures)
 {
 	// I am using open-source csv parser.
 	CsvParser *csvParser = CsvParser_new(filename.c_str(), ",", int(hasHeader));
@@ -87,16 +90,30 @@ bool Dataframe::BuildFromCsv(const std::string& filename, bool hasHeader)
 	// build attribute types
 	int attributeCount = CsvParser_getNumFields(header);
 	const char **parsedHeader = CsvParser_getFields(header);
+	auto& selectedIt = selectedFeatures.begin();
 	for (int i = 0; i < attributeCount; ++i)
-		AddAttribute(parsedHeader[i], AttributeType::Nominal); // nominal by default
-
+	{
+		if (selectedIt != selectedFeatures.end() && *selectedIt == i)
+		{
+			AddAttribute(parsedHeader[i], AttributeType::Nominal); // nominal by default
+			++selectedIt;
+		}
+	}
+		
 	// build instances
 	while (CsvRow* row = CsvParser_getRow(csvParser))
 	{
 		const char **parsedRow = CsvParser_getFields(row);
 		Instance* instance = CreateInstance();
+		selectedIt = selectedFeatures.begin();
 		for (int i = 0; i < attributeCount; ++i)
-			instance->AddAttribute(parsedRow[i]);
+		{
+			if (selectedIt != selectedFeatures.end() && *selectedIt == i)
+			{
+				instance->AddAttribute(parsedRow[i]);
+				++selectedIt;
+			}
+		}
 	}
 
 	_errormsg = "";
