@@ -80,6 +80,9 @@ public:
 	// get instance count
 	size_t GetInstanceCount() const;
 
+  // get attribute index
+  int GetAttributeIndex(std::string & name);
+
 	// get instance of an index
 	const Instance& GetInstance(size_t idx);
 
