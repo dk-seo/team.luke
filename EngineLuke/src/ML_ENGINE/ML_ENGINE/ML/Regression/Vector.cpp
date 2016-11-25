@@ -2,11 +2,13 @@
 
 #include <cmath>
 
-Vector2::Vector2(float x, float y)
+
+Vector2::Vector2(double _x, double _y) : x(_x), y(_y)
 {
 }
 
-float& Vector2::operator[](unsigned index)
+
+double& Vector2::operator[](unsigned index)
 {
 	if (index > 1)
 		return arr[0];
@@ -14,7 +16,7 @@ float& Vector2::operator[](unsigned index)
 	return arr[index];
 }
 
-float Vector2::operator[](unsigned index) const
+double Vector2::operator[](unsigned index) const
 {
 	if (index > 1)
 		return arr[0];
@@ -56,13 +58,13 @@ void Vector2::operator-=(const Vector2 & rhs)
 	y -= rhs.y;
 }
 
-void Vector2::operator*=(const float rhs)
+void Vector2::operator*=(const double rhs)
 {
 	x *= rhs;
 	y *= rhs;
 }
 
-void Vector2::operator/=(const float rhs)
+void Vector2::operator/=(const double rhs)
 {
 	if (rhs != 0)
 	{
@@ -84,12 +86,12 @@ bool Vector2::operator!=(const Vector2 & rhs) const
 	return !(*this == rhs);
 }
 
-float Vector2::Dot(const Vector2 & rhs) const
+double Vector2::Dot(const Vector2 & rhs) const
 {
 	return x * rhs.x + y * rhs.y;
 }
 
-float Vector2::Length(void) const
+double Vector2::Length(void) const
 {
 	return std::sqrt(Dot(*this));
 }

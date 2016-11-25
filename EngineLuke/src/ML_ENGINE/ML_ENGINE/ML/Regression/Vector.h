@@ -3,18 +3,18 @@
 struct Vector2
 {
 	Vector2() {};
-	Vector2(float x, float y);
+    Vector2(double _x, double _y);
 
 	/////////////////////////////////////
-	float x, y;
-	float arr[2];
+	double x, y;
+	double arr[2];
 
 	/////////////////////////////////////
 	//Operator
 
-	float& operator[](unsigned index);
+	double& operator[](unsigned index);
 	
-	float operator[](unsigned index) const;
+    double operator[](unsigned index) const;
 
 	Vector2 operator+(const Vector2& rhs) const;
 	
@@ -28,15 +28,15 @@ struct Vector2
 	
 	void operator-=(const Vector2& rhs);
 	
-	void operator*=(const float rhs);
+	void operator*=(const double rhs);
 	
-	void operator/=(const float rhs);
+	void operator/=(const double rhs);
 
 	bool operator==(const Vector2& rhs) const;
 	
 	bool operator!=(const Vector2& rhs) const;
 
-	float Dot(const Vector2& rhs) const;
+    double Dot(const Vector2& rhs) const;
 	
-	float Length(void) const;
+    double Length(void) const;
 };

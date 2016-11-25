@@ -17,7 +17,7 @@ public:
 
 	Equation GetBestFitLine(Instance& _attr, Instance& _class);
 
-	float SumError(Equation& line, Instance& _attr, Instance& _class);
+	double SumError(Equation& line, Instance& _attr, Instance& _class);
 
 private:
 	Dataframe& m_dataframe;
