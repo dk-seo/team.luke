@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 EngineLuke/src/ML_ENGINE/ML_ENGINE/x64/
 EngineLuke/src/ML_ENGINE/x64/
 EngineLuke/bin/Out/tree.txt
@@ -9,3 +10,7 @@ EngineLuke/bin/imgui.ini
 *.sdf
 EngineLuke/src/ML_ENGINE/ML_ENGINE.VC.VC.opendb
 EngineLuke/src/ML_ENGINE/ML_ENGINE.VC.db
+=======
+*.suo
+DK_Seo/CS399_deok-hwa.seo.VC.db
+>>>>>>> origin/Recommender
