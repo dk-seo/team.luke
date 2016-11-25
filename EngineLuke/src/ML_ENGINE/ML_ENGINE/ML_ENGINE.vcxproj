@@ -112,7 +112,7 @@
       <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).exe" "$(ProjectDir)../../bin/$(ProjectName).exe"</Command>
+      <Command>copy /Y "$(TargetDir)$(ProjectName).exe" "$(ProjectDir)../../../bin/$(ProjectName).exe"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

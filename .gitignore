@@ -1,5 +1,9 @@
-EngineLuke/build/vs2015/
-EngineLuke/EngineLuke/
+EngineLuke/src/ML_ENGINE/ML_ENGINE/x64/
+EngineLuke/src/ML_ENGINE/x64/
 EngineLuke/bin/Out/tree.txt
+EngineLuke/bin/ML_ENGINE.exe
+EngineLuke/bin/imgui.ini
 *.suo
 *.obj
+*.user
+*.sdf
