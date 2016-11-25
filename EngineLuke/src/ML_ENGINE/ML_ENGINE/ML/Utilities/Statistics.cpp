@@ -1,6 +1,7 @@
 #include "Similarity.h"
 #include "../Dataframe/Dataframe.h"
 #include <algorithm>
+#include "Statistics.h"
 
 double CalculateMean(
 	const std::vector<Instance*>& instances, size_t attributeIdx)
@@ -75,4 +76,33 @@ std::vector<double> CalculateMode(
 	}
 
 	return std::move(modes);
+}
+
+double FindMax(const std::vector<Instance*>& instances, size_t attributeIdx)
+{
+	if (instances.size() == 0)
+		return 0.0;
+
+	double max = double(instances[0]->GetAttribute(attributeIdx).AsDouble());
+	for (auto instance : instances)
+	{
+		if(max <double(instance->GetAttribute(attributeIdx).AsDouble()))
+		max = double(instance->GetAttribute(attributeIdx).AsDouble());
+	}
+	return max;
+}
+
+double FindMin(const std::vector<Instance*>& instances, size_t attributeIdx)
+{
+	if (instances.size() == 0)
+		return 0.0;
+
+	double min = double(instances[0]->GetAttribute(attributeIdx).AsDouble());
+
+	for (auto instance : instances)
+	{
+		if (min > double(instance->GetAttribute(attributeIdx).AsDouble()))
+			min = double(instance->GetAttribute(attributeIdx).AsDouble());
+	}
+	return min;
 }

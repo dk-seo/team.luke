@@ -8,7 +8,7 @@ bool StringItemsGetter(void* data, int index, const char** outText)
   return true;
 }
 
-//float ValueGetter(void *data, int idx)
-//{
-//    return std::(*(std::vector<std::string>*)data)[idx];
-//}
+float ValueGetter(void *data, int idx)
+{
+	return reinterpret_cast<float*>(data)[idx];
+}

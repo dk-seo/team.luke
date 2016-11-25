@@ -220,6 +220,9 @@
     <ClInclude Include="UI\Q3Window.h" />
     <ClInclude Include="UI\UserInterface.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\Imgui\imgui_user.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

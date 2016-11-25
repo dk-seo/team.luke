@@ -70,7 +70,7 @@ public:
 	// get name of ith attribute
 	const std::string& GetAttributeName(size_t i) const;
 
-    const std::vector<std::string>& GetAttributeNameList(void) const;
+  const std::vector<std::string>& GetAttributeNameList(void) const;
 
 	// get type of ith attribute
 	AttributeType::Enum GetAttributeType(size_t i) const;
@@ -90,6 +90,9 @@ public:
 
 	// get instance count
 	size_t GetInstanceCount() const;
+
+  // get attribute index
+  unsigned GetAttributeIndex(std::string & attr);
 
 	// get instance of an index
 	Instance& GetInstance(size_t idx);
