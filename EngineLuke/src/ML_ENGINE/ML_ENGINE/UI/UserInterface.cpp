@@ -1,8 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "UserInterface.h"
-#include "../FileIO/FileSystem.h"
-
+#include "FileIO\FileSystem.h"
+#include "UI\Imgui\imconfig.h"
 //For Q3
 #include "ML\Regression\Equation.h"
 #include "ML\Regression\LinearRegression.h"
@@ -65,8 +65,7 @@ void UI::MainWindow(void)
         }
         if (ImGui::CollapsingHeader("Plot", (const char*)0, true, true))
         {
-            std::vector<std::string> temp;
-            //ImGui::PlotHistogram("Plot", ValueGetter, &temp, temp.size(), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80));
+			//PlotHistogram();
         }
         ImGui::End();
     }
@@ -209,8 +208,11 @@ void UI::ShowAttributes(void)
     {
         std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
         static int listbox_item_current = 1;
-        if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12))
-            selected_att = temp[listbox_item_current];
+		if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12))
+		{
+			selected_att = temp[listbox_item_current];
+			i_selected_att = listbox_item_current;
+		}
     }
 }
 
@@ -238,6 +240,23 @@ void UI::ShowSeleAttr(void)
     }
 }
 
+
+void UI::PlotHistogram(void)
+{
+	if (!curr_filepath.empty())
+	{
+		Instance data = m_dataframe->GetInstance(size_t(i_selected_att));
+		int size = data.GetAttributeCount();
+		static float* values = new float(size);
+
+		for (int i = 0; i < size; ++i)
+		{
+			values[i] = data.GetAttribute(i).AsDouble();
+		}
+		ImGui::PlotHistogram("Plot", values, IM_ARRAYSIZE(values), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80));
+	}
+}
+
 void UI::Q1Q2(void)
 {
     static bool Q1Q2Window = false;
@@ -246,7 +265,7 @@ void UI::Q1Q2(void)
 
     if (Q1Q2Window)
     {
-        ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(540, 500), ImGuiSetCond_Once);
         if (ImGui::Begin("Answer for Q1 and Q2", &Q1Q2Window, ImVec2(0, 0)))
         {
             LinearRegressionTest *test = new LinearRegressionTest(m_dataframe);
@@ -255,47 +274,51 @@ void UI::Q1Q2(void)
             std::vector<double> errors;
             size_t min, max;
             test->Answer(bestfits, errors, max, min);
-
-            ImGui::Text("Question 1 : Which attribute is the least related to the quality of wines?");
-            ImGui::Text(" ");
-            ImGui::Text("We think this will be an attribute that has most error in linear regression");
-            ImGui::Text("Most error attributes: "); ImGui::SameLine();
-            ImGui::Text(m_dataframe->GetAttributeName(max).c_str());
-            ImGui::Text("Error: "); ImGui::SameLine();
-            ImGui::Text(std::to_string(errors[max]).c_str());
-            
+			if (ImGui::CollapsingHeader("Question 1", (const char*)0, true, true))
+			{
+				ImGui::Text("Question 1 : Which attribute is the least related to the quality of wines?");
+				ImGui::Text(" ");
+				ImGui::Text("We think this will be an attribute that has most error in linear regression");
+				ImGui::Text("Most error attributes: "); ImGui::SameLine();
+				ImGui::Text(m_dataframe->GetAttributeName(max).c_str());
+				ImGui::Text("Error: "); ImGui::SameLine();
+				ImGui::Text(std::to_string(errors[max]).c_str());
+			}
+            ImGui::Separator();
+			if (ImGui::CollapsingHeader("Question 2", (const char*)0, true, true))
+			{
+				ImGui::Text("Question 2 : Which attribute is the most related to the quality of wines?");
+				ImGui::Text(" ");
+				ImGui::Text("We think this will be an attribute that has least error in linear regression");
+				ImGui::Text("Least error attributes: "); ImGui::SameLine();
+				ImGui::Text(m_dataframe->GetAttributeName(min).c_str());
+				ImGui::Text("Error: "); ImGui::SameLine();
+				ImGui::Text(std::to_string(errors[min]).c_str());
+			}
             ImGui::Separator();
 
-            ImGui::Text("Question 2 : Which attribute is the most related to the quality of wines?");
-            ImGui::Text(" ");
-            ImGui::Text("We think this will be an attribute that has least error in linear regression");
-            ImGui::Text("Least error attributes: "); ImGui::SameLine();
-            ImGui::Text(m_dataframe->GetAttributeName(min).c_str());
-            ImGui::Text("Error: "); ImGui::SameLine();
-            ImGui::Text(std::to_string(errors[min]).c_str());
-            
-            ImGui::Separator();
+			if (ImGui::CollapsingHeader("Best Slope line", (const char*)0, true, true))
+			{
+				ImGui::Text("Best slope line");
+				std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
+				temp.pop_back();
+				static int listbox_item_current = 1;
+				ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12);
 
-            std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
-            temp.pop_back();
-            static int listbox_item_current = 1;
-            ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12);
-            
-            if (listbox_item_current != -1)
-            {
-                ImGui::Text("Best slope line");
-                ImGui::Text(temp[listbox_item_current].c_str()); ImGui::SameLine();
-                ImGui::Text(" and target class Quality. ");
+				if (listbox_item_current != -1)
+				{
+					ImGui::Text(temp[listbox_item_current].c_str()); ImGui::SameLine();
+					ImGui::Text(" and target class Quality. ");
 
-                std::string line = "y = " + std::to_string(bestfits[listbox_item_current].a)
-                    + "x + " + std::to_string(bestfits[listbox_item_current].b);
-                ImGui::Text(line.c_str());
+					std::string line = "y = " + std::to_string(bestfits[listbox_item_current].a)
+						+ "x + " + std::to_string(bestfits[listbox_item_current].b);
+					ImGui::Text(line.c_str());
 
-                ImGui::Text("Error : "); ImGui::SameLine();
-                ImGui::Text(std::to_string(errors[listbox_item_current]).c_str());
-            }
-            
-            
+					ImGui::Text("Error : "); ImGui::SameLine();
+					ImGui::Text(std::to_string(errors[listbox_item_current]).c_str());
+				}
+
+			}
             ImGui::End();
         }
     }

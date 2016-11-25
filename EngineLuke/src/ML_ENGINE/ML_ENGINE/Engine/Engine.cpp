@@ -195,7 +195,7 @@ void Engine::Run()
     // Setup ImGui binding
     ImGui_ImplDX11_Init(hwnd, g_pd3dDevice, g_pd3dDeviceContext);
 
-    ImVec4 clear_col = ImColor(114, 144, 154);
+    ImVec4 clear_col = ImColor(255, 255, 255);
 
 	MSG msg = { 0 };
 

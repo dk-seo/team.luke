@@ -54,5 +54,5 @@ namespace ImGui
 }
 */
 bool StringItemsGetter(void* data, int index, const char** outText);
-//float ValueGetter(void *data, int idx);
+float ValueGetter(void *data, int idx);
 

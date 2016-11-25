@@ -55,6 +55,7 @@ private:
     void ShowRelation(void);
     void ShowAttributes(void);
     void ShowSeleAttr(void);
+	void PlotHistogram(void);
 
     ///////////////////////
     void Q1Q2(void);
@@ -64,6 +65,7 @@ private:
 
     std::string curr_filepath;
     std::string selected_att;
+	int         i_selected_att;
 
     Dataframe *m_dataframe;
 
