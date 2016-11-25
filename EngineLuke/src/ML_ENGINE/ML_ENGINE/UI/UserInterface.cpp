@@ -3,6 +3,7 @@
 #include "UserInterface.h"
 #include "FileIO\FileSystem.h"
 #include "UI\Imgui\imconfig.h"
+#include "ML\Utilities\Statistics.h"
 //For Q3
 #include "ML\Regression\Equation.h"
 #include "ML\Regression\LinearRegression.h"
@@ -220,24 +221,36 @@ void UI::ShowSeleAttr(void)
 {
     if (!curr_filepath.empty())
     {
-        ImGui::Text("Name: ");
-        ImGui::SameLine();
-        ImGui::Text(selected_att.c_str());
+		ImGui::Text("Name: ");
+		ImGui::SameLine();
+		ImGui::Text(selected_att.c_str());
 
 
-        //ImGui::Separator();
-        if (ImGui::TreeNode("Statistic"))
-        {
-            //we did this statistic prob in PA1, where is the code?
-            //ask hb 
-            ImGui::Text("Minimum");
-            ImGui::Text("Maximum");
-            ImGui::Text("Mean");
-            ImGui::Text("StdDev");
-            ImGui::TreePop();
-        }
+		ImGui::Text("Statistic");
+		//we did this statistic prob in PA1, where is the code?
+		//ask hb 
+		double min = FindMin(m_dataframe->GetInstances(), i_selected_att);
+		ImGui::Text("Minimum : "); ImGui::SameLine(); ImGui::Text(std::to_string(min).c_str());
 
-    }
+		double max = FindMax(m_dataframe->GetInstances(), i_selected_att);
+		ImGui::Text("Maximum : "); ImGui::SameLine(); ImGui::Text(std::to_string(max).c_str());
+
+		double mean = CalculateMean(m_dataframe->GetInstances(), i_selected_att);
+		ImGui::Text("Mean : "); ImGui::SameLine(); ImGui::Text(std::to_string(mean).c_str());
+
+		double median = CalculateMedian(m_dataframe->GetInstances(), i_selected_att);
+		ImGui::Text("Median : "); ImGui::SameLine(); ImGui::Text(std::to_string(median).c_str());
+
+		std::vector<double> mode = CalculateMode(m_dataframe->GetInstances(), i_selected_att);
+		ImGui::Text("Mode :"); ImGui::SameLine();
+		for (int i = 0; i < mode.size(); ++i)
+		{
+			ImGui::Text(std::to_string(i + 1).c_str());
+			ImGui::SameLine(); ImGui::Text(". "); ImGui::SameLine();
+			ImGui::Text(std::to_string(mode[i]).c_str());
+		}
+
+	}
 }
 
 
