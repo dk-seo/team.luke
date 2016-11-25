@@ -2,7 +2,10 @@
 #include "UserInterface.h"
 #include "FileIO\FileSystem.h"
 #include "UI\Imgui\imconfig.h"
+<<<<<<< HEAD
 #include "UI\Q3Window.h"
+=======
+>>>>>>> 52d97061a37fe26c389f771ef0bec62786ed5867
 #include "ML\Utilities\Statistics.h"
 //For Q3
 #include "ML\Regression\Equation.h"

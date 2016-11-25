@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{af5d133d-6d7a-4f81-b577-3ed6372d1793}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FileIO">
+      <UniqueIdentifier>{d8e04ada-6bb7-4c5b-b8ba-16a32b6b95c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML">
+      <UniqueIdentifier>{98b0663c-2513-4640-9625-442c2a6bea9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{93b65e3c-ba6e-4dd5-afb7-429fa88b7655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{3545703f-bca2-4d33-a764-5bff1c7aac42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Imgui">
+      <UniqueIdentifier>{b0617ce8-76dd-401f-b2b4-bd9ff453a479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Association">
+      <UniqueIdentifier>{8ef8c7e1-7ad5-4dc7-87d2-2b954d292919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Classification">
+      <UniqueIdentifier>{99c3294c-997b-4d23-8fd9-27af1d22cb5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Dataframe">
+      <UniqueIdentifier>{a6075dea-0d13-4911-98c5-88de52988cb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Recommender">
+      <UniqueIdentifier>{fd69fc86-e522-437c-a767-91f1cb384d66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Regression">
+      <UniqueIdentifier>{b62d1b69-4b50-44ed-bf4c-e7c849204b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Sampling">
+      <UniqueIdentifier>{c24492f4-8bb4-4f89-b804-d1e67da7dcc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ML\Utilities">
+      <UniqueIdentifier>{3eac1ede-3724-4cbc-9bf3-cce41eaee9cf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\UserInterface.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Imgui\imgui.cpp">
+      <Filter>UI\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Imgui\imgui_demo.cpp">
+      <Filter>UI\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Imgui\imgui_draw.cpp">
+      <Filter>UI\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Imgui\imgui_impl_dx11.cpp">
+      <Filter>UI\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="FileIO\csvparser.c">
+      <Filter>FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\DecisionTreeTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\KMeansClusteringTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\RecommenderSystemTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Association\KmeansClustering.cpp">
+      <Filter>ML\Association</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Classification\CoverageRule.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Classification\DecisionTree.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Classification\MultiIntegralDiscretizer.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Classification\OneRule.cpp">
+      <Filter>ML\Classification</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Dataframe\Dataframe.cpp">
+      <Filter>ML\Dataframe</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Utilities\Gain.cpp">
+      <Filter>ML\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Utilities\InstanceCategorizer.cpp">
+      <Filter>ML\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Utilities\Similarity.cpp">
+      <Filter>ML\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Sampling\RandomSampler.cpp">
+      <Filter>ML\Sampling</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Regression\Equation.cpp">
+      <Filter>ML\Regression</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Regression\LinearRegression.cpp">
+      <Filter>ML\Regression</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Regression\Vector.cpp">
+      <Filter>ML\Regression</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Recommender\RecommenderSystem.cpp">
+      <Filter>ML\Recommender</Filter>
+    </ClCompile>
+    <ClCompile Include="FileIO\FileSystem.cpp">
+      <Filter>FileIO</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Test\LinearRegressionTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="ML\Utilities\Statistics.cpp">
+      <Filter>ML\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Q3Window.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UI\UserInterface.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\imconfig.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\imgui.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\imgui_impl_dx11.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\imgui_internal.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\stb_rect_pack.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\stb_textedit.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Imgui\stb_truetype.h">
+      <Filter>UI\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="FileIO\csvparser.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\RecommenderSystemTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\DecisionTreeTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\KMeansClusteringTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Association\KmeansClustering.h">
+      <Filter>ML\Association</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Classification\CoverageRule.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Classification\DecisionTree.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Classification\MultiIntegralDiscretizer.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Classification\OneRule.h">
+      <Filter>ML\Classification</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Dataframe\Dataframe.h">
+      <Filter>ML\Dataframe</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Utilities\Gain.h">
+      <Filter>ML\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Utilities\InstanceCategorizer.h">
+      <Filter>ML\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Utilities\Similarity.h">
+      <Filter>ML\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Sampling\RandomSampler.h">
+      <Filter>ML\Sampling</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Regression\Equation.h">
+      <Filter>ML\Regression</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Regression\LinearRegression.h">
+      <Filter>ML\Regression</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Regression\Vector.h">
+      <Filter>ML\Regression</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Recommender\RecommenderSystem.h">
+      <Filter>ML\Recommender</Filter>
+    </ClInclude>
+    <ClInclude Include="FileIO\FileSystem.h">
+      <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\LinearRegressionTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Utilities\Statistics.h">
+      <Filter>ML\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Q3Window.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\Imgui\imgui_user.inl">
+      <Filter>UI\Imgui</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\Imgui\imgui_user.inl">
+      <Filter>UI\Imgui</Filter>
+    </None>
+  </ItemGroup>
+</Project>

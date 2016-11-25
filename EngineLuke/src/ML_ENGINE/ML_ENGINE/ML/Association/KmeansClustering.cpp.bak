@@ -228,8 +228,12 @@ void KMeansClustering::Cluster(const int k)
 
     // assign each instance to a cluster whose centroid is closest to it
     auto& instances = _dataframe.GetInstances();
+<<<<<<< HEAD
+    for (auto& instance = instances.cbegin(); instance != instances.end(); ++instance)
+=======
     for (auto& instance = instances.cbegin();
       instance != instances.end(); ++instance)
+>>>>>>> 52d97061a37fe26c389f771ef0bec62786ed5867
     {
       DataPoint point = ToDataPoint(*instance);
 
