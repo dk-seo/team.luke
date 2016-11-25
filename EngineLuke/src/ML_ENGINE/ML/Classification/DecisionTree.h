@@ -3,19 +3,27 @@
 #include <vector>
 #include <unordered_map>
 #include <fstream>
-#include "../Dataframe/Dataframe.h"
+#include <map>
+#include <memory>
+#include "ML/Dataframe/Dataframe.h"
 
 class IDTVisitor;
+class MultiIntegralDiscretizer;
 
 class DecisionTree
 {
 public:
 	struct Node
 	{
-		std::vector<Node*> _children;
+		std::map<std::string, Node*> _children;
 		std::string _attributeName;
 		std::string _conceptClass;
-		std::vector<double> _cutpoints;
+		std::unique_ptr<MultiIntegralDiscretizer> _discretizer;
+
+		Node();
+		~Node();
+
+		std::string GetAnswer(Instance* instance);
 
 		void Walk(IDTVisitor* visitor, bool visit);
 	};
@@ -35,8 +43,7 @@ private:
 		std::vector<bool>& attNoded);
 
 private:
-	Dataframe& _dataframe_original;
-	Dataframe _dataframe;
+	Dataframe& _dataframe;
 	int _answerIdx;
 	Node* _root;
 

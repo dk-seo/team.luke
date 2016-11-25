@@ -1,5 +1,5 @@
 #include "Dataframe.h"
-#include "FileIO\csvparser.h"
+#include "../../FileIO/csvparser.h"
 #include <cassert>
 /////////////////////////////////////////////////////////////// 
 // attribute
@@ -73,8 +73,8 @@ Dataframe Dataframe::Clone()
 }
 
 bool Dataframe::BuildFromCsv(
-	const std::string& filename, 
-	bool hasHeader, 
+	const std::string& filename,
+	bool hasHeader,
 	const std::vector<size_t>& selectedFeatures)
 {
 	// I am using open-source csv parser.
@@ -99,7 +99,7 @@ bool Dataframe::BuildFromCsv(
 			++selectedIt;
 		}
 	}
-		
+
 	// build instances
 	while (CsvRow* row = CsvParser_getRow(csvParser))
 	{
@@ -180,7 +180,7 @@ bool Dataframe::Merge(Dataframe& rhs)
 		std::make_move_iterator(rhs._instances.end()));
 	rhs._instances.clear();
 	return true;
-	
+
 }
 
 void Dataframe::ToCsv(std::ostream& o)

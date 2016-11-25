@@ -10,7 +10,7 @@ builddir = path.getabsolute("../" .. action);
 --gendir = path.join(builddir, "gen");
 
 common_flags = { "Symbols", "NoExceptions" }
-msvc_buildflags = { "/wd4190", "/wd4996", "/wd4530" }
+msvc_buildflags = { "/wd4190", "/wd4996", "/wd4530", "/EHsc" }
 gcc_buildflags = { "-Wno-invalid-offsetof", "-std=gnu++11" }
 
 msvc_cpp_defines = { "_SECURE_SCL=0", "_HAS_ITERATOR_DEBUGGING=0" }
