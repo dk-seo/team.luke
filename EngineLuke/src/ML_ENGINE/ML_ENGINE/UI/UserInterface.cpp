@@ -1,8 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
-
 #include "UserInterface.h"
 #include "FileIO\FileSystem.h"
 #include "UI\Imgui\imconfig.h"
+#include "UI\Q3Window.h"
 #include "ML\Utilities\Statistics.h"
 //For Q3
 #include "ML\Regression\Equation.h"
@@ -338,19 +338,11 @@ void UI::Q1Q2(void)
 }
 void UI::Q3(void)
 {
-    static bool Q3Window = false;
-    if (ImGui::Button("Q3"))
-        Q3Window = !Q3Window;
+    static Q3Window window;
+	if (ImGui::Button("Q3"))
+		window.SetActive(!window.IsActive());
 
-    if (Q3Window)
-    {
-        ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
-        if (ImGui::Begin("Answer for Q3", &Q3Window, ImVec2(0, 0)))
-        {
-
-            ImGui::End();
-        }
-    }
+	window.Update();
 }
 void UI::RecommenderSystem(void)
 {
