@@ -184,6 +184,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="UI\Imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="UI\Q3Window.cpp" />
     <ClCompile Include="UI\UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +217,7 @@
     <ClInclude Include="UI\Imgui\stb_rect_pack.h" />
     <ClInclude Include="UI\Imgui\stb_textedit.h" />
     <ClInclude Include="UI\Imgui\stb_truetype.h" />
+    <ClInclude Include="UI\Q3Window.h" />
     <ClInclude Include="UI\UserInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

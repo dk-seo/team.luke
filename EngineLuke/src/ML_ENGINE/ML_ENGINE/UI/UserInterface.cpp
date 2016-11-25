@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
-
 #include "UserInterface.h"
+#include "Q3Window.h"
 #include "../FileIO/FileSystem.h"
 
 //For Q3
@@ -240,7 +240,8 @@ void UI::ShowSeleAttr(void)
 
 void UI::Q1Q2(void)
 {
-    static bool Q1Q2Window = false;
+	static bool Q1Q2Window = false;
+
     if (ImGui::Button("Q1 and Q2"))
         Q1Q2Window = !Q1Q2Window;
 
@@ -302,19 +303,11 @@ void UI::Q1Q2(void)
 }
 void UI::Q3(void)
 {
-    static bool Q3Window = false;
-    if (ImGui::Button("Q3"))
-        Q3Window = !Q3Window;
+    static Q3Window window;
+	if (ImGui::Button("Q3"))
+		window.SetActive(!window.IsActive());
 
-    if (Q3Window)
-    {
-        ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
-        if (ImGui::Begin("Answer for Q3", &Q3Window, ImVec2(0, 0)))
-        {
-
-            ImGui::End();
-        }
-    }
+	window.Update();
 }
 void UI::RecommenderSystem(void)
 {

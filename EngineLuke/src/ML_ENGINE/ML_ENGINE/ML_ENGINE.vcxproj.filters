@@ -124,6 +124,9 @@
     <ClCompile Include="ML\Utilities\Statistics.cpp">
       <Filter>ML\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="UI\Q3Window.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI\UserInterface.h">
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="ML\Utilities\Statistics.h">
       <Filter>ML\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Q3Window.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
