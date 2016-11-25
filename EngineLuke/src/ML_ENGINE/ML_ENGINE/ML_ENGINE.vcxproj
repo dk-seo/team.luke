@@ -171,6 +171,7 @@
     <ClCompile Include="ML\Utilities\Gain.cpp" />
     <ClCompile Include="ML\Utilities\InstanceCategorizer.cpp" />
     <ClCompile Include="ML\Utilities\Similarity.cpp" />
+    <ClCompile Include="ML\Utilities\Statistics.cpp" />
     <ClCompile Include="Test\DecisionTreeTest.cpp" />
     <ClCompile Include="Test\KMeansClusteringTest.cpp" />
     <ClCompile Include="Test\RecommenderSystemTest.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="ML\Utilities\Gain.h" />
     <ClInclude Include="ML\Utilities\InstanceCategorizer.h" />
     <ClInclude Include="ML\Utilities\Similarity.h" />
+    <ClInclude Include="ML\Utilities\Statistics.h" />
     <ClInclude Include="Test\DecisionTreeTest.h" />
     <ClInclude Include="Test\KMeansClusteringTest.h" />
     <ClInclude Include="Test\RecommenderSystemTest.h" />

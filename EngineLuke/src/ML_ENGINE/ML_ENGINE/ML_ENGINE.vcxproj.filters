@@ -121,6 +121,9 @@
     <ClCompile Include="Test\LinearRegressionTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="ML\Utilities\Statistics.cpp">
+      <Filter>ML\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI\UserInterface.h">
@@ -209,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="Test\LinearRegressionTest.h">
       <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="ML\Utilities\Statistics.h">
+      <Filter>ML\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
