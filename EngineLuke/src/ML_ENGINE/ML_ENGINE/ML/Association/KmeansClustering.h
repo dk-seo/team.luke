@@ -5,17 +5,21 @@
 class Dataframe;
 class Instance;
 
-struct DataPoint
+template <typename T = double>
+struct DataPointTemplate
 {
-	double X;
-	double Y;
+  std::vector<T> mDataPoints;
 };
+
+// double type's data point
+typedef DataPointTemplate<> DataPoint;
 
 class KMeansClustering
 {
 public:
-	// requires dataframe to cluster, attribute names for x axis and y axis
-	KMeansClustering(Dataframe& datframe, const std::string& attX, const std::string& attY);
+	// requires dataframe to cluster + ignored attribute names
+	KMeansClustering(Dataframe& dataframe,
+    std::vector<std::string> & ignores = std::vector<std::string>());
 
 	// if ofstream is not null then prints all the course of works while clustering to the stream.
 	void SetDebugOutput(std::ofstream* o);
@@ -42,10 +46,12 @@ private:
 	// print clusters with given stream, cluster-group, and centroid
 	void PrintClusters(std::ofstream& o, const int group, const DataPoint& centroid);
 
+  // calculate N dimensions Square by Euclidean 
+  double DistSq(const DataPoint & p1, DataPoint & p2);
 private:
 	Dataframe& _dataframe; // dataframe to be used
-	std::string _attX; // attribute name for x axis
-	std::string _attY; // attribute name for y axis
+  std::vector<int> _ignores; // ignore field's indices
 	std::vector<std::vector<const Instance*>> _clusters; // cluster-groups with instances
 	std::ofstream* _o; // output stream for debug
 };
+
