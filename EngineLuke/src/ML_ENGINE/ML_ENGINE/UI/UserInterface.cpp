@@ -209,7 +209,7 @@ void UI::ShowAttributes(void)
     {
         std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
         static int listbox_item_current = 1;
-        if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 10))
+        if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12))
             selected_att = temp[listbox_item_current];
     }
 }
@@ -282,7 +282,7 @@ void UI::Q1Q2(void)
             std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
             temp.pop_back();
             static int listbox_item_current = 1;
-            ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 10);
+            ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12);
             
             if (listbox_item_current != -1)
             {
