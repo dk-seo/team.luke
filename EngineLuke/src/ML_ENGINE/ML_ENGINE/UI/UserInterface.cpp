@@ -1,5 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "UserInterface.h"
 #include "../FileIO/FileSystem.h"
+
+//For Q3
+#include "ML\Regression\Equation.h"
+#include "ML\Regression\LinearRegression.h"
+#include "Test\LinearRegressionTest.h"
 
 UI* UI::s_pinstance = NULL;
 
@@ -12,10 +19,15 @@ UI::~UI(void)
 
 void UI::Initialize(void)
 {
+    m_dataframe = new Dataframe();
 }
 void UI::Update(void)
 {
     MainWindow();
+
+    UpdateMethodWindow();
+    UpdateQuestionsWindow();
+   
 }
 
 
@@ -37,57 +49,19 @@ void UI::MainWindow(void)
 
         if (ImGui::CollapsingHeader("Current relation", (const char*)0, true, true))
         {
-            ImGui::Text("Relation: "); 
-            ImGui::SameLine(); 
-            ImGui::Text(" "); 
-
-            ImGui::Text("Attributes: ");
-            ImGui::SameLine();
-            ImGui::Text(" ");
-
-            ImGui::Text("Instances: ");
-            ImGui::SameLine();
-            ImGui::Text(" ");
-          
+            ShowRelation();          
         }
 
         if (ImGui::CollapsingHeader("Attributes", (const char*)0, true, true))
         {
-            /*
-            for()//each attribute
-            {
-            ImGui::Text();     //Number
-            ImGui::SameLine();
-            ImGui::Text(" ");  //Attribute name
-            }
-            */
-
-            std::vector<std::string> temp;
-            static int listbox_item_current = 1;
-            if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, int(temp.size()), 10))
-                selected_att = temp[listbox_item_current];
+            ShowAttributes();
         }
 
         ImGui::NextColumn();
 
         if (ImGui::CollapsingHeader("Selected Attributes", (const char*)0, true, true))
         {
-            ImGui::Text("Name: ");
-            ImGui::SameLine();
-            ImGui::Text(selected_att.c_str());
-
-           
-            ImGui::Separator();
-            if(ImGui::TreeNode("Statistic"))
-            {
-                ImGui::Text("Minimum");
-                ImGui::Text("Maximum");
-                ImGui::Text("Mean");
-                ImGui::Text("StdDev");
-                ImGui::TreePop();
-            }
-            
-         
+            ShowSeleAttr();
         }
         if (ImGui::CollapsingHeader("Plot", (const char*)0, true, true))
         {
@@ -98,24 +72,84 @@ void UI::MainWindow(void)
     }
 }
 
+void UI::ShowErrorWindow(std::string message, bool* open)
+{
+    if (ImGui::Begin("Error", open, ImGuiWindowFlags_MenuBar))
+    {
+        ImGui::Text(message.c_str());
+
+        ImGui::End();
+    }
+}
+
+void UI::UpdateMethodWindow(void)
+{
+    ImGui::SetNextWindowPos(ImVec2(930, 50), ImGuiSetCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(300, 70), ImGuiSetCond_Once);
+    if (!curr_filepath.empty())
+    {
+        if (ImGui::Begin("Methods"))
+        {
+            if (ImGui::Button("Classify"))
+            {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Associate"))
+            {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cluster"))
+            {
+
+            }
+            ImGui::End();
+        }
+    }
+}
+
+void UI::UpdateQuestionsWindow(void)
+{
+    ImGui::SetNextWindowPos(ImVec2(930, 130), ImGuiSetCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(300, 70), ImGuiSetCond_Once);
+    if (!curr_filepath.empty())
+    {
+        if (ImGui::Begin("Questions"))
+        {
+            Q1Q2();
+
+            ImGui::SameLine();
+
+            Q3();
+
+            ImGui::SameLine();
+
+            RecommenderSystem();
+
+            ImGui::End();
+        }
+    }
+}
+
 void UI::LoadCSVfile(void)
 {
-    static bool spaceLoadWindow = false;
+    static bool loadWindow = false;
     if (ImGui::Button("Choose"))
-        spaceLoadWindow = true;
+        loadWindow = true;
 
     ImGui::SameLine();
     ImGui::Text(curr_filepath.c_str());
 
     ImGui::Separator();
 
-    if (!spaceLoadWindow)
+    if (!loadWindow)
         return;
 
-    if (spaceLoadWindow)
+    if (loadWindow)
     {
         ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_Always);
-        if (ImGui::Begin(" File Load ", &spaceLoadWindow, ImVec2(0, 0)))
+        if (ImGui::Begin(" File Load ", &loadWindow, ImVec2(0, 0)))
         {
             std::vector<std::string> fileList = GetFilesNameFromDirectory(std::string("Data"));
             static int currIndex = -1;
@@ -125,14 +159,24 @@ void UI::LoadCSVfile(void)
             if (ImGui::Button(" Load "))
             {
                 if (currIndex != -1)
+                {
                     curr_filepath = fileList[currIndex];
-                spaceLoadWindow = false;
+
+                    std::string path = "Data/" + curr_filepath;                   
+
+                    if (!m_dataframe->BuildFromCsv(path, true))
+                    {
+                        bool open = true;
+                        UI::Get().ShowErrorWindow(m_dataframe->GetErrorMessage(), &open);
+                    }
+                }
+                loadWindow = false;
             }
 
             ImGui::SameLine();
             if (ImGui::Button(" Cancel "))
             {
-                spaceLoadWindow = false;
+                loadWindow = false;
             }
 
             ImGui::End();
@@ -140,15 +184,164 @@ void UI::LoadCSVfile(void)
     }
 }
 
-void UI::LoadMethod(void)
+void UI::ShowRelation(void)
 {
+    if (!curr_filepath.empty())
+    {
+        ImGui::Text("Relation: ");
+        ImGui::SameLine();
+        ImGui::Text(curr_filepath.c_str());
 
+        ImGui::Text("Attributes: ");
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(m_dataframe->GetAttributeCount()).c_str());
+        
+        ImGui::Text("Instances: ");
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(m_dataframe->GetInstanceCount()).c_str());
+    }
+    
 }
 
-void UI::TempTestWindow(void)
+void UI::ShowAttributes(void)
 {
-
+    if (!curr_filepath.empty())
+    {
+        std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
+        static int listbox_item_current = 1;
+        if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 10))
+            selected_att = temp[listbox_item_current];
+    }
 }
+
+void UI::ShowSeleAttr(void)
+{
+    if (!curr_filepath.empty())
+    {
+        ImGui::Text("Name: ");
+        ImGui::SameLine();
+        ImGui::Text(selected_att.c_str());
+
+
+        //ImGui::Separator();
+        if (ImGui::TreeNode("Statistic"))
+        {
+            //we did this statistic prob in PA1, where is the code?
+            //ask hb 
+            ImGui::Text("Minimum");
+            ImGui::Text("Maximum");
+            ImGui::Text("Mean");
+            ImGui::Text("StdDev");
+            ImGui::TreePop();
+        }
+
+    }
+}
+
+void UI::Q1Q2(void)
+{
+    static bool Q1Q2Window = false;
+    if (ImGui::Button("Q1 and Q2"))
+        Q1Q2Window = true;
+
+    if (!Q1Q2Window)
+        return;
+
+    if (Q1Q2Window)
+    {
+        ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
+        if (ImGui::Begin("Answer for Q1 and Q2", &Q1Q2Window, ImVec2(0, 0)))
+        {
+            LinearRegressionTest *test = new LinearRegressionTest(m_dataframe);
+
+            std::vector<Equation> bestfits;
+            std::vector<double> errors;
+            size_t min, max;
+            test->Answer(bestfits, errors, max, min);
+
+            ImGui::Text("Question 1 : Which attribute is the least related to the quality of wines?");
+            ImGui::Text(" ");
+            ImGui::Text("We think this will be an attribute that has most error in linear regression");
+            ImGui::Text("Most error attributes: "); ImGui::SameLine();
+            ImGui::Text(m_dataframe->GetAttributeName(max).c_str());
+            ImGui::Text("Error: "); ImGui::SameLine();
+            ImGui::Text(std::to_string(errors[max]).c_str());
+            
+            ImGui::Separator();
+
+            ImGui::Text("Question 2 : Which attribute is the most related to the quality of wines?");
+            ImGui::Text(" ");
+            ImGui::Text("We think this will be an attribute that has least error in linear regression");
+            ImGui::Text("Least error attributes: "); ImGui::SameLine();
+            ImGui::Text(m_dataframe->GetAttributeName(min).c_str());
+            ImGui::Text("Error: "); ImGui::SameLine();
+            ImGui::Text(std::to_string(errors[min]).c_str());
+            
+            ImGui::Separator();
+
+            std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
+            temp.pop_back();
+            static int listbox_item_current = 1;
+            ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 10);
+            
+            if (listbox_item_current != -1)
+            {
+                ImGui::Text("Best slope line");
+                ImGui::Text(temp[listbox_item_current].c_str()); ImGui::SameLine();
+                ImGui::Text(" and target class Quality. ");
+
+                std::string line = "y = " + std::to_string(bestfits[listbox_item_current].a)
+                    + "x + " + std::to_string(bestfits[listbox_item_current].b);
+                ImGui::Text(line.c_str());
+
+                ImGui::Text("Error : "); ImGui::SameLine();
+                ImGui::Text(std::to_string(errors[listbox_item_current]).c_str());
+            }
+            
+            
+            ImGui::End();
+        }
+    }
+}
+void UI::Q3(void)
+{
+    static bool Q3Window = false;
+    if (ImGui::Button("Q3"))
+        Q3Window = true;
+
+    if (!Q3Window)
+        return;
+
+    if (Q3Window)
+    {
+        ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
+        if (ImGui::Begin("Answer for Q3", &Q3Window, ImVec2(0, 0)))
+        {
+
+            ImGui::End();
+        }
+    }
+}
+void UI::RecommenderSystem(void)
+{
+    static bool RecWindow = false;
+    if (ImGui::Button("Recommender System"))
+        RecWindow = true;
+
+    if (!RecWindow)
+        return;
+
+    if (RecWindow)
+    {
+        ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
+        if (ImGui::Begin("Recommender System", &RecWindow, ImVec2(0, 0)))
+        {
+
+            ImGui::End();
+        }
+    }
+}
+
 void UI::AddString(int index, std::string string)
 {
     switch (index)

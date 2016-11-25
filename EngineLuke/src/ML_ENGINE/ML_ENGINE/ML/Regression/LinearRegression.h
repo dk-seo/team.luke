@@ -11,7 +11,7 @@ class Regression
 {
 public:
 
-	Regression(Dataframe& dataframe);
+	Regression(void);
 
 	~Regression(void);
 
@@ -20,6 +20,5 @@ public:
 	double SumError(Equation& line, Instance& _attr, Instance& _class);
 
 private:
-	Dataframe& m_dataframe;
 
 };

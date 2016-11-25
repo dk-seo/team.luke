@@ -118,6 +118,9 @@
       <Filter>FileIO</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Test\LinearRegressionTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI\UserInterface.h">
@@ -203,6 +206,9 @@
     </ClInclude>
     <ClInclude Include="FileIO\FileSystem.h">
       <Filter>FileIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\LinearRegressionTest.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

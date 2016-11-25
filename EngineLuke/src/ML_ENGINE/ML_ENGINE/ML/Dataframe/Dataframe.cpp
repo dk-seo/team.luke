@@ -148,6 +148,11 @@ const std::string& Dataframe::GetAttributeName(size_t i) const
 	return _attributeNames[i];
 }
 
+const std::vector<std::string>& Dataframe::GetAttributeNameList(void) const
+{
+    return _attributeNames;
+}
+
 AttributeType::Enum Dataframe::GetAttributeType(size_t i) const
 {
 	assert(i < GetAttributeCount());

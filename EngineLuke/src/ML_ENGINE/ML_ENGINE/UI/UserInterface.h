@@ -1,8 +1,10 @@
 #pragma once
-#include "../UI/Imgui/imgui.h"
-#include "../UI/Imgui/imgui_impl_dx11.h"
 #include <string>
 #include <vector>
+
+#include "UI\Imgui\imgui.h"
+#include "UI\Imgui\imgui_impl_dx11.h"
+#include "ML\Dataframe\Dataframe.h"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -33,8 +35,9 @@ public:
 
     void MainWindow(void);
 
+    void ShowErrorWindow(std::string message, bool* open);
+
     //for test 
-    void TempTestWindow(void);
     void AddString(int index, std::string string);
     void PrintString(int index, bool* p_open);
 
@@ -45,15 +48,24 @@ private:
     ~UI(void);
     static UI* s_pinstance;
 
+    void UpdateMethodWindow(void);
+    void UpdateQuestionsWindow(void);
+
     void LoadCSVfile(void);
-    void LoadMethod(void);
+    void ShowRelation(void);
+    void ShowAttributes(void);
+    void ShowSeleAttr(void);
+
+    ///////////////////////
+    void Q1Q2(void);
+    void Q3(void);
+    void RecommenderSystem(void);
+    ///////////////////////
 
     std::string curr_filepath;
-    std::string curr_method;
     std::string selected_att;
-    
-    std::vector<std::string> methodList;
 
+    Dataframe *m_dataframe;
 
     //for test
     std::vector<std::string> dk_testoutput;

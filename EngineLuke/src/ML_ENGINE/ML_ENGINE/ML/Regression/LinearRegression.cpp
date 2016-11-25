@@ -1,8 +1,7 @@
 #include "LinearRegression.h"
 #include "../Dataframe/Dataframe.h"
 
-Regression::Regression(Dataframe & dataframe)
-	:m_dataframe(dataframe)
+Regression::Regression(void)
 {
 }
 
