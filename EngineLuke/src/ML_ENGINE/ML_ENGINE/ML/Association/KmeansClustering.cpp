@@ -180,10 +180,10 @@ void KMeansClustering::PrintClusters(std::ofstream& o, const int group, const Da
   o << std::endl;
 }
 
-void KMeansClustering::Cluster(const int k)
+ClusterData KMeansClustering::Cluster(const int k)
 {
   // randomly select k points from instances
-  std::vector<DataPoint> centroids = std::move(SampleDataPoints(k));
+  ClusterData centroids = std::move(SampleDataPoints(k));
 
   // prints initial centroids
   if (_o)
@@ -286,7 +286,10 @@ void KMeansClustering::Cluster(const int k)
 
     ++iteration;
   }
+
+  return std::move(centroids);
 }
+
 
 double KMeansClustering::DistSq(const DataPoint & p1, DataPoint & p2)
 {

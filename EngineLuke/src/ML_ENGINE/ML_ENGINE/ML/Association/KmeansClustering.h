@@ -12,7 +12,8 @@ struct DataPointTemplate
 };
 
 // double type's data point
-typedef DataPointTemplate<> DataPoint;
+typedef DataPointTemplate<>    DataPoint;
+typedef std::vector<DataPoint> ClusterData;
 
 class KMeansClustering
 {
@@ -25,7 +26,7 @@ public:
 	void SetDebugOutput(std::ofstream* o);
 
 	// cluster into k groups
-	void Cluster(const int k);
+  ClusterData Cluster(const int k);
 
 	// get a specific cluster group of index
 	const std::vector<const Instance*>& Get(int i) const;
