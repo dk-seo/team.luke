@@ -26,13 +26,23 @@ DecisionTree::Node::~Node()
 {
 }
 
-std::string DecisionTree::Node::GetAnswer(Instance* instance)
+std::string DecisionTree::Node::GetAnswer(const Instance* instance)
 {
 	if (_children.empty())
 		return _conceptClass;
 
 	std::string childName = _discretizer->Discretize(instance);
-	return _children[childName]->GetAnswer(instance);
+	auto childIt = _children.find(childName);
+	if(childIt != _children.end())
+		return childIt->second->GetAnswer(instance);
+
+	for (childIt = _children.begin(); childIt != _children.end(); ++childIt)
+	{
+		if (childName < childIt->first)
+			return childIt->second->GetAnswer(instance);
+	}
+	
+	return std::prev(childIt)->second->GetAnswer(instance);
 }
 
 void DecisionTree::Node::Walk(IDTVisitor* visitor, bool visit)
@@ -71,7 +81,7 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	if (parentCategorizer.GetClassCount() <= 1)
 	{
 		Node* node = new Node;
-		node->_conceptClass = instances[0]->GetAttribute(_answerIdx).AsString();
+		node->_conceptClass = parentCategorizer.GetClasses()[0];
 		node->_childrenCountByConcept[node->_conceptClass] = instances.size();
 		return node;
 	}
@@ -143,7 +153,26 @@ DecisionTree::Node* DecisionTree::BuildTree(
 	}
 
 	if (bestGainAttIdx < 0)
-		return nullptr;
+	{
+
+		Node* node = new Node;
+		auto classes = std::move(parentCategorizer.GetClasses());
+		std::string dominatingClass;
+		size_t dominatingInstanceCount = 0;
+		for (auto& classname : classes)
+		{
+			size_t instanceCount = parentCategorizer.GetCount(classname);
+			node->_childrenCountByConcept[classname] = instanceCount;
+			if (dominatingInstanceCount < instanceCount)
+			{
+				dominatingInstanceCount = instanceCount;
+				dominatingClass = classname;
+			}
+		}
+
+		node->_conceptClass = dominatingClass;
+		return node;
+	}
 
 	// create a node.
 	Node* node = new Node;
@@ -186,6 +215,11 @@ void DecisionTree::Build()
 	std::vector<bool> attMarker(_dataframe.GetAttributeCount(), false);
 	attMarker[_answerIdx] = true;
 	_root = BuildTree(_dataframe.GetInstances(), attMarker);
+}
+
+std::string DecisionTree::Classify(const Instance* instance)
+{
+	return _root->GetAnswer(instance);
 }
 
 void DecisionTree::Walk(IDTVisitor* visitor, bool visit)

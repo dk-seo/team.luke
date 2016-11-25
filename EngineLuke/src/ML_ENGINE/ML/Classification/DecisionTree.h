@@ -24,7 +24,7 @@ public:
 		Node();
 		~Node();
 
-		std::string GetAnswer(Instance* instance);
+		std::string GetAnswer(const Instance* instance);
 
 		void Walk(IDTVisitor* visitor, bool visit);
 	};
@@ -35,6 +35,8 @@ public:
 	void SetDebugOutput(std::ofstream* o);
 
 	void Build();
+
+	std::string Classify(const Instance* instance);
 
 	void Walk(IDTVisitor* visitor, bool visit);
 

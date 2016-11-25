@@ -11,7 +11,7 @@ public:
 
 	void Build(const std::vector<Instance*>& instances);
 
-	std::string Discretize(Instance* instance);
+	std::string Discretize(const Instance* instance);
 
 	const std::vector<double>& GetCutPoints() const { return _cutPoints; }
 

@@ -24,6 +24,8 @@ public:
 
 	double AsDouble() const { return atof(_content.c_str()); }
 	const std::string& AsString() const { return _content; }
+
+	void Set(const std::string& value) { _content = value; }
 private:
 	std::string _content;
 };
@@ -33,6 +35,7 @@ class Instance
 {
 public:
 	int GetAttributeCount() const;
+	Attribute& GetAttribute(size_t idx);
 	const Attribute& GetAttribute(size_t idx) const;
 	void AddAttribute(const std::string& attribute);
 
@@ -87,7 +90,8 @@ public:
 	size_t GetInstanceCount() const;
 
 	// get instance of an index
-	const Instance& GetInstance(size_t idx);
+	Instance& GetInstance(size_t idx);
+	const Instance& GetInstance(size_t idx) const;
 
 	// get error message
 	std::string GetErrorMessage() const;

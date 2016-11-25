@@ -20,7 +20,21 @@ namespace WineAttribute
 		wine_type,
 		COUNT
 	};
+
+	static const char* Names[] =
+	{
+		"fixed acidity",
+		"volatile acidity",
+		"residual sugar",
+		"chlorides",
+		"total sulfur dioxide",
+		"pH",
+		"sulphates",
+		"wine type",
+	};
 }
+
+std::vector<size_t> s_selectedFeatures = { 0, 1, 3, 4, 6, 8, 9, 12 };
 
 static AttributeType::Enum attributeTypes[WineAttribute::COUNT] = {
 	AttributeType::Numeric,
@@ -49,12 +63,16 @@ public:
 				else				notFirst = true;
 				_o << it.first << "=" << it.second;
 			}
-			_o << ")" << std::endl;
+			_o << ")";
 		}
 
 		if (node->_children.empty())
+		{
+			_o << "-->" << node->_conceptClass << std::endl;
 			return false;
-
+		}
+			
+		_o << std::endl;
 
 		_tabs += "\t\t";
 		auto& cutpoints = node->_discretizer->GetCutPoints();
@@ -96,41 +114,12 @@ static void AddWineAttribute(
 	}
 }
 
-Dataframe OpenMergedWineDataframe()
+Dataframe OpenWineData(const std::string& filename, const std::vector<size_t>& selectedFeatures = {})
 {
-	// build red/white data frames and merge them with wine type column added
-	//Dataframe wines;
-	//if (!wines.BuildFromCsv(
-	//	"Data/winequality-red_Output.csv", true))
-	//{
-	//	std::cout << "loading red-wine data failed!" << std::endl;
-	//	return;
-	//}
-	//AddWineAttribute(
-	//	wines, "wine type", "red", attributeTypes[WineAttribute::wine_type]);
-
-	//{
-	//	Dataframe whitewines;
-	//	if (!whitewines.BuildFromCsv(
-	//		"Data/winequality-white_Output.csv", true))
-	//	{
-	//		std::cout << "loading red-wine data failed!" << std::endl;
-	//		return;
-	//	}
-	//	AddWineAttribute(
-	//		whitewines, "wine type", "white",
-	//		attributeTypes[WineAttribute::wine_type]);
-
-	//	wines.Merge(whitewines);
-	// wines.ToCsv(mergedCsv);
-	//}
-
-	std::vector<size_t> selectiveAttributes = { 0, 1, 3, 4, 6, 8, 9, 12 };
-
 	Dataframe wines;
-	if (!wines.BuildFromCsv("Data/wine_both_red_n_white.csv", true, selectiveAttributes))
+	if (!wines.BuildFromCsv(filename, true, selectedFeatures))
 	{
-		std::cout << "no file wine_both_red_n_white.csv" << std::endl;
+		std::cout << "no file exists : " << filename << std::endl;
 	}
 	else
 	{
@@ -142,9 +131,52 @@ Dataframe OpenMergedWineDataframe()
 }
 
 
-void DecisionTreeTest_Wines()
+void CreateMergedData(const std::string& mergedFilename)
 {
-	Dataframe wines = std::move(OpenMergedWineDataframe());
+	Dataframe wines = std::move(OpenWineData("Data/winequality-red_Output.csv"));
+	AddWineAttribute(wines, 
+		WineAttribute::Names[WineAttribute::wine_type], 
+		"red", 
+		AttributeType::Nominal);
+
+	Dataframe whitewines =
+		std::move(OpenWineData("Data/winequality-white_Output.csv"));
+	AddWineAttribute(whitewines, 
+		WineAttribute::Names[WineAttribute::wine_type], 
+		"white", 
+		AttributeType::Nominal);
+
+	if (!wines.Merge(whitewines))
+	{
+		std::cout << "merge failed!" << std::endl;
+		return;
+	}
+
+	std::ofstream o(mergedFilename, std::ios::out);
+	wines.ToCsv(o);
+}
+
+
+std::string ReduceDataByFeatureSelection(const std::string& filename)
+{
+	Dataframe d = std::move(OpenWineData(filename, s_selectedFeatures));
+	std::string reducedFilename = 
+		filename.substr(0, filename.find_last_of('.'))
+		+ "_feature_selection.csv";
+
+	std::ofstream o(reducedFilename, std::ios::out);
+	d.ToCsv(o);
+	return std::move(reducedFilename);
+}
+
+void DecisionTreeTest_Wines(std::ostream& treeout)
+{
+	std::string filename = "Data/wine_both_red_n_white.csv";
+	//CreateMergedData(filename);
+	//ReduceDataByFeatureSelection(filename);
+
+	Dataframe wines = std::move(OpenWineData(filename, s_selectedFeatures));
+
 	// @hanstar17 todo:
 	// balance the wine dataset such that # instances of red wine/white wine
 	// are the same or similar. USE SAMPLING
@@ -152,10 +184,30 @@ void DecisionTreeTest_Wines()
 	// build decision tree with discretized attributes
 	DecisionTree decisiontree(wines, WineAttribute::wine_type);
 
-	std::ofstream out("out/tree.txt", std::ios::out);
-	decisiontree.SetDebugOutput(&out);
 	decisiontree.Build();
 
-	TreePrinter printer(std::cout);
+	TreePrinter printer(treeout);
 	decisiontree.Walk(&printer, true);
+
+	Dataframe testdata = std::move(
+			OpenWineData("UserData/is_red_or_white.csv", s_selectedFeatures));
+
+	for (size_t i = 0; i < testdata.GetInstanceCount(); ++i)
+	{
+		auto& inst = testdata.GetInstance(i);
+		std::string result = decisiontree.Classify(&inst);
+		inst.GetAttribute(WineAttribute::wine_type).Set(result);
+	}
+
+	std::ofstream answerfile(
+		"Out/answer_to_is_red_or_white.csv", std::ios::out);
+
+	std::cout 
+		<< "user input file \"UserData/is_red_or_white.csv\" processed." 
+		<< std::endl;
+	std::cout
+		<< "Check out the file \"/Out/answer_to_is_red_or_white.csv\""
+		<< std::endl << std::endl;
+
+	testdata.ToCsv(answerfile);
 }

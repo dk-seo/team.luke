@@ -9,7 +9,7 @@ MultiIntegralDiscretizer::MultiIntegralDiscretizer(
 	size_t attributeIdx, size_t answerIdx)
 	: _attributeIdx(attributeIdx)
 	, _answerIdx(answerIdx)
-	, _maxSplitDepth(100)
+	, _maxSplitDepth(2)
 {
 }
 
@@ -17,7 +17,7 @@ MultiIntegralDiscretizer::~MultiIntegralDiscretizer()
 {
 }
 
-std::string MultiIntegralDiscretizer::Discretize(Instance* instance)
+std::string MultiIntegralDiscretizer::Discretize(const Instance* instance)
 {
 	for (size_t i = 0; i < _cutPoints.size(); ++i)
 	{
@@ -166,8 +166,10 @@ void MultiIntegralDiscretizer::Split(
 		bestGain, totalCategorizer,
 		bestGainLeftChildCategorizer, bestGainRightChildCategorizer))
 	{
-		if(bestGainLeftChildCategorizer.GetClassCount() > 1)
+		if (bestGainLeftChildCategorizer.GetClassCount() > 1)
+		{
 			Split(bestGainLeftChildCategorizer, depth + 1);
+		}
 
 		_cutPoints.push_back(bestGainCutpoint);
 

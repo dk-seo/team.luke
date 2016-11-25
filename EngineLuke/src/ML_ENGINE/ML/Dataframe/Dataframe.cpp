@@ -17,6 +17,10 @@ int Instance::GetAttributeCount() const
 	return int(_attributes.size());
 }
 
+Attribute& Instance::GetAttribute(size_t idx)
+{
+	return _attributes[idx];
+}
 const Attribute& Instance::GetAttribute(size_t idx) const
 {
 	return _attributes[idx];
@@ -90,30 +94,46 @@ bool Dataframe::BuildFromCsv(
 	// build attribute types
 	int attributeCount = CsvParser_getNumFields(header);
 	const char **parsedHeader = CsvParser_getFields(header);
-	auto& selectedIt = selectedFeatures.begin();
-	for (int i = 0; i < attributeCount; ++i)
+	if (selectedFeatures.empty())
 	{
-		if (selectedIt != selectedFeatures.end() && *selectedIt == i)
-		{
+		for (int i = 0; i < attributeCount; ++i)
 			AddAttribute(parsedHeader[i], AttributeType::Nominal); // nominal by default
-			++selectedIt;
+	}
+	else
+	{
+		auto& selectedIt = selectedFeatures.begin();
+		for (int i = 0; i < attributeCount; ++i)
+		{
+			if (selectedIt != selectedFeatures.end() && *selectedIt == i)
+			{
+				AddAttribute(parsedHeader[i], AttributeType::Nominal); // nominal by default
+				++selectedIt;
+			}
 		}
 	}
-
 	// build instances
 	while (CsvRow* row = CsvParser_getRow(csvParser))
 	{
 		const char **parsedRow = CsvParser_getFields(row);
 		Instance* instance = CreateInstance();
-		selectedIt = selectedFeatures.begin();
-		for (int i = 0; i < attributeCount; ++i)
+		if (selectedFeatures.empty())
 		{
-			if (selectedIt != selectedFeatures.end() && *selectedIt == i)
-			{
+			for (int i = 0; i < attributeCount; ++i)
 				instance->AddAttribute(parsedRow[i]);
-				++selectedIt;
+		}
+		else
+		{
+			auto selectedIt = selectedFeatures.begin();
+			for (int i = 0; i < attributeCount; ++i)
+			{
+				if (selectedIt != selectedFeatures.end() && *selectedIt == i)
+				{
+					instance->AddAttribute(parsedRow[i]);
+					++selectedIt;
+				}
 			}
 		}
+		
 	}
 
 	_errormsg = "";
@@ -159,11 +179,14 @@ size_t Dataframe::GetInstanceCount() const
 	return int(_instances.size());
 }
 
-const Instance& Dataframe::GetInstance(size_t idx)
+Instance& Dataframe::GetInstance(size_t idx)
 {
 	return *_instances[idx];
 }
-
+const Instance& Dataframe::GetInstance(size_t idx) const
+{
+	return *_instances[idx];
+}
 std::string Dataframe::GetErrorMessage() const
 {
 	return _errormsg;
