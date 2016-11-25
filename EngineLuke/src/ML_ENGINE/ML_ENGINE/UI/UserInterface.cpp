@@ -242,10 +242,7 @@ void UI::Q1Q2(void)
 {
     static bool Q1Q2Window = false;
     if (ImGui::Button("Q1 and Q2"))
-        Q1Q2Window = true;
-
-    if (!Q1Q2Window)
-        return;
+        Q1Q2Window = !Q1Q2Window;
 
     if (Q1Q2Window)
     {
@@ -307,10 +304,7 @@ void UI::Q3(void)
 {
     static bool Q3Window = false;
     if (ImGui::Button("Q3"))
-        Q3Window = true;
-
-    if (!Q3Window)
-        return;
+        Q3Window = !Q3Window;
 
     if (Q3Window)
     {
@@ -326,10 +320,7 @@ void UI::RecommenderSystem(void)
 {
     static bool RecWindow = false;
     if (ImGui::Button("Recommender System"))
-        RecWindow = true;
-
-    if (!RecWindow)
-        return;
+        RecWindow = !RecWindow;
 
     if (RecWindow)
     {
