@@ -184,6 +184,11 @@ size_t Dataframe::GetInstanceCount() const
 	return int(_instances.size());
 }
 
+unsigned Dataframe::GetAttributeIndex(std::string & attr)
+{
+  return _attributeMap[attr];
+}
+
 Instance& Dataframe::GetInstance(size_t idx)
 {
 	return *_instances[idx];
