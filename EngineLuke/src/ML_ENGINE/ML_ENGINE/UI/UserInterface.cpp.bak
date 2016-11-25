@@ -338,7 +338,7 @@ void UI::Q1Q2(void)
 }
 void UI::Q3(void)
 {
-    static Q3Window window;
+	static Q3Window window;
 	if (ImGui::Button("Q3"))
 		window.SetActive(!window.IsActive());
 
