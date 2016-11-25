@@ -228,4 +228,9 @@
       <Filter>UI\Imgui</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\Imgui\imgui_user.inl">
+      <Filter>UI\Imgui</Filter>
+    </None>
+  </ItemGroup>
 </Project>
