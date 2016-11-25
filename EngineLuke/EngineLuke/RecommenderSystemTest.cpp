@@ -65,3 +65,27 @@ void RecommenderSystemTest_Movies(
 	if(out)
 		PrintTable(*out, users, table);
 }
+
+void RecommenderSystemTest_Wines(const std::string & wine, std::ostream * out)
+{
+  Dataframe wineTable("Data/winequality-red_Output.csv");
+  
+  wineTable.AddAttribute("Type");
+  for (auto & i : wineTable.GetInstances())
+    i->AddAttribute("Red");
+
+  //Extract white wines from a file and merge into table
+  {
+    Dataframe whiteWines("Data/winequality-white_Output.csv");
+    
+    whiteWines.AddAttribute("Type");
+    for (auto & i : whiteWines.GetInstances())
+      i->AddAttribute("White");
+
+    wineTable.Merge(whiteWines);
+  }
+
+  RecommenderSystem mRCS(wineTable);
+  mRCS.RecommendFor(std::vector<unsigned>());
+
+}

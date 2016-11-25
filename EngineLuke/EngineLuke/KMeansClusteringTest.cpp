@@ -69,7 +69,7 @@ static void KMeansClusterTest(int k, // number of groups to be clustered
 	out << std::fixed;
 
 	// cluster with dataframe
-	KMeansClustering clustering(dataframe, attX, attY);
+	KMeansClustering clustering(dataframe);
 	if (debugOutput)
 		clustering.SetDebugOutput(&out);
 
