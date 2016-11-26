@@ -265,7 +265,7 @@ void Q3Window::ImguiTestInput()
 	{
 		if (WineAttribute::Types[i] == AttributeType::Numeric)
 		{
-			float v = _inputInstance.GetAttribute(i).AsDouble();
+			float v = float(_inputInstance.GetAttribute(i).AsDouble());
 			ImGui::DragFloat(WineAttribute::Names[i], 
 				&v, _mins[i], _maxes[i]);
 
@@ -447,8 +447,8 @@ bool Q3Window::LoadDataframe()
 	{
 		if (WineAttribute::Types[i] == AttributeType::Numeric)
 		{
-			_mins[i] = FindMin(instances, i);
-			_maxes[i] = FindMax(instances, i);
+			_mins[i] = float(FindMin(instances, i));
+			_maxes[i] = float(FindMax(instances, i));
 		}
 		_dataframe->SetAttributeType(i, WineAttribute::Types[i]);
 	}
