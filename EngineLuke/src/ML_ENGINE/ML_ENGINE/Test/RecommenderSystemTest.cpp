@@ -90,30 +90,38 @@ void RecommenderSystemTest_Wines(const std::string & winefilename, std::ostream 
   typedef std::vector<Answer>          Answers;
   Answers mRecommends;
 
-  mRecommends.resize(GROUP);
-  std::vector<double> cluster_len;
-
-  // assign each instance to a cluster whose centroid is closest to it
-  auto& instances = wines.GetInstances();
+# define QUALITY "quality"
   
-  for (unsigned index = 0; index < instances.size(); ++index)
+  int ignore = wines.GetAttributeIndex(std::string(QUALITY));
+
+  mRecommends.resize(GROUP);
   {
-    DataPoint point = mKMC.ToDataPoint(instances[index]);
-    double point_len = KMeansClustering::Length(point);
+    std::vector<double> cluster_len;
 
-    for (int i = 0, size = static_cast<int>(clustered.size());
-      i < size; ++i)
+    // assign each instance to a cluster whose centroid is closest to it
+    auto& instances = wines.GetInstances();
+
+    for (unsigned index = 0; index < instances.size(); ++index)
     {
-      const auto & cluster = clustered[i];
-      if (cluster_len.size() < size)
-        cluster_len.push_back(KMeansClustering::Length(cluster));
-      double similarity = sqrtl(point_len * cluster_len[i]);
-      similarity = KMeansClustering::Dot(cluster, point) / similarity;
+      if (index == ignore) continue;
 
-      if (similarity >= PRECISION)
-        mRecommends[i].emplace_back(index, similarity);
+      DataPoint point = mKMC.ToDataPoint(instances[index]);
+      double point_len = KMeansClustering::Length(point);
+
+      for (int i = 0, size = static_cast<int>(clustered.size());
+        i < size; ++i)
+      {
+        const auto & cluster = clustered[i];
+        if (cluster_len.size() < size)
+          cluster_len.push_back(KMeansClustering::Length(cluster));
+        double similarity = sqrtl(point_len * cluster_len[i]);
+        similarity = KMeansClustering::Dot(cluster, point) / similarity;
+
+        if (similarity >= PRECISION)
+          mRecommends[i].emplace_back(index, similarity);
+      }
     }
   }
-  
+
 
 }
