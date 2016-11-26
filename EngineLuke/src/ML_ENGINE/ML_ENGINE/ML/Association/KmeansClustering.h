@@ -37,6 +37,10 @@ public:
   // convert instance to datapoint
   DataPoint ToDataPoint(const Instance* instance);
 
+  // get min/max of each attribute
+  const std::vector<std::pair<double, double>> &
+    GetLimits() const;
+
 private:
 	// sample n datapoints from dataframe
 	std::vector<DataPoint> SampleDataPoints(const int n);
@@ -49,6 +53,9 @@ private:
 
   // calculate N dimensions Square by Euclidean 
   double DistSq(const DataPoint & p1, DataPoint & p2);
+
+  // calculate min/max limit on each attribute
+  void CalculateLimits();
 
 public:
   // dot product if two data have differnet size return 0.0
@@ -65,5 +72,7 @@ private:
   std::vector<int> _ignores; // ignore field's indices
 	std::vector<std::vector<const Instance*>> _clusters; // cluster-groups with instances
 	std::ofstream* _o; // output stream for debug
+  std::vector<std::pair<double, double>> _limits;
+  std::vector<double> _diffs;
 };
 

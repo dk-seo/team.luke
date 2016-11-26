@@ -1,6 +1,7 @@
 #include "RecommenderSystemTest.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include "../ML/Dataframe/Dataframe.h"
 #include "../ML/Association/KmeansClustering.h"
 #include "../ML/Recommender/RecommenderSystem.h"
@@ -103,25 +104,21 @@ void RecommenderSystemTest_Wines(const std::string & winefilename, std::ostream 
 
     for (unsigned index = 0; index < instances.size(); ++index)
     {
-      if (index == ignore) continue;
-
       DataPoint point = mKMC.ToDataPoint(instances[index]);
-      double point_len = KMeansClustering::Length(point);
+      double point_len = KMeansClustering::Length(point, { ignore });
 
       for (int i = 0, size = static_cast<int>(clustered.size());
         i < size; ++i)
       {
         const auto & cluster = clustered[i];
         if (cluster_len.size() < size)
-          cluster_len.push_back(KMeansClustering::Length(cluster));
+          cluster_len.push_back(KMeansClustering::Length(cluster, { ignore }));
         double similarity = sqrtl(point_len * cluster_len[i]);
-        similarity = KMeansClustering::Dot(cluster, point) / similarity;
+        similarity = KMeansClustering::Dot(cluster, point, { ignore }) / similarity;
 
         if (similarity >= PRECISION)
           mRecommends[i].emplace_back(index, similarity);
       }
     }
   }
-
-
 }

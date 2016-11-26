@@ -357,6 +357,8 @@ void UI::RecommenderSystem(void)
         ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
         if (ImGui::Begin("Recommender System", &RecWindow, ImVec2(0, 0)))
         {
+          ImGui::Text(" and target class Quality. ");
+
 
             ImGui::End();
         }

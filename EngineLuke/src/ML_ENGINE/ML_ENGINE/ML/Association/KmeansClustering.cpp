@@ -24,8 +24,10 @@ KMeansClustering::KMeansClustering(Dataframe & dataframe,
   for (auto & i : ignores)
     _ignores.push_back(_dataframe.GetAttributeIndex(i));
   
+  CalculateLimits();
+
   if(_ignores.size() != 0)
-    std::qsort(_ignores.data(), _ignores.size(),
+    qsort(_ignores.data(), _ignores.size(),
       sizeof(_ignores.front()), compareMyType);
 }
 
@@ -77,19 +79,25 @@ DataPoint KMeansClustering::ToDataPoint(const Instance* instance)
   int attSize = instance->GetAttributeCount(),
     dataSize = attSize - static_cast<int>(_ignores.size());
   point.mDataPoints.resize(dataSize);
-  auto ignoreIndex = _ignores.begin();
+  //auto ignoreIndex = _ignores.begin();
   for (int instIndex = 0, dataIndex = 0;
     instIndex < attSize; ++instIndex)
   {
-    if (ignoreIndex == _ignores.end() ||
-      instIndex != *ignoreIndex)
+    //if (ignoreIndex == _ignores.end() ||
+    //  instIndex != *ignoreIndex)
     {
       point.mDataPoints[dataIndex++] =
         instance->GetAttribute(instIndex).AsDouble();
     }
-    if (ignoreIndex != _ignores.end()) ++ignoreIndex;
+    //if (ignoreIndex != _ignores.end()) ++ignoreIndex;
   }
   return std::move(point);
+}
+
+const std::vector<std::pair<double, double>>&
+  KMeansClustering::GetLimits() const
+{
+  return _limits;
 }
 
 DataPoint KMeansClustering::CalculateCentroid(const std::vector<const Instance*>& instances)
@@ -240,7 +248,7 @@ ClusterData KMeansClustering::Cluster(const int k)
           minDistCluster = i;
         }
       }
-
+      
       // add instance to the group
       _clusters[minDistCluster].emplace_back(*instance);
       if (_o)
@@ -302,6 +310,35 @@ double KMeansClustering::DistSq(const DataPoint & p1, DataPoint & p2)
   }
 
   return dist;
+}
+
+void KMeansClustering::CalculateLimits()
+{
+  _limits.resize(_dataframe.GetAttributeCount(),
+    std::make_pair(std::numeric_limits<double>().max(),
+      std::numeric_limits<double>().min()));
+
+  auto& instances = _dataframe.GetInstances();
+  for (auto instance = instances.cbegin();
+    instance != instances.end(); ++instance)
+  {
+    DataPoint point = ToDataPoint(*instance);
+
+    for (int i = 0; i < point.mDataPoints.size(); ++i)
+    {
+      if (_limits[i].first > point.mDataPoints[i])
+        _limits[i].first = point.mDataPoints[i];
+      if (_limits[i].second < point.mDataPoints[i])
+        _limits[i].second = point.mDataPoints[i];
+    }
+  }
+
+  _diffs.resize(_limits.size());
+ 
+  for (int i = 0, size = static_cast<int>(_limits.size());
+    i < size; ++i)
+    _diffs[i] = _limits[i].second - _limits[i].first;
+
 }
 
 double KMeansClustering::Dot(const DataPoint & p1,
