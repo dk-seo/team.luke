@@ -41,6 +41,8 @@ public:
     void AddString(int index, std::string string);
     void PrintString(int index, bool* p_open);
 
+	Dataframe* GetDataframe() { return m_dataframe; }
+
 private:
 
     
