@@ -3,6 +3,7 @@
 #include "UI\Imgui\imgui.h"
 #include "UI\Imgui\imgui_impl_dx11.h"
 #include "ML\Classification\DecisionTree.h"
+#include "ML\Classification\MultiIntegralDiscretizer.h"
 #include "UI\UserInterface.h"
 #include "FileIO\csvparser.h"
 #include "FileIO\FileSystem.h"
@@ -47,6 +48,82 @@ namespace WineAttribute
 	};
 }
 
+class ImguiTreeVisitor : public IDTVisitor
+{
+public:
+	ImguiTreeVisitor() {}
+	virtual bool Visit(DecisionTree::Node* node)
+	{
+		std::string nodename = node->_attributePrefix;
+		auto nodeOpen = ImGui::TreeNode(nodename.c_str());
+
+		std::string instanceInfo = " (";
+		bool notFirst = false;
+		for (auto it : node->_childrenCountByConcept)
+		{
+			if (notFirst)	instanceInfo += ", ";
+			else			notFirst = true;
+
+			instanceInfo += it.first + "=" + std::to_string(it.second);
+		}
+		instanceInfo += ")";
+
+		ImGui::SameLine(0, 3);
+		if (node->_children.empty())
+		{
+			if (node->_conceptClass == "red")
+			{
+				ImGui::TextColored(
+					ImVec4(1, 0.3f, 0.3f, 1), instanceInfo.c_str());
+			}
+			else
+			{
+				ImGui::TextColored(
+					ImVec4(0.3f, 0.3f, 1, 1), instanceInfo.c_str());
+			}
+		}
+		else
+		{
+			ImGui::TextColored(
+				ImVec4(0.3f, 0.3f, 0.3f, 1), instanceInfo.c_str());
+		}
+
+		if (nodeOpen && !node->_children.empty())
+		{
+			auto& cutpoints = node->_discretizer->GetCutPoints();
+			auto& itCutpoint = cutpoints.begin();
+			for (auto child = node->_children.begin();
+				child != node->_children.end(); ++child)
+			{
+				child->second->_attributePrefix = "[ ";
+
+				if (child != node->_children.begin())
+				{
+					child->second->_attributePrefix +=
+						std::to_string(*(itCutpoint++)) + " < ";
+				}
+
+				child->second->_attributePrefix +=
+					node->_attributeName;
+
+				if (child != std::prev(node->_children.end()))
+				{
+					child->second->_attributePrefix +=
+						" <= " + std::to_string(*itCutpoint);
+				}
+
+				child->second->_attributePrefix += " ]";
+				child->second->Walk(this, true);
+			}
+		}
+		if (nodeOpen)
+			ImGui::TreePop();
+
+		return false;
+	}
+
+private:
+};
 
 Q3Window::Q3Window()
 	:_active(false)
@@ -66,22 +143,25 @@ void Q3Window::Update()
 	ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_Once);
 	ImGui::Begin("Answer for Q3", nullptr, ImVec2(0, 0));
 	{
-		ImGui::InputText(
-			"Training Set", _trainingsetFilename, sizeof(_trainingsetFilename));
-
-		if (ImGui::Button("Load Dataframe"))
+		if (ImGui::Button("Build Decision Tree"))
 		{
-			LoadDataframe();
-		}
+			if (!_dataframe)
+			{
+				LoadDataframe();
+			}
 
-		if (_dataframe)
-		{
-			if (ImGui::Button("Build Decision Tree"))
+			if (_dataframe)
 			{
 				_decisionTree.reset(
 					new DecisionTree(*_dataframe, WineAttribute::wine_type));
 				_decisionTree->Build();
 			}
+		}
+
+		if (_decisionTree)
+		{
+			ImguiTreeVisitor visitor;
+			_decisionTree->Walk(&visitor, true);
 		}
 		
 	}
@@ -105,6 +185,14 @@ bool Q3Window::IsValidTrainingSet()
 {
 	CsvParser *csvParser = CsvParser_new(
 		GetTrainingSetFilename().c_str(), ",", int(true));
+	if (!csvParser)
+	{
+		_errorWindowMessage =
+			"Invalid training set.\n"
+			"The file" + GetTrainingSetFilename() +" doesn't have heaer row.";
+		return false;
+	}
+
 	CsvRow* header = CsvParser_getHeader(csvParser);
 	if (!header)
 	{
@@ -178,7 +266,6 @@ bool Q3Window::LoadDataframe()
 
 	static std::vector<size_t> selectedFeatures = { 0, 1, 3, 4, 6, 8, 9, 12 };
 
-	
 	_dataframe.reset(new Dataframe);
 	if (!_dataframe->BuildFromCsv(
 		GetTrainingSetFilename().c_str(), true, selectedFeatures))

@@ -20,7 +20,7 @@ private:
 	bool LoadDataframe();
 	bool IsValidTrainingSet();
 	std::string GetTrainingSetFilename() { 
-		return std::string("Data/") + _trainingsetFilename; }
+		return "Data/wine_both_red_n_white.csv"; }
 
 private:
 	bool _active;
