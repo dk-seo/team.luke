@@ -34,12 +34,12 @@ public:
 	// print clustered groups and its members to given stream
 	void PrintClusters(std::ofstream& o);
 
+  // convert instance to datapoint
+  DataPoint ToDataPoint(const Instance* instance);
+
 private:
 	// sample n datapoints from dataframe
 	std::vector<DataPoint> SampleDataPoints(const int n);
-
-	// convert instance to datapoint
-	DataPoint ToDataPoint(const Instance* instance);
 
 	// calculate centroids with given instances
 	DataPoint CalculateCentroid(const std::vector<const Instance*>& instances);
@@ -49,6 +49,14 @@ private:
 
   // calculate N dimensions Square by Euclidean 
   double DistSq(const DataPoint & p1, DataPoint & p2);
+
+public:
+  // dot product if two data have differnet size return 0.0
+  static double Dot(const DataPoint & p1, const DataPoint & p2);
+
+  // length
+  static double Length(const DataPoint & p, const bool Sqrt = false);
+
 private:
 	Dataframe& _dataframe; // dataframe to be used
   std::vector<int> _ignores; // ignore field's indices

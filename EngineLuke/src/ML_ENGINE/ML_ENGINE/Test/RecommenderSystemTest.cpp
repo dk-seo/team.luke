@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "../ML/Dataframe/Dataframe.h"
+#include "../ML/Association/KmeansClustering.h"
 #include "../ML/Recommender/RecommenderSystem.h"
 
 // prints table to out stream in csv format
@@ -64,4 +65,46 @@ void RecommenderSystemTest_Movies(
 	std::vector<std::vector<double>>&& table = recommender.RecommendFor(users);
 	if(out)
 		PrintTable(*out, users, table);
+}
+
+void RecommenderSystemTest_Wines(const std::string & winefilename, std::ostream * debug_out, std::ostream & out)
+{
+
+  // build critics dataframe
+  Dataframe wines;
+  if (!wines.BuildFromCsv(winefilename, true))
+  {
+    if (debug_out)
+      *debug_out << "file doesn't exist!" << std::endl;
+    return;
+  }
+
+# define GROUP 2
+# define PRECISION 0.8
+  KMeansClustering mKMC(wines);
+  ClusterData clustered = mKMC.Cluster(GROUP);
+
+  typedef std::pair<unsigned, double>  AnswerForm;
+  typedef std::vector<AnswerForm>      Answer;
+  typedef std::vector<Answer>          Answers;
+  Answers mRecommends;
+  mRecommends.resize(GROUP);
+
+  // assign each instance to a cluster whose centroid is closest to it
+  auto& instances = wines.GetInstances();
+  for (unsigned index = 0; index < instances.size(); ++index)
+  {
+    DataPoint point = mKMC.ToDataPoint(instances[index]);
+    
+    for (int i = 0; i < clustered.size(); ++i)
+    {
+      const auto & cluster = clustered[i];
+      double similarity = sqrtl(KMeansClustering::Length(point) *
+        KMeansClustering::Length(cluster));
+      similarity = KMeansClustering::Dot(cluster, point) / similarity;
+
+      if (similarity >= PRECISION)
+        mRecommends[i].emplace_back(index, similarity);
+    }
+  }
 }

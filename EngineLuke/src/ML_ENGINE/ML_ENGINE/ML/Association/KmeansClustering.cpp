@@ -228,7 +228,7 @@ ClusterData KMeansClustering::Cluster(const int k)
 
     // assign each instance to a cluster whose centroid is closest to it
     auto& instances = _dataframe.GetInstances();
-    for (auto& instance = instances.cbegin();
+    for (auto instance = instances.cbegin();
       instance != instances.end(); ++instance)
     {
       DataPoint point = ToDataPoint(*instance);
@@ -307,4 +307,28 @@ double KMeansClustering::DistSq(const DataPoint & p1, DataPoint & p2)
   }
 
   return dist;
+}
+
+double KMeansClustering::Dot(const DataPoint & p1, const DataPoint & p2)
+{
+  if (p1.mDataPoints.size() != p2.mDataPoints.size())
+    return 0.0;
+
+  double dot = 0.0;
+
+  for (int i = 0, size = static_cast<int>(p1.mDataPoints.size());
+    i < size; ++i)
+    dot += p1.mDataPoints[i] * p2.mDataPoints[i];
+
+  return dot;
+}
+
+double KMeansClustering::Length(const DataPoint & p, const bool Sqrt)
+{
+  double length = 0.0;
+
+  for (const auto i : p.mDataPoints)
+    length += (i * i);
+
+  return (Sqrt) ? sqrtl(length) : length;
 }
