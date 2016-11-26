@@ -100,6 +100,11 @@ const std::vector<std::pair<double, double>>&
   return _limits;
 }
 
+const std::vector<double>& KMeansClustering::GetDiff() const
+{
+  return _diffs;
+}
+
 DataPoint KMeansClustering::CalculateCentroid(const std::vector<const Instance*>& instances)
 {
   DataPoint centroid;

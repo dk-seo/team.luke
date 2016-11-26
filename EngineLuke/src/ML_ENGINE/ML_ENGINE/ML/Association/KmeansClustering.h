@@ -41,6 +41,9 @@ public:
   const std::vector<std::pair<double, double>> &
     GetLimits() const;
 
+  // get difference between min and max of each attribute
+  const std::vector<double> & GetDiff() const;
+
 private:
 	// sample n datapoints from dataframe
 	std::vector<DataPoint> SampleDataPoints(const int n);
