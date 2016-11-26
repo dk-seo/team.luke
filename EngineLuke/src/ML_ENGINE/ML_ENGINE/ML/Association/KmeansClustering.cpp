@@ -62,11 +62,8 @@ std::vector<DataPoint> KMeansClustering::SampleDataPoints(const int n)
     {
       if(ignore == _ignores.end() || i != *ignore)
         points[pointIndex].mDataPoints.push_back(sample->GetAttribute(i).AsDouble());
-      else
-      {
-        points[pointIndex].mDataPoints.push_back(-1.0);
-        if(ignore != _ignores.end()) ++ignore;
-      }
+      else points[pointIndex].mDataPoints.push_back(-1.0);
+      if (ignore != _ignores.end()) ++ignore;
     }
     ++pointIndex;
   }
@@ -81,7 +78,8 @@ DataPoint KMeansClustering::ToDataPoint(const Instance* instance)
     dataSize = attSize - static_cast<int>(_ignores.size());
   point.mDataPoints.resize(dataSize);
   auto ignoreIndex = _ignores.begin();
-  for (int instIndex = 0, dataIndex = 0; instIndex < attSize; ++instIndex)
+  for (int instIndex = 0, dataIndex = 0;
+    instIndex < attSize; ++instIndex)
   {
     if (ignoreIndex == _ignores.end() ||
       instIndex != *ignoreIndex)
@@ -89,7 +87,7 @@ DataPoint KMeansClustering::ToDataPoint(const Instance* instance)
       point.mDataPoints[dataIndex++] =
         instance->GetAttribute(instIndex).AsDouble();
     }
-    else if (ignoreIndex != _ignores.end()) ++ignoreIndex;
+    if (ignoreIndex != _ignores.end()) ++ignoreIndex;
   }
   return std::move(point);
 }
@@ -110,7 +108,7 @@ DataPoint KMeansClustering::CalculateCentroid(const std::vector<const Instance*>
       if(ignore == _ignores.end() ||
         i != *ignore)
       centroid.mDataPoints[i] += point.mDataPoints[i];
-      else if (ignore != _ignores.end()) ++ignore;
+      if (ignore != _ignores.end()) ++ignore;
     }
   }
 
@@ -146,10 +144,8 @@ void KMeansClustering::PrintClusters(std::ofstream& o, const int group, const Da
   {
     if(ignore == _ignores.end() || *ignore != i)
       o << points[i];
-    else {
-      o << "NULL";
-      if (ignore != _ignores.end()) ++ignore;
-    }
+    else o << "NULL";
+    if (ignore != _ignores.end()) ++ignore;
     if (++i != size) *_o << ", ";
   }
   o << ")" << std::endl;
@@ -167,10 +163,9 @@ void KMeansClustering::PrintClusters(std::ofstream& o, const int group, const Da
       
       if (ignore == _ignores.end() || attIndex != *ignore)
         o << instance->GetAttribute(attIndex).AsString();
-      else {
-        o << "NULL";
-        if (ignore + 1 != _ignores.end()) ++ignore;
-      }
+      else o << "NULL";
+
+      if (ignore != _ignores.end()) ++ignore;
 
       if (attIndex + 1 != _dataframe.GetAttributeCount())
         o << ",";
@@ -201,8 +196,8 @@ ClusterData KMeansClustering::Cluster(const int k)
           *_o << points[i];
         else {
           *_o << "NULL";
-          if (ignore != _ignores.end()) ++ignore;
         }
+        if (ignore != _ignores.end()) ++ignore;
         if (++i != size) *_o << ", ";
       }
 
@@ -273,7 +268,7 @@ ClusterData KMeansClustering::Cluster(const int k)
           if (centroid.mDataPoints[index] != centroids[i].mDataPoints[index])
             centroidsChanged = true;
         }
-        else if (ignore != _ignores.end()) ++ignore;
+        if (ignore != _ignores.end()) ++ignore;
       }
 
       centroids[i] = centroid;
@@ -303,32 +298,48 @@ double KMeansClustering::DistSq(const DataPoint & p1, DataPoint & p2)
       double diff = p1.mDataPoints[i] - p2.mDataPoints[i];
       dist += sqrt(diff * diff);
     }
-    else if (ignore != _ignores.end()) ++ignore;
+    if (ignore != _ignores.end()) ++ignore;
   }
 
   return dist;
 }
 
-double KMeansClustering::Dot(const DataPoint & p1, const DataPoint & p2)
+double KMeansClustering::Dot(const DataPoint & p1,
+  const DataPoint & p2,
+  const std::vector<int> ignores)
 {
   if (p1.mDataPoints.size() != p2.mDataPoints.size())
     return 0.0;
 
   double dot = 0.0;
-
+  auto ignore = ignores.cbegin();
   for (int i = 0, size = static_cast<int>(p1.mDataPoints.size());
     i < size; ++i)
-    dot += p1.mDataPoints[i] * p2.mDataPoints[i];
+  {
+    if(ignore == ignores.end() || 
+      *ignore != i)
+      dot += p1.mDataPoints[i] * p2.mDataPoints[i];
+    
+    if (ignore != ignores.end()) ++ignore;
+  }
 
   return dot;
 }
 
-double KMeansClustering::Length(const DataPoint & p, const bool Sqrt)
+double KMeansClustering::Length(const DataPoint & p,
+  const std::vector<int> ignores,
+  const bool Sqrt)
 {
   double length = 0.0;
 
-  for (const auto i : p.mDataPoints)
-    length += (i * i);
+  auto ignore = ignores.cbegin();
+  for (int i = 0; i < p.mDataPoints.size(); ++i)
+  {
+    if (ignore == ignores.end() ||
+      *ignore != i)
+      length += (p.mDataPoints[i] * p.mDataPoints[i]);
+    if (ignore != ignores.end()) ++ignore;
+  }
 
   return (Sqrt) ? sqrtl(length) : length;
 }

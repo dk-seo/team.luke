@@ -52,10 +52,13 @@ private:
 
 public:
   // dot product if two data have differnet size return 0.0
-  static double Dot(const DataPoint & p1, const DataPoint & p2);
+  static double Dot(const DataPoint & p1, const DataPoint & p2,
+    const std::vector<int> ignores = std::vector<int>());
 
   // length
-  static double Length(const DataPoint & p, const bool Sqrt = false);
+  static double Length(const DataPoint & p,
+    const std::vector<int> ignores = std::vector<int>(),
+    const bool Sqrt = false);
 
 private:
 	Dataframe& _dataframe; // dataframe to be used

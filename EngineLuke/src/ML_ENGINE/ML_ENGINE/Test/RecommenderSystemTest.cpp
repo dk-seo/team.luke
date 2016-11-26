@@ -81,6 +81,7 @@ void RecommenderSystemTest_Wines(const std::string & winefilename, std::ostream 
 
 # define GROUP 2
 # define PRECISION 0.8
+
   KMeansClustering mKMC(wines);
   ClusterData clustered = mKMC.Cluster(GROUP);
 
@@ -88,23 +89,31 @@ void RecommenderSystemTest_Wines(const std::string & winefilename, std::ostream 
   typedef std::vector<AnswerForm>      Answer;
   typedef std::vector<Answer>          Answers;
   Answers mRecommends;
+
   mRecommends.resize(GROUP);
+  std::vector<double> cluster_len;
 
   // assign each instance to a cluster whose centroid is closest to it
   auto& instances = wines.GetInstances();
+  
   for (unsigned index = 0; index < instances.size(); ++index)
   {
     DataPoint point = mKMC.ToDataPoint(instances[index]);
-    
-    for (int i = 0; i < clustered.size(); ++i)
+    double point_len = KMeansClustering::Length(point);
+
+    for (int i = 0, size = static_cast<int>(clustered.size());
+      i < size; ++i)
     {
       const auto & cluster = clustered[i];
-      double similarity = sqrtl(KMeansClustering::Length(point) *
-        KMeansClustering::Length(cluster));
+      if (cluster_len.size() < size)
+        cluster_len.push_back(KMeansClustering::Length(cluster));
+      double similarity = sqrtl(point_len * cluster_len[i]);
       similarity = KMeansClustering::Dot(cluster, point) / similarity;
 
       if (similarity >= PRECISION)
         mRecommends[i].emplace_back(index, similarity);
     }
   }
+  
+
 }
