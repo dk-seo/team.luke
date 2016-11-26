@@ -4,7 +4,7 @@
 
 static double Sq(double v)
 {
-  return v*v;
+  return v * v;
 }
 
 static int compareMyType(const void * a, const void * b)
@@ -298,7 +298,6 @@ ClusterData KMeansClustering::Cluster(const int k)
   return std::move(centroids);
 }
 
-
 double KMeansClustering::DistSq(const DataPoint & p1, DataPoint & p2)
 {
   double dist = 0.0;
@@ -348,20 +347,28 @@ void KMeansClustering::CalculateLimits()
 
 double KMeansClustering::Dot(const DataPoint & p1,
   const DataPoint & p2,
-  const std::vector<int> ignores)
+  const std::vector<int> & ignores,
+  const std::vector<double> & diffs)
 {
   if (p1.mDataPoints.size() != p2.mDataPoints.size())
     return 0.0;
+
+  bool isDiffs = true;
+  if (diffs.size() != p1.mDataPoints.size())
+    isDiffs = false;
 
   double dot = 0.0;
   auto ignore = ignores.cbegin();
   for (int i = 0, size = static_cast<int>(p1.mDataPoints.size());
     i < size; ++i)
   {
-    if(ignore == ignores.end() || 
-      *ignore != i)
-      dot += p1.mDataPoints[i] * p2.mDataPoints[i];
-    
+    if (ignore == ignores.end() || *ignore != i)
+    {
+      double temp = p1.mDataPoints[i] * p2.mDataPoints[i];
+      if (isDiffs) temp /= (diffs[i] * diffs[i]);
+      dot += temp;
+    }
+
     if (ignore != ignores.end()) ++ignore;
   }
 
@@ -369,17 +376,26 @@ double KMeansClustering::Dot(const DataPoint & p1,
 }
 
 double KMeansClustering::Length(const DataPoint & p,
-  const std::vector<int> ignores,
+  const std::vector<int> & ignores,
+  const std::vector<double> & diffs,
   const bool Sqrt)
 {
   double length = 0.0;
+
+  bool isDiffs = true;
+  if (diffs.size() != p.mDataPoints.size())
+    isDiffs = false;
 
   auto ignore = ignores.cbegin();
   for (int i = 0; i < p.mDataPoints.size(); ++i)
   {
     if (ignore == ignores.end() ||
       *ignore != i)
-      length += (p.mDataPoints[i] * p.mDataPoints[i]);
+    {
+      double temp = (p.mDataPoints[i] * p.mDataPoints[i]);
+      if (isDiffs) temp /= (diffs[i] * diffs[i]);
+      length += temp;
+    }
     if (ignore != ignores.end()) ++ignore;
   }
 
