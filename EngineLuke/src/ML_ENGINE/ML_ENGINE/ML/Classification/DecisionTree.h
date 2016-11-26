@@ -19,6 +19,7 @@ public:
 		std::map<std::string, size_t> _childrenCountByConcept;
 		std::string _attributeName;
 		std::string _conceptClass; // only leaf node has this value
+		std::string _attributePrefix; // for visualization.. this will be range
 		std::unique_ptr<MultiIntegralDiscretizer> _discretizer;
 
 		Node();
