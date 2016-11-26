@@ -12,10 +12,13 @@
 UI* UI::s_pinstance = NULL;
 
 UI::UI(void) 
+	:m_dataframe(nullptr)
 {
 }
 UI::~UI(void)
 {
+	if (m_dataframe)
+		delete m_dataframe;
 }
 
 void UI::Initialize(void)
@@ -113,7 +116,7 @@ void UI::UpdateQuestionsWindow(void)
 {
     ImGui::SetNextWindowPos(ImVec2(930, 130), ImGuiSetCond_Once);
     ImGui::SetNextWindowSize(ImVec2(300, 70), ImGuiSetCond_Once);
-    if (!curr_filepath.empty())
+    //if (!curr_filepath.empty())
     {
         if (ImGui::Begin("Questions"))
         {
@@ -249,7 +252,6 @@ void UI::ShowSeleAttr(void)
 			ImGui::SameLine(); ImGui::Text(". "); ImGui::SameLine();
 			ImGui::Text(std::to_string(mode[i]).c_str());
 		}
-
 	}
 }
 

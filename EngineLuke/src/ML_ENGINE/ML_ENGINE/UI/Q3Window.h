@@ -1,4 +1,10 @@
 #pragma once
+#include <memory>
+#include <string>
+
+class DecisionTree;
+class Dataframe;
+
 class Q3Window
 {
 public:
@@ -11,5 +17,16 @@ public:
 	void Update();
 
 private:
+	bool LoadDataframe();
+	bool IsValidTrainingSet();
+	std::string GetTrainingSetFilename() { 
+		return std::string("Data/") + _trainingsetFilename; }
+
+private:
 	bool _active;
+	std::unique_ptr<DecisionTree> _decisionTree;
+	std::unique_ptr<Dataframe> _dataframe;
+	std::string _errorWindowMessage;
+	char _trainingsetFilename[255];
+
 };

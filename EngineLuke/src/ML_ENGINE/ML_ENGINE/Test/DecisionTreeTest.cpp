@@ -32,20 +32,20 @@ namespace WineAttribute
 		"sulphates",
 		"wine type",
 	};
+
+	static AttributeType::Enum Types[] = {
+		AttributeType::Numeric,
+		AttributeType::Numeric,
+		AttributeType::Numeric,
+		AttributeType::Numeric,
+		AttributeType::Numeric,
+		AttributeType::Numeric,
+		AttributeType::Numeric,
+		AttributeType::Nominal
+	};
 }
 
 std::vector<size_t> s_selectedFeatures = { 0, 1, 3, 4, 6, 8, 9, 12 };
-
-static AttributeType::Enum attributeTypes[WineAttribute::COUNT] = {
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Numeric,
-	AttributeType::Nominal
-};
 
 class TreePrinter : public IDTVisitor
 {
@@ -124,7 +124,7 @@ Dataframe OpenWineData(const std::string& filename, const std::vector<size_t>& s
 	else
 	{
 		for (size_t i = WineAttribute::BEGIN; i < WineAttribute::COUNT; ++i)
-			wines.SetAttributeType(i, attributeTypes[i]);
+			wines.SetAttributeType(i, WineAttribute::Types[i]);
 	}
 
 	return std::move(wines);
