@@ -15,10 +15,11 @@ class DecisionTree
 public:
 	struct Node
 	{
-		std::map<std::string, Node*> _children;
+		std::map<std::string, std::unique_ptr<Node>> _children;
 		std::map<std::string, size_t> _childrenCountByConcept;
 		std::string _attributeName;
 		std::string _conceptClass; // only leaf node has this value
+		std::string _attributePrefix; // for visualization.. this will be range
 		std::unique_ptr<MultiIntegralDiscretizer> _discretizer;
 
 		Node();
@@ -40,6 +41,8 @@ public:
 
 	void Walk(IDTVisitor* visitor, bool visit);
 
+	Node* GetRoot() { return _root.get(); }
+
 private:
 	Node* BuildTree(
 		const std::vector<Instance*>& instances,
@@ -48,7 +51,7 @@ private:
 private:
 	Dataframe& _dataframe;
 	int _answerIdx;
-	Node* _root;
+	std::unique_ptr<Node> _root;
 
 	std::ofstream* _o; // output stream for debug
 };

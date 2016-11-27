@@ -214,7 +214,7 @@ void DecisionTree::Build()
 {
 	std::vector<bool> attMarker(_dataframe.GetAttributeCount(), false);
 	attMarker[_answerIdx] = true;
-	_root = BuildTree(_dataframe.GetInstances(), attMarker);
+	_root.reset(BuildTree(_dataframe.GetInstances(), attMarker));
 }
 
 std::string DecisionTree::Classify(const Instance* instance)
