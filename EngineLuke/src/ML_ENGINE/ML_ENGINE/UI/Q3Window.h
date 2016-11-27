@@ -43,8 +43,8 @@ private:
 	std::unique_ptr<Dataframe> _dataframe;
 	std::string _errorWindowMessage;
 	std::string _outputGeneratedNotice;
-	std::vector<double> _mins;
-	std::vector<double> _maxes;
+	std::vector<float> _mins;
+	std::vector<float> _maxes;
 	Instance _inputInstance;
 	char _trainingsetFilename[255];
 	size_t _outputGeneratedNoticeTickCount;
