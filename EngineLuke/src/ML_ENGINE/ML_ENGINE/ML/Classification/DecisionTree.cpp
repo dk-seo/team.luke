@@ -198,10 +198,10 @@ DecisionTree::Node* DecisionTree::BuildTree(
 		std::vector<Instance*> childInstances =
 			std::move(childCategorizer.GetInstances());
 
-		if (Node* childNode = BuildTree(childInstances, attNoded))
-		{
-			node->_children.emplace(classname, childNode);
-		}
+        std::unique_ptr<Node> childNode;
+        childNode.reset(BuildTree(childInstances, attNoded));
+		if (childNode)
+			node->_children.emplace(classname, std::move(childNode));
 	}
 
 	attNoded[bestGainAttIdx] = false;
