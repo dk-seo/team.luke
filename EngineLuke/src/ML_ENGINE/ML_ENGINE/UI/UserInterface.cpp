@@ -167,6 +167,8 @@ void UI::LoadCSVfile(void)
 
                     std::string path = "Data/" + curr_filepath;                   
 
+                    
+
                     if (!m_dataframe->BuildFromCsv(path, true))
                     {
                         bool open = true;
@@ -212,7 +214,7 @@ void UI::ShowAttributes(void)
     {
         std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
         static int listbox_item_current = 1;
-		if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12))
+		if (ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, int(temp.size()), 12))
 		{
 			selected_att = temp[listbox_item_current];
 			i_selected_att = listbox_item_current;
@@ -262,11 +264,11 @@ void UI::PlotHistogram(void)
 	{
 		Instance data = m_dataframe->GetInstance(size_t(i_selected_att));
 		int size = data.GetAttributeCount();
-		static float* values = new float(size);
+		static float* values = new float(float(size));
 
 		for (int i = 0; i < size; ++i)
 		{
-			values[i] = data.GetAttribute(i).AsDouble();
+			values[i] = float(data.GetAttribute(i).AsDouble());
 		}
 		ImGui::PlotHistogram("Plot", values, IM_ARRAYSIZE(values), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80));
 	}
@@ -318,10 +320,30 @@ void UI::Q1Q2(void)
 				std::vector<std::string> temp = m_dataframe->GetAttributeNameList();
 				temp.pop_back();
 				static int listbox_item_current = 1;
-				ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12);
+				ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, int(temp.size()), 12);
 
-				if (listbox_item_current != -1)
-				{
+                struct Funcs 
+                {
+                    static float func(void*, float i) { return sinf(i * 0.1f); }
+                };
+
+               
+                if (listbox_item_current != -1)
+                {
+                    float data[2] = { float(bestfits[listbox_item_current].a) ,float(bestfits[listbox_item_current].b) };
+
+                    struct Funcs
+                    {
+                        static float func(void* data, int i) { 
+                            float* fData = reinterpret_cast<float*>(data);
+                            return fData[0]*i + fData[1];
+                        }
+                    };
+
+                    
+                    float(*func)(void*, int) = Funcs::func;
+                    ImGui::PlotLines("Lines", func, data, 5, 0, NULL, 0.0f, 5.0f, ImVec2(0, 80));
+
 					ImGui::Text(temp[listbox_item_current].c_str()); ImGui::SameLine();
 					ImGui::Text(" and target class Quality. ");
 
