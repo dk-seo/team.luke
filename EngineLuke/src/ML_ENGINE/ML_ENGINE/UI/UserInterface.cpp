@@ -167,6 +167,8 @@ void UI::LoadCSVfile(void)
 
                     std::string path = "Data/" + curr_filepath;                   
 
+                    
+
                     if (!m_dataframe->BuildFromCsv(path, true))
                     {
                         bool open = true;
@@ -320,8 +322,28 @@ void UI::Q1Q2(void)
 				static int listbox_item_current = 1;
 				ImGui::ListBox("Attributes", &listbox_item_current, StringItemsGetter, &temp, temp.size(), 12);
 
-				if (listbox_item_current != -1)
-				{
+                struct Funcs 
+                {
+                    static float func(void*, float i) { return sinf(i * 0.1f); }
+                };
+
+               
+                if (listbox_item_current != -1)
+                {
+                    float data[2] = { bestfits[listbox_item_current].a ,bestfits[listbox_item_current].b };
+
+                    struct Funcs
+                    {
+                        static float func(void* data, int i) { 
+                            float* fData = reinterpret_cast<float*>(data);
+                            return fData[0]*i + fData[1];
+                        }
+                    };
+
+                    
+                    float(*func)(void*, int) = Funcs::func;
+                    ImGui::PlotLines("Lines", func, data, 5, 0, NULL, 0.0f, 5.0f, ImVec2(0, 80));
+
 					ImGui::Text(temp[listbox_item_current].c_str()); ImGui::SameLine();
 					ImGui::Text(" and target class Quality. ");
 
