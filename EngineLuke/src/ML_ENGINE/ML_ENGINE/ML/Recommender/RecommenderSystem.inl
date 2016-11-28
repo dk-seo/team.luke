@@ -14,13 +14,21 @@ template<typename Cluster, typename Data>
 inline Recommender<Cluster, Data>::Recommender(Dataframe & data) :
   mTable(data), mCluster(data),
   mIgnores(), pOStream(nullptr),
-  mClusterGroup(1)
+  mClusterGroup(1), mPrecision(0.5f),
+  mClusterUpdatable(true), mRecommendUpdatable(true)
 {
 }
 
 template<typename Cluster, typename Data>
 inline Recommender<Cluster, Data>::~Recommender()
 {
+}
+
+template<typename Cluster, typename Data>
+inline void Recommender<Cluster, Data>::ChangeDataFrame(Dataframe & data)
+{
+  mTable = data;
+  mClusterUpdatable = true;
 }
 
 template<typename Cluster, typename Data>
@@ -32,7 +40,10 @@ inline void Recommender<Cluster, Data>::SetDebugOutput(std::ostream * o)
 template<typename Cluster, typename Data>
 inline void Recommender<Cluster, Data>::SetGroupNumber(const int k)
 {
-  if(k >= 1) mClusterGroup = k;
+  if (k < 1) return;
+  
+  mClusterGroup = k;
+  mClusterUpdatable = true;
 }
 
 template<typename Cluster, typename Data>
@@ -44,7 +55,10 @@ inline int Recommender<Cluster, Data>::GetGroupNumber() const
 template<typename Cluster, typename Data>
 inline void Recommender<Cluster, Data>::SetPrecision(const float percent)
 {
-  if (percent >= 0.0f) mPrecision = percent;
+  if (percent <= 0.0f) return;
+  
+  mPrecision = percent;
+  mRecommendUpdatable = true;
 }
 
 template<typename Cluster, typename Data>

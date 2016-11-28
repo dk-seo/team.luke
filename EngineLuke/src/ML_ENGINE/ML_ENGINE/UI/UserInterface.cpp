@@ -21,27 +21,35 @@ written consent of DigiPen Institute of Technology is prohibited.
 #include "Test\LinearRegressionTest.h"
 #include "ML/Recommender/RecommenderSystem.h" // recommender
 
+
 struct UI::pImpl {
-  Recommender<>* WineRecommender;
+  WineRecommender* pRecommender;
 };
 
 UI* UI::s_pinstance = NULL;
 
 UI::UI(void)
-  :m_dataframe(nullptr), 
+  :m_dataframe(nullptr),
   mRecommender(std::make_unique<pImpl>())
 {
 }
 UI::~UI(void)
 {
+  if (mRecommender->pRecommender)
+  {
+    delete mRecommender->pRecommender;
+    mRecommender->pRecommender = nullptr;
+  }
+
   if (m_dataframe)
     delete m_dataframe;
 }
 
 void UI::Initialize(void)
 {
-  m_dataframe = new Dataframe();
+  m_dataframe = nullptr;
 }
+
 void UI::Update(void)
 {
   MainWindow();
@@ -185,6 +193,13 @@ void UI::LoadCSVfile(void)
           std::string path = "Data/" + curr_filepath;
 
 
+          if (m_dataframe)
+          {
+            delete m_dataframe;
+            m_dataframe = nullptr;
+          }
+
+          m_dataframe = new Dataframe;
 
           if (!m_dataframe->BuildFromCsv(path, true))
           {
@@ -393,10 +408,22 @@ void UI::RecommenderSystem(void)
 
   if (RecWindow)
   {
+    if (mRecommender->pRecommender == nullptr)
+    {
+      if (m_dataframe != nullptr)
+        mRecommender->pRecommender = new WineRecommender(*m_dataframe);
+      else
+        return;
+    }
+
     ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
     if (ImGui::Begin("Recommender System", &RecWindow, ImVec2(0, 0)))
     {
       ImGui::Text(" and target class Quality. ");
+
+      if (mRecommender->pRecommender)
+        ImGui::Text("YapYapYap");
+
 
 
       ImGui::End();

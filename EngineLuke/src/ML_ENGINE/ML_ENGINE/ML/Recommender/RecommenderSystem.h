@@ -63,6 +63,9 @@ public:
   Recommender(Dataframe & data);
   ~Recommender();
 
+  // change data frame
+  void ChangeDataFrame(Dataframe & data);
+
   // show process detail if stream is given
   void SetDebugOutput(std::ostream* o);
 
@@ -107,7 +110,10 @@ private:
   std::ostream * pOStream;
   int   mClusterGroup;
   float mPrecision;
+  bool  mClusterUpdatable;
+  bool  mRecommendUpdatable;
 };
 
 #include "RecommenderSystem.inl"
 
+typedef Recommender<> WineRecommender;
