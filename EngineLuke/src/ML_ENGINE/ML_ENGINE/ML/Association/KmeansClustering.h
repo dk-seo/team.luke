@@ -33,6 +33,9 @@ public:
   KMeansClustering(Dataframe& dataframe,
     std::vector<std::string> & ignores = std::vector<std::string>());
 
+  // add ignores
+  void AddIngnore(std::string & ignores);
+
   // if ofstream is not null then prints all the course of works while clustering to the stream.
   void SetDebugOutput(std::ofstream* o);
 

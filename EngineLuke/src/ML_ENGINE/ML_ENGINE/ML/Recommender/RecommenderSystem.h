@@ -18,7 +18,7 @@ class Dataframe;
 class Instance;
 
 // rename type of vector layout of unsigned integer
-typedef std::vector<unsigned int> IndexList;
+typedef std::vector<int> IndexList;
 
 class RecommenderSystem
 {
@@ -53,7 +53,7 @@ private:
 // dummy object
 namespace Dummy { static IndexList indexDummy = IndexList(); }
 
-class KMeansClustering; // forward declaration
+#include "../Association/KmeansClustering.h"
 
 // recommender implement class
 template <typename Cluster = KMeansClustering, typename Data = ClusterData>
@@ -110,3 +110,4 @@ private:
 };
 
 #include "RecommenderSystem.inl"
+
