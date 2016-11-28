@@ -30,7 +30,8 @@ UI* UI::s_pinstance = NULL;
 
 UI::UI(void)
   :m_dataframe(nullptr),
-  mRecommender(std::make_unique<pImpl>())
+  mRecommender(std::make_unique<pImpl>()),
+  mUpdatable(true)
 {
 }
 UI::~UI(void)
@@ -200,6 +201,7 @@ void UI::LoadCSVfile(void)
           }
 
           m_dataframe = new Dataframe;
+          mUpdatable = true;
 
           if (!m_dataframe->BuildFromCsv(path, true))
           {
@@ -264,27 +266,43 @@ void UI::ShowSeleAttr(void)
 
 
     ImGui::Text("Statistic");
-    //we did this statistic prob in PA1, where is the code?
-    //ask hb 
-    double min = FindMin(m_dataframe->GetInstances(), i_selected_att);
-    ImGui::Text("Minimum : "); ImGui::SameLine(); ImGui::Text(std::to_string(min).c_str());
+    
+    struct Statistic
+    {
+      double Min;
+      double Max;
+      double Mean;
+      double Median;
+      std::vector<double> Mode;
+    };
+    static Statistic mStatistic;
+    if (mUpdatable)
+    {
+      mStatistic.Min = FindMin(m_dataframe->GetInstances(), i_selected_att);
+      mStatistic.Max = FindMax(m_dataframe->GetInstances(), i_selected_att);
+      mStatistic.Mean = CalculateMean(m_dataframe->GetInstances(), i_selected_att);
+      mStatistic.Median = CalculateMedian(m_dataframe->GetInstances(), i_selected_att);
+      mStatistic.Mode = CalculateMode(m_dataframe->GetInstances(), i_selected_att);
+    }
+    //double min = FindMin(m_dataframe->GetInstances(), i_selected_att);
+    ImGui::Text("Minimum : "); ImGui::SameLine(); ImGui::Text(std::to_string(mStatistic.Min).c_str());
 
-    double max = FindMax(m_dataframe->GetInstances(), i_selected_att);
-    ImGui::Text("Maximum : "); ImGui::SameLine(); ImGui::Text(std::to_string(max).c_str());
+    //double max = FindMax(m_dataframe->GetInstances(), i_selected_att);
+    ImGui::Text("Maximum : "); ImGui::SameLine(); ImGui::Text(std::to_string(mStatistic.Max).c_str());
 
-    double mean = CalculateMean(m_dataframe->GetInstances(), i_selected_att);
-    ImGui::Text("Mean : "); ImGui::SameLine(); ImGui::Text(std::to_string(mean).c_str());
+    //double mean = CalculateMean(m_dataframe->GetInstances(), i_selected_att);
+    ImGui::Text("Mean : "); ImGui::SameLine(); ImGui::Text(std::to_string(mStatistic.Mean).c_str());
 
-    double median = CalculateMedian(m_dataframe->GetInstances(), i_selected_att);
-    ImGui::Text("Median : "); ImGui::SameLine(); ImGui::Text(std::to_string(median).c_str());
+    //double median = CalculateMedian(m_dataframe->GetInstances(), i_selected_att);
+    ImGui::Text("Median : "); ImGui::SameLine(); ImGui::Text(std::to_string(mStatistic.Median).c_str());
 
-    std::vector<double> mode = CalculateMode(m_dataframe->GetInstances(), i_selected_att);
+    //std::vector<double> mode = CalculateMode(m_dataframe->GetInstances(), i_selected_att);
     ImGui::Text("Mode :"); ImGui::SameLine();
-    for (int i = 0; i < mode.size(); ++i)
+    for (int i = 0; i < mStatistic.Mode.size(); ++i)
     {
       ImGui::Text(std::to_string(i + 1).c_str());
       ImGui::SameLine(); ImGui::Text(". "); ImGui::SameLine();
-      ImGui::Text(std::to_string(mode[i]).c_str());
+      ImGui::Text(std::to_string(mStatistic.Mode[i]).c_str());
     }
   }
 }
