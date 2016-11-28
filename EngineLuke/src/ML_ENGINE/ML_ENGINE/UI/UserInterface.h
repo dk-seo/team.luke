@@ -76,11 +76,11 @@ private:
   void RecommenderSystem(void);
   ///////////////////////
 
-  std::string curr_filepath;
-  std::string selected_att;
-  int         i_selected_att;
 
   Dataframe *m_dataframe;
+  int         i_selected_att;
+  std::string curr_filepath;
+  std::string selected_att;
 
   //for test
   std::vector<std::string> dk_testoutput;
@@ -88,4 +88,5 @@ private:
 
   struct pImpl;
   std::unique_ptr<pImpl> mRecommender;
+  bool mUpdatable; // who cares about memory layout?
 };
