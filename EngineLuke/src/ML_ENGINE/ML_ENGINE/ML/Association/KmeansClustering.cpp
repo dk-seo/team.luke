@@ -1,3 +1,14 @@
+/******************************************************************************/
+/*!
+\file KmeansClustering.cpp
+\project CS399_TeamLuke
+\author Hanbyul Jeon, Deok-Hwa (DK) Seo
+
+Copyright (C) 2016 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior
+written consent of DigiPen Institute of Technology is prohibited.
+*/
+/******************************************************************************/
 #include "KMeansClustering.h"
 #include "../Dataframe/Dataframe.h"
 #include "../Sampling/RandomSampler.h"
@@ -9,10 +20,10 @@ static double Sq(double v)
 
 static int compareMyType(const void * a, const void * b)
 {
-  if (*(double*)a <  *(double*)b) return -1; else
-  if (*(double*)a == *(double*)b) return  0;
+  if (*(double*)a < *(double*)b) return -1; else
+    if (*(double*)a == *(double*)b) return  0;
   return 1; // a > b
-} 
+}
 
 KMeansClustering::KMeansClustering(Dataframe & dataframe,
   std::vector<std::string> & ignores)
@@ -23,10 +34,10 @@ KMeansClustering::KMeansClustering(Dataframe & dataframe,
   _ignores.resize(ignores.size());
   for (auto & i : ignores)
     _ignores.push_back(_dataframe.GetAttributeIndex(i));
-  
+
   CalculateLimits();
 
-  if(_ignores.size() != 0)
+  if (_ignores.size() != 0)
     qsort(_ignores.data(), _ignores.size(),
       sizeof(_ignores.front()), compareMyType);
 }
@@ -62,7 +73,7 @@ std::vector<DataPoint> KMeansClustering::SampleDataPoints(const int n)
     for (int i = 0;
       i < size; ++i)
     {
-      if(ignore == _ignores.end() || i != *ignore)
+      if (ignore == _ignores.end() || i != *ignore)
         points[pointIndex].mDataPoints.push_back(sample->GetAttribute(i).AsDouble());
       else points[pointIndex].mDataPoints.push_back(-1.0);
       if (ignore != _ignores.end()) ++ignore;
@@ -95,7 +106,7 @@ DataPoint KMeansClustering::ToDataPoint(const Instance* instance)
 }
 
 const std::vector<std::pair<double, double>>&
-  KMeansClustering::GetLimits() const
+KMeansClustering::GetLimits() const
 {
   return _limits;
 }
@@ -118,9 +129,9 @@ DataPoint KMeansClustering::CalculateCentroid(const std::vector<const Instance*>
     for (int i = 0; i < centroid.mDataPoints.size() &&
       i < point.mDataPoints.size(); ++i)
     {
-      if(ignore == _ignores.end() ||
+      if (ignore == _ignores.end() ||
         i != *ignore)
-      centroid.mDataPoints[i] += point.mDataPoints[i];
+        centroid.mDataPoints[i] += point.mDataPoints[i];
       if (ignore != _ignores.end()) ++ignore;
     }
   }
@@ -155,7 +166,7 @@ void KMeansClustering::PrintClusters(std::ofstream& o, const int group, const Da
   for (int i = 0, size = static_cast<int>(points.size());
     i < size; )
   {
-    if(ignore == _ignores.end() || *ignore != i)
+    if (ignore == _ignores.end() || *ignore != i)
       o << points[i];
     else o << "NULL";
     if (ignore != _ignores.end()) ++ignore;
@@ -173,7 +184,7 @@ void KMeansClustering::PrintClusters(std::ofstream& o, const int group, const Da
     for (int attIndex = 0; attIndex < _dataframe.GetAttributeCount(); ++attIndex)
     {
       o << _dataframe.GetAttributeName(attIndex) << "=";
-      
+
       if (ignore == _ignores.end() || attIndex != *ignore)
         o << instance->GetAttribute(attIndex).AsString();
       else o << "NULL";
@@ -253,7 +264,7 @@ ClusterData KMeansClustering::Cluster(const int k)
           minDistCluster = i;
         }
       }
-      
+
       // add instance to the group
       _clusters[minDistCluster].emplace_back(*instance);
       if (_o)
@@ -338,7 +349,7 @@ void KMeansClustering::CalculateLimits()
   }
 
   _diffs.resize(_limits.size());
- 
+
   for (int i = 0, size = static_cast<int>(_limits.size());
     i < size; ++i)
     _diffs[i] = _limits[i].second - _limits[i].first;
