@@ -56,11 +56,68 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
 template<typename Cluster, typename Data>
 inline IndexList Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
-  IndexList mOut;
+  Data clustered = mCluster.Cluster(mClusterGroup);
 
-  mCluster.Cluster(mClusterGroup);
+  typedef std::pair<unsigned, double>  AnswerForm;
+  typedef std::vector<AnswerForm>      Answer;
+  typedef std::vector<Answer>          Answers;
 
-  return std::move(mOut);
+  Answers mRecommends;
+
+  int ignore = wines.GetAttributeIndex(std::string(QUALITY));
+  IndexList ignores(mIgnores.size());
+
+  for (auto & i : mIgnores)
+    ignores.push_back(wines.GetAttributeIndex(i));
+
+  std::vector<DataPoint> mTable;
+  mRecommends.resize(mClusterGroup);
+  {
+    std::vector<double> cluster_len;
+
+    // assign each instance to a cluster whose centroid is closest to it
+    auto& instances = wines.GetInstances();
+    mTable.resize(instances.size());
+    for (unsigned index = 0; index < instances.size(); ++index)
+    {
+      DataPoint point = mKMC.ToDataPoint(instances[index]);
+      double point_len = KMeansClustering::Length(point, ignores);
+
+      for (int i = 0, size = static_cast<int>(clustered.size());
+        i < size; ++i)
+      {
+        const auto & cluster = clustered[i];
+        if (cluster_len.size() < size)
+          cluster_len.push_back(KMeansClustering::Length(cluster, ignores));
+        double similarity = sqrtl(point_len * cluster_len[i]);
+        similarity = KMeansClustering::Dot(cluster, point, ignores) / similarity;
+
+        if (similarity >= mPrecision)
+          mRecommends[i].emplace_back(index, similarity);
+      }
+      mTable[index] = std::move(point);
+    }
+  }
+
+  double grade = 0.0;
+  IndexList highest;
+
+  for (const auto recommenderList : mRecommends)
+  {
+    for (int i = 0; i < recommenderList.size(); ++i)
+    {
+      auto & obj = recommenderList[i];
+      if (grade < mTable[obj.first].mDataPoints[ignore])
+      {
+        grade = mTable[obj.first].mDataPoints[ignore];
+        highest.clear();
+      }
+      else if (grade == mTable[obj.first].mDataPoints[ignore])
+        highest.push_back(i);
+    }
+  }
+  
+  return std::move(highest);
 }
 
 template<typename Cluster, typename Data>

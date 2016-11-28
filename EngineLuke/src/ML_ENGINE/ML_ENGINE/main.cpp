@@ -11,6 +11,7 @@ written consent of DigiPen Institute of Technology is prohibited.
 /******************************************************************************/
 #include <fstream>
 #include "Engine\Engine.h"
+#include "../ML_ENGINE/Test/RecommenderSystemTest.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
@@ -20,7 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
     return 0;
 
   bool result = engine->Initialize(hInstance);
-
+  
   if (result)
     engine->Run();
 

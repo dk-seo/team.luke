@@ -19,11 +19,17 @@ written consent of DigiPen Institute of Technology is prohibited.
 #include "ML\Regression\Equation.h"
 #include "ML\Regression\LinearRegression.h"
 #include "Test\LinearRegressionTest.h"
+#include "ML/Recommender/RecommenderSystem.h" // recommender
+
+struct UI::pImpl {
+  Recommender<>* WineRecommender;
+};
 
 UI* UI::s_pinstance = NULL;
 
 UI::UI(void)
-  :m_dataframe(nullptr)
+  :m_dataframe(nullptr), 
+  mRecommender(std::make_unique<pImpl>())
 {
 }
 UI::~UI(void)

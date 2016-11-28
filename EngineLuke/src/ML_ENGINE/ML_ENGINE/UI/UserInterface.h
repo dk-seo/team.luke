@@ -12,10 +12,10 @@ written consent of DigiPen Institute of Technology is prohibited.
 #pragma once
 #include <string>
 #include <vector>
-
-#include "UI\Imgui\imgui.h"
-#include "UI\Imgui\imgui_impl_dx11.h"
-#include "ML\Dataframe\Dataframe.h"
+#include <memory>
+#include "UI/Imgui/imgui.h"
+#include "UI/Imgui/imgui_impl_dx11.h"
+#include "ML/Dataframe/Dataframe.h"
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
@@ -86,5 +86,6 @@ private:
   std::vector<std::string> dk_testoutput;
   std::vector<std::string> hb_testoutput;
 
-
+  struct pImpl;
+  std::unique_ptr<pImpl> mRecommender;
 };
