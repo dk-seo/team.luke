@@ -8,3 +8,7 @@ void RecommenderSystemTest_Movies(
 	std::ostream* debug_out, // prints debug output to see process detail
 	std::ostream* out); // stream to print table
 
+void RecommenderSystemTest_Wines(
+  const std::string& winefilename,
+  std::ostream* debug_out,
+  std::ostream& out);
