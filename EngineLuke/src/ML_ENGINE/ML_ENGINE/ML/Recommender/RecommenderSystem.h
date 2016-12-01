@@ -82,13 +82,13 @@ public:
   float GetPrecision() const;
 
   // recommend possible choices
-  IndexList Recommend(IndexList & favorList = Dummy::indexDummy);
+  IndexList & Recommend(IndexList & favorList = Dummy::indexDummy);
 
   // add ignore attribute name
-  void AddIgnoreAttribute(const std::string & attribute);
+  void AddIgnoreAttribute(std::string & attribute);
 
   // revmoe ignore attribute name
-  void RemoveIgnoreAttribute(const std::string & attribute);
+  void RemoveIgnoreAttribute(std::string & attribute);
 
   // display attributes on ignore list
   void DisplayIgnoreAttribute(std::ostream * o);
@@ -112,6 +112,8 @@ private:
   float mPrecision;
   bool  mClusterUpdatable;
   bool  mRecommendUpdatable;
+  IndexList mRecommendList;
+  Data clustered;
 };
 
 #include "RecommenderSystem.inl"

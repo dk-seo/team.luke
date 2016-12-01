@@ -68,9 +68,13 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
 }
 
 template<typename Cluster, typename Data>
-inline IndexList Recommender<Cluster, Data>::Recommend(IndexList & favorList)
+inline IndexList & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
-  Data clustered = mCluster.Cluster(mClusterGroup);
+  if (mClusterUpdatable) mRecommendUpdatable = true;
+  if (!mRecommendUpdatable) return mRecommendList;
+
+  if(mClusterUpdatable)
+    clustered = mCluster.Cluster(mClusterGroup);
 
   typedef std::pair<unsigned, double>  AnswerForm;
   typedef std::vector<AnswerForm>      Answer;
@@ -78,23 +82,23 @@ inline IndexList Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 
   Answers mRecommends;
 
-  int ignore = wines.GetAttributeIndex(std::string(QUALITY));
   IndexList ignores(mIgnores.size());
 
   for (auto & i : mIgnores)
-    ignores.push_back(wines.GetAttributeIndex(i));
+    ignores.push_back(mTable.GetAttributeIndex(i));
 
-  std::vector<DataPoint> mTable;
+  std::vector<DataPoint> dataTable;
   mRecommends.resize(mClusterGroup);
   {
     std::vector<double> cluster_len;
 
     // assign each instance to a cluster whose centroid is closest to it
-    auto& instances = wines.GetInstances();
-    mTable.resize(instances.size());
+    std::vector<Instance*> instances = mTable.GetInstances();
+    dataTable.resize(instances.size());
+
     for (unsigned index = 0; index < instances.size(); ++index)
     {
-      DataPoint point = mKMC.ToDataPoint(instances[index]);
+      DataPoint point = mCluster.ToDataPoint(instances[index]);
       double point_len = KMeansClustering::Length(point, ignores);
 
       for (int i = 0, size = static_cast<int>(clustered.size());
@@ -109,41 +113,55 @@ inline IndexList Recommender<Cluster, Data>::Recommend(IndexList & favorList)
         if (similarity >= mPrecision)
           mRecommends[i].emplace_back(index, similarity);
       }
-      mTable[index] = std::move(point);
+      dataTable[index] = std::move(point);
     }
   }
 
   double grade = 0.0;
   IndexList highest;
-
-  for (const auto recommenderList : mRecommends)
+  int quality = -1;
   {
-    for (int i = 0; i < recommenderList.size(); ++i)
-    {
-      auto & obj = recommenderList[i];
-      if (grade < mTable[obj.first].mDataPoints[ignore])
-      {
-        grade = mTable[obj.first].mDataPoints[ignore];
-        highest.clear();
-      }
-      else if (grade == mTable[obj.first].mDataPoints[ignore])
-        highest.push_back(i);
-    }
+    auto qualityIter = std::find(mIgnores.begin(), mIgnores.end(), "quality");
+    if (qualityIter != mIgnores.end())
+      quality = mTable.GetAttributeIndex(*qualityIter);
   }
   
-  return std::move(highest);
+  if (quality >= 0)
+  {
+    for (const auto recommenderList : mRecommends)
+    {
+      for (int i = 0; i < recommenderList.size(); ++i)
+      {
+        auto & obj = recommenderList[i];
+        if (grade < dataTable[obj.first].mDataPoints[quality])
+        {
+          grade = dataTable[obj.first].mDataPoints[quality];
+          highest.clear();
+        }
+        else if (grade == dataTable[obj.first].mDataPoints[quality])
+          highest.push_back(i);
+      }
+    }
+    mRecommendList = std::move(highest);
+  }
+
+  mClusterUpdatable = mRecommendUpdatable = false;
+  return mRecommendList;
 }
 
 template<typename Cluster, typename Data>
-inline void Recommender<Cluster, Data>::AddIgnoreAttribute(const std::string & attribute)
+inline void Recommender<Cluster, Data>::AddIgnoreAttribute(std::string & attribute)
 {
   auto result = std::find(mIgnores.begin(), mIgnores.end(), attribute);
   if (result == mIgnores.end())
+  {
     mIgnores.emplace_back(attribute);
+    mCluster.AddIngnore(attribute);
+  }
 }
 
 template<typename Cluster, typename Data>
-inline void Recommender<Cluster, Data>::RemoveIgnoreAttribute(const std::string & attribute)
+inline void Recommender<Cluster, Data>::RemoveIgnoreAttribute(std::string & attribute)
 {
   auto result = std::find(mIgnores.begin(), mIgnores.end(), attribute);
   if (result != mIgnores.end())

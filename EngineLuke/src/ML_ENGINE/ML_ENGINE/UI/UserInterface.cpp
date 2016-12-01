@@ -190,7 +190,11 @@ void UI::LoadCSVfile(void)
       {
         if (currIndex != -1)
         {
-          curr_filepath = fileList[currIndex];
+          if (curr_filepath != fileList[currIndex])
+          {
+            mUpdatable = true;
+            curr_filepath = fileList[currIndex];
+          }
 
           std::string path = "Data/" + curr_filepath;
 
@@ -431,8 +435,13 @@ void UI::RecommenderSystem(void)
     {
       if (m_dataframe != nullptr)
         mRecommender->pRecommender = new WineRecommender(*m_dataframe);
-      else
-        return;
+      else return;
+    }
+    else if (mUpdatable)
+    {
+      delete mRecommender->pRecommender;
+      mRecommender->pRecommender = new WineRecommender(*m_dataframe);
+      mUpdatable = false;
     }
 
     ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
@@ -440,10 +449,24 @@ void UI::RecommenderSystem(void)
     {
       ImGui::Text(" and target class Quality. ");
 
-      if (mRecommender->pRecommender)
-        ImGui::Text("YapYapYap");
+      mRecommender->pRecommender->AddIgnoreAttribute(std::string("quality"));
+      size_t pick = curr_filepath.find("both");
+      if (pick != std::string::npos)
+      {
+        mRecommender->pRecommender->AddIgnoreAttribute(std::string("wine type"));
+      }
+      else if (std::string::npos != curr_filepath.find("white"))
+      {
 
+      }
+      else
+      {
 
+      }
+
+      auto result = mRecommender->pRecommender->Recommend();
+
+      ImGui::Text(std::to_string(result.front()).data());
 
       ImGui::End();
     }
