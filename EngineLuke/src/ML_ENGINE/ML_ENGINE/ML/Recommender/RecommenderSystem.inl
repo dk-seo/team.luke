@@ -67,18 +67,15 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
   return mPrecision;
 }
 
+
 template<typename Cluster, typename Data>
-inline IndexList & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
+inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
   if (mClusterUpdatable) mRecommendUpdatable = true;
   if (!mRecommendUpdatable) return mRecommendList;
 
   if(mClusterUpdatable)
     clustered = mCluster.Cluster(mClusterGroup);
-
-  typedef std::pair<unsigned, double>  AnswerForm;
-  typedef std::vector<AnswerForm>      Answer;
-  typedef std::vector<Answer>          Answers;
 
   Answers mRecommends;
 
@@ -118,7 +115,7 @@ inline IndexList & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
   }
 
   double grade = 0.0;
-  IndexList highest;
+  Answer highest;
   int quality = -1;
   {
     auto qualityIter = std::find(mIgnores.begin(), mIgnores.end(), "quality");
@@ -126,10 +123,13 @@ inline IndexList & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
       quality = mTable.GetAttributeIndex(*qualityIter);
   }
   
+  mRecommendList.resize(mRecommends.size());
+
   if (quality >= 0)
   {
-    for (const auto recommenderList : mRecommends)
+    for (int index = 0; index < static_cast<int>(mRecommends.size()); ++index)
     {
+      const auto recommenderList = mRecommends[index];
       for (int i = 0; i < recommenderList.size(); ++i)
       {
         auto & obj = recommenderList[i];
@@ -139,10 +139,10 @@ inline IndexList & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
           highest.clear();
         }
         else if (grade == dataTable[obj.first].mDataPoints[quality])
-          highest.push_back(i);
+          highest.emplace_back(obj.first, obj.second);
       }
+      mRecommendList[index] = std::move(highest);
     }
-    mRecommendList = std::move(highest);
   }
 
   mClusterUpdatable = mRecommendUpdatable = false;
@@ -156,7 +156,7 @@ inline void Recommender<Cluster, Data>::AddIgnoreAttribute(std::string & attribu
   if (result == mIgnores.end())
   {
     mIgnores.emplace_back(attribute);
-    mCluster.AddIngnore(attribute);
+    mCluster.AddIgnore(attribute);
   }
 }
 
@@ -165,7 +165,10 @@ inline void Recommender<Cluster, Data>::RemoveIgnoreAttribute(std::string & attr
 {
   auto result = std::find(mIgnores.begin(), mIgnores.end(), attribute);
   if (result != mIgnores.end())
+  {
     mIgnores.erase(result);
+    mCluster.RemoveIgnore(attribute);
+  }
 }
 
 template<typename Cluster, typename Data>
