@@ -93,7 +93,7 @@ void UI::MainWindow(void)
     {
       ShowSeleAttr();
     }
-    if (ImGui::CollapsingHeader("Plot", (const char*)0, true, true))
+    //if (ImGui::CollapsingHeader("Plot", (const char*)0, true, true))
     {
       //PlotHistogram();
     }
@@ -113,8 +113,9 @@ void UI::ShowErrorWindow(std::string message, bool* open)
 
 void UI::UpdateMethodWindow(void)
 {
-  ImGui::SetNextWindowPos(ImVec2(930, 50), ImGuiSetCond_Once);
+  ImGui::SetNextWindowPos(ImVec2(930, 130), ImGuiSetCond_Once);
   ImGui::SetNextWindowSize(ImVec2(300, 70), ImGuiSetCond_Once);
+
   if (!curr_filepath.empty())
   {
     if (ImGui::Begin("Methods"))
@@ -140,7 +141,7 @@ void UI::UpdateMethodWindow(void)
 
 void UI::UpdateQuestionsWindow(void)
 {
-  ImGui::SetNextWindowPos(ImVec2(930, 130), ImGuiSetCond_Once);
+  ImGui::SetNextWindowPos(ImVec2(930, 50), ImGuiSetCond_Once);
   ImGui::SetNextWindowSize(ImVec2(300, 70), ImGuiSetCond_Once);
   if (!curr_filepath.empty())
   {
@@ -266,7 +267,7 @@ void UI::ShowSeleAttr(void)
 
 
     ImGui::Text("Statistic");
-    
+
     struct Statistic
     {
       double Min;
@@ -391,8 +392,8 @@ void UI::Q1Q2(void)
           };
 
 
-          float(*func)(void*, int) = Funcs::func;
-          ImGui::PlotLines("Lines", func, data, 5, 0, NULL, 0.0f, 5.0f, ImVec2(0, 80));
+          //float(*func)(void*, int) = Funcs::func;
+          //ImGui::PlotLines("Lines", func, data, 5, 0, NULL, 0.0f, 5.0f, ImVec2(0, 80));
 
           ImGui::Text(temp[listbox_item_current].c_str()); ImGui::SameLine();
           ImGui::Text(" and target class Quality. ");
