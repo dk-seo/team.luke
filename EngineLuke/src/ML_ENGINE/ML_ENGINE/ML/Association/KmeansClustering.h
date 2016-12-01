@@ -26,6 +26,15 @@ struct DataPointTemplate
 typedef DataPointTemplate<>    DataPoint;
 typedef std::vector<DataPoint> ClusterData;
 
+// comparison functor
+static int compareMyType(const void * a, const void * b)
+{
+  if (*(double*)a < *(double*)b) return -1; else
+    if (*(double*)a == *(double*)b) return  0;
+  return 1; // a > b
+}
+
+// K-Means Clustering
 class KMeansClustering
 {
 public:
@@ -94,7 +103,7 @@ private:
   std::vector<int> _ignores; // ignore field's indices
   std::vector<std::vector<const Instance*>> _clusters; // cluster-groups with instances
   std::ofstream* _o; // output stream for debug
-  std::vector<std::pair<double, double>> _limits;
-  std::vector<double> _diffs;
+  std::vector<std::pair<double, double>> _limits; // limit values
+  std::vector<double> _diffs; // diffs storage
 };
 

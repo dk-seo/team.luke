@@ -475,10 +475,13 @@ void UI::RecommenderSystem(void)
       alcohol
       */
 
-
+      EditItemsUI();
+      
+#     define MAX(a, b) ( (a >= b) ? a : b )
+#     define MIN(a, b) ( (a <= b) ? a : b )
 
       static int group = 1;
-      ImGui::SliderInt("Number of Cluster groups", &group, 1, MAX_CLUSTER);
+      ImGui::SliderInt("Number of Cluster groups", &group, 1, MIN(MAX_CLUSTER, MAX(1, mFavoriteList.size())));
       if (group != pRecommender->GetGroupNumber())
         pRecommender->SetGroupNumber(group);
       
@@ -500,6 +503,71 @@ void UI::RecommenderSystem(void)
       ImGui::End();
     }
   }
+}
+
+int UI::EditItemsUI()
+{
+  if (ImGui::TreeNode("Items"))
+  {
+    bool addItem = ImGui::Button("Add"); ImGui::SameLine();
+    
+    ImGui::PushItemWidth(static_cast<float>(mFavoriteList.size()));
+    int itemId = 0;
+    bool input = ImGui::InputInt("##Item", &itemId, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
+    addItem |= input;
+    
+    if (addItem)
+    {
+      auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
+      if (result == mFavoriteList.end())
+      {
+        mFavoriteList.push_back(*result);
+        std::qsort(mFavoriteList.data(), mFavoriteList.size(),
+          sizeof(mFavoriteList.front()), compareMyType);
+      }
+    }
+
+    ImGui::SameLine();
+
+    bool removeItem = ImGui::Button("Remove");
+
+    removeItem |= input;
+    if (removeItem)
+    {
+      auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
+      if (result != mFavoriteList.end())
+        mFavoriteList.erase(result);
+    }
+
+    ImGui::PopItemWidth();
+
+    ImGui::Text("Peference Wines");
+    ImGui::BeginChild("Items", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), false, ImGuiWindowFlags_HorizontalScrollbar);
+    for (const auto & i : mFavoriteList)
+      ImGui::Text("%04dth Wine", i);
+    ImGui::EndChild();
+
+    //ImGui::SameLine();
+
+    //ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
+    //ImGui::BeginChild("Sub2", ImVec2(0, 300), true);
+    //ImGui::Text("With border");
+    //ImGui::Columns(2);
+    //for (int i = 0; i < 100; i++)
+    //{
+    //  if (i == 50)
+    //    ImGui::NextColumn();
+    //  char buf[32];
+    //  sprintf(buf, "%08x", i * 5731);
+    //  ImGui::Button(buf, ImVec2(-1.0f, 0.0f));
+    //}
+    //ImGui::EndChild();
+    //ImGui::PopStyleVar();
+
+    ImGui::TreePop();
+  }
+
+  return 0;
 }
 
 void UI::AddString(int index, std::string string)

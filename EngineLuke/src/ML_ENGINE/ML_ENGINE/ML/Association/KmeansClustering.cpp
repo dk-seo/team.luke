@@ -18,13 +18,6 @@ static double Sq(double v)
   return v * v;
 }
 
-static int compareMyType(const void * a, const void * b)
-{
-  if (*(double*)a < *(double*)b) return -1; else
-    if (*(double*)a == *(double*)b) return  0;
-  return 1; // a > b
-}
-
 KMeansClustering::KMeansClustering(Dataframe & dataframe,
   std::vector<std::string> & ignores)
   : _dataframe(dataframe),
