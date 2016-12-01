@@ -55,7 +55,7 @@ void UI::Update(void)
 {
   MainWindow();
 
-  UpdateMethodWindow();
+  //UpdateMethodWindow();
   UpdateQuestionsWindow();
 
 }
