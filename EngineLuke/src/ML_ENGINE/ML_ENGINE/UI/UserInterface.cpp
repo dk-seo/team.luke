@@ -198,7 +198,6 @@ void UI::LoadCSVfile(void)
 
           std::string path = "Data/" + curr_filepath;
 
-
           if (m_dataframe)
           {
             delete m_dataframe;
@@ -302,11 +301,11 @@ void UI::ShowSeleAttr(void)
     ImGui::Text("Median : "); ImGui::SameLine(); ImGui::Text(std::to_string(mStatistic.Median).c_str());
 
     //std::vector<double> mode = CalculateMode(m_dataframe->GetInstances(), i_selected_att);
-    ImGui::Text("Mode :"); ImGui::SameLine();
+    //ImGui::Text("Mode :"); ImGui::SameLine();
     for (int i = 0; i < mStatistic.Mode.size(); ++i)
     {
-      ImGui::Text(std::to_string(i + 1).c_str());
-      ImGui::SameLine(); ImGui::Text(". "); ImGui::SameLine();
+      ImGui::Text(("Mode " + std::to_string(i + 1)).data());
+      ImGui::SameLine(); ImGui::Text(": "); ImGui::SameLine();
       ImGui::Text(std::to_string(mStatistic.Mode[i]).c_str());
     }
   }
