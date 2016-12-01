@@ -179,7 +179,7 @@ void Engine::Run()
   // Create application window
   WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, LoadCursor(NULL, IDC_ARROW), NULL, NULL, "ML_Engine", NULL };
   RegisterClassEx(&wc);
-  HWND hwnd = CreateWindow("ML_Engine", "ML_Engine", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
+  HWND hwnd = CreateWindow("ML_Engine", "Luke_ML_Engine", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
   if (CreateDeviceD3D(hwnd) < 0)
@@ -224,7 +224,7 @@ void Engine::Run()
 
   ImGui_ImplDX11_Shutdown();
   CleanupDeviceD3D();
-  UnregisterClass("ML_Engine Example", wc.hInstance);
+  UnregisterClass("ML_Engine", wc.hInstance);
 }
 
 bool Engine::IsRunning() const

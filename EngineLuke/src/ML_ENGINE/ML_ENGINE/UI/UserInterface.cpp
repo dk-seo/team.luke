@@ -443,29 +443,48 @@ void UI::RecommenderSystem(void)
       mUpdatable = false;
     }
 
-    ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(750, 500), ImGuiSetCond_FirstUseEver);
     if (ImGui::Begin("Recommender System", &RecWindow, ImVec2(0, 0)))
     {
-      mRecommender->pRecommender->AddIgnoreAttribute(std::string("quality"));
+      auto pRecommender = mRecommender->pRecommender;
+      pRecommender->AddIgnoreAttribute(std::string("quality"));
+      bool both = false;
       size_t pick = curr_filepath.find("both");
       if (pick != std::string::npos)
       {
-        mRecommender->pRecommender->AddIgnoreAttribute(std::string("wine type"));
+        both = true;
+        pRecommender->AddIgnoreAttribute(std::string("wine type"));
         ImGui::Text("Both White and Red wines are selected.");
       }
       else if (std::string::npos != curr_filepath.find("white"))
       {
-        mRecommender->pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
+        pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
         ImGui::Text("White wine data set is selected.");
       }
       else
       {
-        mRecommender->pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
+        pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
         ImGui::Text("Red wine data set is selected.");
       }
 
-      auto result = mRecommender->pRecommender->Recommend();
+#     define MAX_CLUSTER 10
+      /*
+      volatile acidity
+      citric acid
+      chlorides
+      alcohol
+      */
 
+
+
+      static int group = 1;
+      ImGui::SliderInt("Number of Cluster groups", &group, 1, MAX_CLUSTER);
+      if (group != pRecommender->GetGroupNumber())
+        pRecommender->SetGroupNumber(group);
+      
+      auto result = pRecommender->Recommend();
+
+      // print results
       for (int i = 0; i < static_cast<int>(result.size()); ++i)
       {
         for (const auto & att : result[i])
@@ -474,6 +493,8 @@ void UI::RecommenderSystem(void)
           ImGui::SameLine();
           ImGui::Text((std::to_string(att.first) + "th Wine With "
             + std::to_string(att.second * 100.0) + "%").data());
+          ImGui::SameLine();
+          ImGui::Text(" Similiarity!");
         }
       }
       ImGui::End();
