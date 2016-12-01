@@ -55,6 +55,10 @@ namespace Dummy { static IndexList indexDummy = IndexList(); }
 
 #include "../Association/KmeansClustering.h"
 
+typedef std::pair<unsigned, double>  AnswerForm;
+typedef std::vector<AnswerForm>      Answer;
+typedef std::vector<Answer>          Answers;
+
 // recommender implement class
 template <typename Cluster = KMeansClustering, typename Data = ClusterData>
 class Recommender
@@ -82,7 +86,7 @@ public:
   float GetPrecision() const;
 
   // recommend possible choices
-  IndexList & Recommend(IndexList & favorList = Dummy::indexDummy);
+  Answers & Recommend(IndexList & favorList = Dummy::indexDummy);
 
   // add ignore attribute name
   void AddIgnoreAttribute(std::string & attribute);
@@ -112,7 +116,7 @@ private:
   float mPrecision;
   bool  mClusterUpdatable;
   bool  mRecommendUpdatable;
-  IndexList mRecommendList;
+  Answers mRecommendList;
   Data clustered;
 };
 

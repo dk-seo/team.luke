@@ -447,26 +447,25 @@ void UI::RecommenderSystem(void)
     ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
     if (ImGui::Begin("Recommender System", &RecWindow, ImVec2(0, 0)))
     {
-      ImGui::Text(" and target class Quality. ");
-
       mRecommender->pRecommender->AddIgnoreAttribute(std::string("quality"));
       size_t pick = curr_filepath.find("both");
       if (pick != std::string::npos)
       {
         mRecommender->pRecommender->AddIgnoreAttribute(std::string("wine type"));
+        ImGui::Text("Both White and Red wines are selected.");
       }
       else if (std::string::npos != curr_filepath.find("white"))
       {
-
+        ImGui::Text("White wine data set is selected.");
       }
       else
       {
-
+        ImGui::Text("Red wine data set is selected.");
       }
 
       auto result = mRecommender->pRecommender->Recommend();
 
-      ImGui::Text(std::to_string(result.front()).data());
+      ImGui::Text((std::to_string(result.front().front().first) + "th Wine With " + std::to_string(result.front().front().second * 100.0) + "% similiarity!").data());
 
       ImGui::End();
     }
