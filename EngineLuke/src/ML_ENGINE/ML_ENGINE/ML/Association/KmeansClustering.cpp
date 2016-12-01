@@ -48,6 +48,11 @@ void KMeansClustering::AddIngnore(std::string & ignore)
   auto result = std::find(_ignores.begin(), _ignores.end(), att);
   if(result == _ignores.end())
     _ignores.push_back(att);
+
+
+  if (_ignores.size() != 0)
+    qsort(_ignores.data(), _ignores.size(),
+      sizeof(_ignores.front()), compareMyType);
 }
 
 void KMeansClustering::SetDebugOutput(std::ofstream* o)
@@ -96,19 +101,24 @@ DataPoint KMeansClustering::ToDataPoint(const Instance* instance)
 {
   DataPoint point;
   int attSize = instance->GetAttributeCount(),
-    dataSize = attSize - static_cast<int>(_ignores.size());
+    dataSize = attSize;// -static_cast<int>(_ignores.size());
   point.mDataPoints.resize(dataSize);
-  //auto ignoreIndex = _ignores.begin();
+  auto ignoreIndex = _ignores.begin();
   for (int instIndex = 0, dataIndex = 0;
     instIndex < attSize; ++instIndex)
   {
-    //if (ignoreIndex == _ignores.end() ||
-    //  instIndex != *ignoreIndex)
+    if (ignoreIndex == _ignores.end() ||
+      instIndex != *ignoreIndex)
     {
       point.mDataPoints[dataIndex++] =
         instance->GetAttribute(instIndex).AsDouble();
     }
-    //if (ignoreIndex != _ignores.end()) ++ignoreIndex;
+    if (ignoreIndex != _ignores.end())
+    {
+      if (instIndex == *ignoreIndex)
+        point.mDataPoints[dataIndex++] = 0.0;
+      ++ignoreIndex;
+    }
   }
   return std::move(point);
 }
@@ -127,7 +137,8 @@ const std::vector<double>& KMeansClustering::GetDiff() const
 DataPoint KMeansClustering::CalculateCentroid(const std::vector<const Instance*>& instances)
 {
   DataPoint centroid;
-  centroid.mDataPoints.resize(instances.size());
+  if (instances.size() == 0) return centroid;
+  centroid.mDataPoints.resize(instances.front()->GetAttributeCount());
 
   // sums all the given points
   for (auto & instance : instances)
