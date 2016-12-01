@@ -42,17 +42,24 @@ KMeansClustering::KMeansClustering(Dataframe & dataframe,
       sizeof(_ignores.front()), compareMyType);
 }
 
-void KMeansClustering::AddIngnore(std::string & ignore)
+void KMeansClustering::AddIgnore(std::string & ignore)
 {
   int att = _dataframe.GetAttributeIndex(ignore);
   auto result = std::find(_ignores.begin(), _ignores.end(), att);
   if(result == _ignores.end())
     _ignores.push_back(att);
 
-
   if (_ignores.size() != 0)
     qsort(_ignores.data(), _ignores.size(),
       sizeof(_ignores.front()), compareMyType);
+}
+
+void KMeansClustering::RemoveIgnore(std::string & ignores)
+{
+  int att = _dataframe.GetAttributeIndex(ignores);
+  auto result = std::find(_ignores.begin(), _ignores.end(), att);
+  if (result != _ignores.end())
+    _ignores.erase(result);
 }
 
 void KMeansClustering::SetDebugOutput(std::ofstream* o)

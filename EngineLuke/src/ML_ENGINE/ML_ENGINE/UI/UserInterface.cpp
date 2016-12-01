@@ -456,17 +456,27 @@ void UI::RecommenderSystem(void)
       }
       else if (std::string::npos != curr_filepath.find("white"))
       {
+        mRecommender->pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
         ImGui::Text("White wine data set is selected.");
       }
       else
       {
+        mRecommender->pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
         ImGui::Text("Red wine data set is selected.");
       }
 
       auto result = mRecommender->pRecommender->Recommend();
 
-      ImGui::Text((std::to_string(result.front().front().first) + "th Wine With " + std::to_string(result.front().front().second * 100.0) + "% similiarity!").data());
-
+      for (int i = 0; i < static_cast<int>(result.size()); ++i)
+      {
+        for (const auto & att : result[i])
+        {
+          ImGui::Text(std::string("Group" + std::to_string(i)).data());
+          ImGui::SameLine();
+          ImGui::Text((std::to_string(att.first) + "th Wine With "
+            + std::to_string(att.second * 100.0) + "%").data());
+        }
+      }
       ImGui::End();
     }
   }

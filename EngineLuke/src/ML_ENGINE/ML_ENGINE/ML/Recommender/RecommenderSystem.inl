@@ -67,6 +67,7 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
   return mPrecision;
 }
 
+
 template<typename Cluster, typename Data>
 inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
@@ -155,7 +156,7 @@ inline void Recommender<Cluster, Data>::AddIgnoreAttribute(std::string & attribu
   if (result == mIgnores.end())
   {
     mIgnores.emplace_back(attribute);
-    mCluster.AddIngnore(attribute);
+    mCluster.AddIgnore(attribute);
   }
 }
 
@@ -164,7 +165,10 @@ inline void Recommender<Cluster, Data>::RemoveIgnoreAttribute(std::string & attr
 {
   auto result = std::find(mIgnores.begin(), mIgnores.end(), attribute);
   if (result != mIgnores.end())
+  {
     mIgnores.erase(result);
+    mCluster.RemoveIgnore(attribute);
+  }
 }
 
 template<typename Cluster, typename Data>
