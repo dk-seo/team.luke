@@ -57,7 +57,7 @@ void UI::Update(void)
 
   //UpdateMethodWindow();
   UpdateQuestionsWindow();
-
+  mUpdatable = false;
 }
 
 
@@ -264,13 +264,13 @@ void UI::ShowSeleAttr(void)
 {
   if (!curr_filepath.empty())
   {
+    // display name field
     ImGui::Text("Name: ");
     ImGui::SameLine();
     ImGui::Text(selected_att.c_str());
 
-
+    // display statistic field
     ImGui::Text("Statistic");
-
     struct Statistic
     {
       double Min;
@@ -280,6 +280,7 @@ void UI::ShowSeleAttr(void)
       std::vector<double> Mode;
     };
     static Statistic mStatistic;
+
     if (mUpdatable)
     {
       mStatistic.Min = FindMin(m_dataframe->GetInstances(), i_selected_att);
@@ -310,7 +311,6 @@ void UI::ShowSeleAttr(void)
     }
   }
 }
-
 
 void UI::PlotHistogram(void)
 {
