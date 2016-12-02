@@ -17,7 +17,10 @@ void RandomSampler::Sample(Dataframe& dataframe, int sampleSize)
 	std::uniform_int_distribution<int> distribution(
 		0, int(dataframe.GetInstanceCount()) - 1);
 
-  if (sampleSize == 1)
+  if (dataframe.GetInstanceCount() <= sampleSize)
+    sampleSize = 1;
+
+  if (dataframe.GetInstanceCount() == 1 || sampleSize == 1)
   {
     _samples.emplace_back(&dataframe.GetInstance(0));
     return;

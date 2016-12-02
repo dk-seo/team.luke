@@ -473,17 +473,12 @@ void UI::RecommenderSystem(void)
       }
 
 #     define MAX_CLUSTER 10
-      /*
-      volatile acidity
-      citric acid
-      chlorides
-      alcohol
-      */
 
       EditItemsUI();
             
       auto result = pRecommender->Recommend();
 
+      bool noRecommend = true;
       // print results
       for (int i = 0; i < static_cast<int>(result.size()); ++i)
       {
@@ -495,8 +490,12 @@ void UI::RecommenderSystem(void)
             + std::to_string(att.second * 100.0) + "%%").data());
           ImGui::SameLine();
           ImGui::Text(" Similiarity!");
+          noRecommend = false;
         }
       }
+      if (noRecommend)
+        ImGui::Text("Nothing to recommend!");
+
       ImGui::End();
     }
   }
@@ -559,7 +558,7 @@ void UI::EditItemsUI()
       &group, 1,
       MIN(MAX_CLUSTER, MAX(1, static_cast<int>(mFavoriteList.size()))));
     auto pRecommender = mRecommender->pRecommender;
-    if (group != pRecommender->GetGroupNumber())
+    if (group != pRecommender->GetGroupNumber() && group <= mFavoriteList.size())
       pRecommender->SetGroupNumber(group);
     static float precision = 0.8f;
     ImGui::SliderFloat("Similarity Precision",
