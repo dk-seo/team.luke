@@ -33,7 +33,9 @@ UI::UI(void)
   mRecommender(std::make_unique<pImpl>()),
   mUpdatable(true)
 {
+  mFavoriteList.push_back(0);
 }
+
 UI::~UI(void)
 {
   if (mRecommender->pRecommender)
@@ -476,15 +478,7 @@ void UI::RecommenderSystem(void)
       */
 
       EditItemsUI();
-      
-#     define MAX(a, b) ( (a >= b) ? a : b )
-#     define MIN(a, b) ( (a <= b) ? a : b )
-
-      static int group = 1;
-      ImGui::SliderInt("Number of Cluster groups", &group, 1, MIN(MAX_CLUSTER, MAX(1, mFavoriteList.size())));
-      if (group != pRecommender->GetGroupNumber())
-        pRecommender->SetGroupNumber(group);
-      
+            
       auto result = pRecommender->Recommend();
 
       // print results
@@ -495,7 +489,7 @@ void UI::RecommenderSystem(void)
           ImGui::Text(std::string("Group" + std::to_string(i)).data());
           ImGui::SameLine();
           ImGui::Text((std::to_string(att.first) + "th Wine With "
-            + std::to_string(att.second * 100.0) + "%").data());
+            + std::to_string(att.second * 100.0) + "%%").data());
           ImGui::SameLine();
           ImGui::Text(" Similiarity!");
         }
@@ -505,25 +499,26 @@ void UI::RecommenderSystem(void)
   }
 }
 
-int UI::EditItemsUI()
+void UI::EditItemsUI()
 {
   if (ImGui::TreeNode("Items"))
   {
     bool addItem = ImGui::Button("Add"); ImGui::SameLine();
     
-    ImGui::PushItemWidth(static_cast<float>(mFavoriteList.size()));
-    int itemId = 0;
-    bool input = ImGui::InputInt("##Item", &itemId, 0, 0, ImGuiInputTextFlags_EnterReturnsTrue);
-    addItem |= input;
-    
+    ImGui::PushItemWidth(static_cast<float>(mFavoriteList.size() + 40));
+    static int itemId = 0;
+    ImGui::InputInt("##Item", &itemId, 0, 0);    
     if (addItem)
     {
-      auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
-      if (result == mFavoriteList.end())
+      if (!(itemId < 0 || itemId >= m_dataframe->GetInstanceCount()))
       {
-        mFavoriteList.push_back(*result);
-        std::qsort(mFavoriteList.data(), mFavoriteList.size(),
-          sizeof(mFavoriteList.front()), compareMyType);
+        auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
+        if (result == mFavoriteList.end())
+        {
+          mFavoriteList.push_back(itemId);
+          std::qsort(mFavoriteList.data(), mFavoriteList.size(),
+            sizeof(mFavoriteList.front()), compareMyType);
+        }
       }
     }
 
@@ -531,7 +526,6 @@ int UI::EditItemsUI()
 
     bool removeItem = ImGui::Button("Remove");
 
-    removeItem |= input;
     if (removeItem)
     {
       auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
@@ -547,27 +541,30 @@ int UI::EditItemsUI()
       ImGui::Text("%04dth Wine", i);
     ImGui::EndChild();
 
-    //ImGui::SameLine();
+#     define MAX(a, b) ( (a >= b) ? a : b )
+#     define MIN(a, b) ( (a <= b) ? a : b )
 
-    //ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
-    //ImGui::BeginChild("Sub2", ImVec2(0, 300), true);
-    //ImGui::Text("With border");
-    //ImGui::Columns(2);
-    //for (int i = 0; i < 100; i++)
-    //{
-    //  if (i == 50)
-    //    ImGui::NextColumn();
-    //  char buf[32];
-    //  sprintf(buf, "%08x", i * 5731);
-    //  ImGui::Button(buf, ImVec2(-1.0f, 0.0f));
-    //}
-    //ImGui::EndChild();
-    //ImGui::PopStyleVar();
+    static int group = 1;
+    ImGui::SliderInt("Number of Cluster groups",
+      &group, 1,
+      MIN(MAX_CLUSTER, MAX(1, static_cast<int>(mFavoriteList.size()))));
+    auto pRecommender = mRecommender->pRecommender;
+    if (group != pRecommender->GetGroupNumber())
+      pRecommender->SetGroupNumber(group);
+    static float precision = 0.5;
+    ImGui::SliderFloat("Similarity Precision",
+      &precision, 0.1f,
+      0.9999f);
 
+    float diff_precision =
+      precision - pRecommender->GetPrecision();
+
+    if (diff_precision > FLT_EPSILON ||
+      diff_precision < -FLT_EPSILON)
+      pRecommender->SetPrecision(precision);
     ImGui::TreePop();
   }
 
-  return 0;
 }
 
 void UI::AddString(int index, std::string string)

@@ -74,7 +74,7 @@ private:
   void Q1Q2(void);
   void Q3(void);
   void RecommenderSystem(void);
-  int EditItemsUI();
+  void EditItemsUI();
   ///////////////////////
 
   Dataframe *m_dataframe;

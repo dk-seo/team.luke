@@ -15,7 +15,7 @@ inline Recommender<Cluster, Data>::Recommender(Dataframe & data) :
   mTable(data), mCluster(data),
   mIgnores(), pOStream(nullptr),
   mClusterGroup(1), mPrecision(0.5f),
-  mClusterUpdatable(true), mRecommendUpdatable(true)
+  mFlag(DO_CLUSTER | DO_RECOMMEND)
 {
 }
 
@@ -43,7 +43,7 @@ inline void Recommender<Cluster, Data>::SetGroupNumber(const int k)
   if (k < 1) return;
   
   mClusterGroup = k;
-  mClusterUpdatable = true;
+  mFlag |= DO_CLUSTER;
 }
 
 template<typename Cluster, typename Data>
@@ -58,7 +58,7 @@ inline void Recommender<Cluster, Data>::SetPrecision(const float percent)
   if (percent <= 0.0f) return;
   
   mPrecision = percent;
-  mRecommendUpdatable = true;
+  mFlag |= DO_RECOMMEND;
 }
 
 template<typename Cluster, typename Data>
@@ -67,20 +67,21 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
   return mPrecision;
 }
 
-
 template<typename Cluster, typename Data>
 inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
-  if (mClusterUpdatable) mRecommendUpdatable = true;
-  if (!mRecommendUpdatable) return mRecommendList;
+  if (mFlag & DO_CLUSTER) mFlag |= DO_RECOMMEND;
+  if ((mFlag & DO_RECOMMEND) == 0x00) return mRecommendList;
 
-  if(mClusterUpdatable)
+  // calculate cluster
+  if(mFlag & DO_CLUSTER)
     clustered = mCluster.Cluster(mClusterGroup);
 
   Answers mRecommends;
 
   IndexList ignores(mIgnores.size());
 
+  // put ignore attribute's indices
   for (auto & i : mIgnores)
     ignores.push_back(mTable.GetAttributeIndex(i));
 
@@ -98,6 +99,7 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
       DataPoint point = mCluster.ToDataPoint(instances[index]);
       double point_len = KMeansClustering::Length(point, ignores);
 
+      // calculate cosine similarity on N dimensions 
       for (int i = 0, size = static_cast<int>(clustered.size());
         i < size; ++i)
       {
@@ -107,6 +109,7 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
         double similarity = sqrtl(point_len * cluster_len[i]);
         similarity = KMeansClustering::Dot(cluster, point, ignores) / similarity;
 
+        // pick when the similarity is greater than or equal to a specific precision
         if (similarity >= mPrecision)
           mRecommends[i].emplace_back(index, similarity);
       }
@@ -124,7 +127,8 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
   }
   
   mRecommendList.resize(mRecommends.size());
-
+  
+  // find the highest quality 
   if (quality >= 0)
   {
     for (int index = 0; index < static_cast<int>(mRecommends.size()); ++index)
@@ -145,7 +149,8 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
     }
   }
 
-  mClusterUpdatable = mRecommendUpdatable = false;
+  
+  mFlag = 0;
   return mRecommendList;
 }
 
