@@ -434,7 +434,10 @@ void UI::RecommenderSystem(void)
     if (mRecommender->pRecommender == nullptr)
     {
       if (m_dataframe != nullptr)
+      {
+        mFavoriteList.clear();
         mRecommender->pRecommender = new WineRecommender(*m_dataframe);
+      }
       else return;
     }
     else if (mUpdatable)
@@ -442,6 +445,7 @@ void UI::RecommenderSystem(void)
       delete mRecommender->pRecommender;
       mRecommender->pRecommender = new WineRecommender(*m_dataframe);
       mUpdatable = false;
+      mFavoriteList.clear();
     }
 
     ImGui::SetNextWindowSize(ImVec2(750, 500), ImGuiSetCond_FirstUseEver);
