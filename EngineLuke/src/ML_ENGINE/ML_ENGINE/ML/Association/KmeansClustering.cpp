@@ -308,7 +308,8 @@ ClusterData KMeansClustering::Cluster(const int k)
       {
         if (ignore == _ignores.end() || *ignore != index)
         {
-          if (centroid.mDataPoints[index] != centroids[i].mDataPoints[index])
+          if (centroids[i].mDataPoints.size() > 0 &&
+            centroid.mDataPoints[index] != centroids[i].mDataPoints[index])
             centroidsChanged = true;
         }
         if (ignore != _ignores.end()) ++ignore;

@@ -33,7 +33,6 @@ UI::UI(void)
   mRecommender(std::make_unique<pImpl>()),
   mUpdatable(true)
 {
-  mFavoriteList.push_back(0);
 }
 
 UI::~UI(void)
@@ -504,10 +503,10 @@ void UI::EditItemsUI()
   if (ImGui::TreeNode("Items"))
   {
     bool addItem = ImGui::Button("Add"); ImGui::SameLine();
-    
+    bool isListEdited = false;
     ImGui::PushItemWidth(static_cast<float>(mFavoriteList.size() + 40));
     static int itemId = 0;
-    ImGui::InputInt("##Item", &itemId, 0, 0);    
+    ImGui::InputInt("##Item", &itemId, 0, 0);
     if (addItem)
     {
       if (!(itemId < 0 || itemId >= m_dataframe->GetInstanceCount()))
@@ -518,6 +517,7 @@ void UI::EditItemsUI()
           mFavoriteList.push_back(itemId);
           std::qsort(mFavoriteList.data(), mFavoriteList.size(),
             sizeof(mFavoriteList.front()), compareMyType);
+          isListEdited = true;
         }
       }
     }
@@ -530,8 +530,14 @@ void UI::EditItemsUI()
     {
       auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
       if (result != mFavoriteList.end())
+      {
         mFavoriteList.erase(result);
+        isListEdited = true;
+      }
     }
+
+    if (isListEdited)
+      mRecommender->pRecommender->SetFavoriteList(mFavoriteList);
 
     ImGui::PopItemWidth();
 
@@ -551,9 +557,9 @@ void UI::EditItemsUI()
     auto pRecommender = mRecommender->pRecommender;
     if (group != pRecommender->GetGroupNumber())
       pRecommender->SetGroupNumber(group);
-    static float precision = 0.5;
+    static float precision = 0.8f;
     ImGui::SliderFloat("Similarity Precision",
-      &precision, 0.1f,
+      &precision, 0.75f,
       0.9999f);
 
     float diff_precision =

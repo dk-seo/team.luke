@@ -41,7 +41,7 @@ public:
   // requires dataframe to cluster + ignored attribute names
   KMeansClustering(Dataframe& dataframe,
     std::vector<std::string> & ignores = std::vector<std::string>());
-
+  
   // add ignores
   void AddIgnore(std::string & ignores);
 

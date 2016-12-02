@@ -42,6 +42,11 @@ void Instance::AddAttribute(const std::string& attribute)
   _attributes.push_back(Attribute(attribute));
 }
 
+void Instance::AddAttribute(Attribute & attribute)
+{
+  _attributes.push_back(attribute);
+}
+
 /////////////////////////////////////////////////////////////// 
 // Dataframe
 

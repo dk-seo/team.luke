@@ -12,23 +12,31 @@ written consent of DigiPen Institute of Technology is prohibited.
 
 template<typename Cluster, typename Data>
 inline Recommender<Cluster, Data>::Recommender(Dataframe & data) :
-  mTable(data), mCluster(data),
+  mTable(data),
   mIgnores(), pOStream(nullptr),
-  mClusterGroup(1), mPrecision(0.5f),
+  mClusterGroup(1), mPrecision(0.6f),
   mFlag(DO_CLUSTER | DO_RECOMMEND)
 {
+  pCluster = new Cluster(data, mIgnores);
+
+  std::vector<std::string> attributes = data.GetAttributeNameList();
+  for (auto & i : attributes)
+    favorites.AddAttribute(i,
+      data.GetAttributeType(data.GetAttributeIndex(i)));
 }
 
 template<typename Cluster, typename Data>
 inline Recommender<Cluster, Data>::~Recommender()
 {
+  if (pCluster)
+    delete pCluster;
 }
 
 template<typename Cluster, typename Data>
 inline void Recommender<Cluster, Data>::ChangeDataFrame(Dataframe & data)
 {
   mTable = data;
-  mClusterUpdatable = true;
+  mFlag |= DO_CLUSTER;
 }
 
 template<typename Cluster, typename Data>
@@ -68,14 +76,39 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
 }
 
 template<typename Cluster, typename Data>
+inline void Recommender<Cluster, Data>::SetFavoriteList(std::vector<int> & favoritelist)
+{
+  mfavoriteList = favoritelist;
+  
+  for (auto & i : mfavoriteList)
+  {
+    auto copiable = mTable.GetInstance(i);
+    auto instance = favorites.CreateInstance();
+    
+    for (int i = 0, size = copiable.GetAttributeCount(); i < size; ++i)
+      instance->AddAttribute(copiable.GetAttribute(i));
+  }
+
+  mFlag |= DO_CENTROID;
+}
+
+template<typename Cluster, typename Data>
 inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
-  if (mFlag & DO_CLUSTER) mFlag |= DO_RECOMMEND;
-  if ((mFlag & DO_RECOMMEND) == 0x00) return mRecommendList;
+  if (mFlag & DO_CENTROID)
+  {
+    if (pCluster) delete pCluster;
+    pCluster = new Cluster(favorites, mIgnores);
+    mFlag |= (DO_CLUSTER | DO_RECOMMEND);
+  }
+  else if (mFlag & DO_CLUSTER)
+    mFlag |= DO_RECOMMEND;
+  else if ((mFlag & DO_RECOMMEND) == 0x00)
+    return mRecommendList;
 
   // calculate cluster
   if(mFlag & DO_CLUSTER)
-    clustered = mCluster.Cluster(mClusterGroup);
+    clustered = pCluster->Cluster(mClusterGroup);
 
   Answers mRecommends;
 
@@ -96,7 +129,7 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 
     for (unsigned index = 0; index < instances.size(); ++index)
     {
-      DataPoint point = mCluster.ToDataPoint(instances[index]);
+      DataPoint point = pCluster->ToDataPoint(instances[index]);
       double point_len = KMeansClustering::Length(point, ignores);
 
       // calculate cosine similarity on N dimensions 
@@ -161,7 +194,7 @@ inline void Recommender<Cluster, Data>::AddIgnoreAttribute(std::string & attribu
   if (result == mIgnores.end())
   {
     mIgnores.emplace_back(attribute);
-    mCluster.AddIgnore(attribute);
+    pCluster->AddIgnore(attribute);
   }
 }
 
@@ -172,7 +205,7 @@ inline void Recommender<Cluster, Data>::RemoveIgnoreAttribute(std::string & attr
   if (result != mIgnores.end())
   {
     mIgnores.erase(result);
-    mCluster.RemoveIgnore(attribute);
+    pCluster->RemoveIgnore(attribute);
   }
 }
 

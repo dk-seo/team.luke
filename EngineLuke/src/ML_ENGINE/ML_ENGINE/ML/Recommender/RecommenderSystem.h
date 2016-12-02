@@ -86,10 +86,7 @@ public:
   float GetPrecision() const;
 
   // add favorite items
-  void AddFavoriteItems(const int id);
-
-  // remove favorite items
-  void RemoveFavoriteItems(const int id);
+  void SetFavoriteList(std::vector<int> & favoritelist);
 
   // recommend possible choices
   Answers & Recommend(IndexList & favorList = Dummy::indexDummy);
@@ -120,7 +117,7 @@ private:
 #  define DO_RECOMMEND  0004
 private:
   Dataframe & mTable;
-  Cluster mCluster;
+  Cluster* pCluster;
   std::vector<std::string> mIgnores;
   std::ostream * pOStream;
   int   mClusterGroup;
@@ -128,6 +125,8 @@ private:
   unsigned int mFlag;
   Answers mRecommendList;
   Data clustered;
+  Dataframe favorites;
+  std::vector<int> mfavoriteList;
 };
 
 #include "RecommenderSystem.inl"
