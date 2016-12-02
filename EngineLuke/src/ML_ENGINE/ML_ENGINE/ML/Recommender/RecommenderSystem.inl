@@ -12,23 +12,31 @@ written consent of DigiPen Institute of Technology is prohibited.
 
 template<typename Cluster, typename Data>
 inline Recommender<Cluster, Data>::Recommender(Dataframe & data) :
-  mTable(data), mCluster(data),
+  mTable(data),
   mIgnores(), pOStream(nullptr),
-  mClusterGroup(1), mPrecision(0.5f),
-  mClusterUpdatable(true), mRecommendUpdatable(true)
+  mClusterGroup(1), mPrecision(0.6f),
+  mFlag(DO_CLUSTER | DO_RECOMMEND)
 {
+  pCluster = new Cluster(data, mIgnores);
+
+  std::vector<std::string> attributes = data.GetAttributeNameList();
+  for (auto & i : attributes)
+    favorites.AddAttribute(i,
+      data.GetAttributeType(data.GetAttributeIndex(i)));
 }
 
 template<typename Cluster, typename Data>
 inline Recommender<Cluster, Data>::~Recommender()
 {
+  if (pCluster)
+    delete pCluster;
 }
 
 template<typename Cluster, typename Data>
 inline void Recommender<Cluster, Data>::ChangeDataFrame(Dataframe & data)
 {
   mTable = data;
-  mClusterUpdatable = true;
+  mFlag |= DO_CLUSTER;
 }
 
 template<typename Cluster, typename Data>
@@ -43,7 +51,7 @@ inline void Recommender<Cluster, Data>::SetGroupNumber(const int k)
   if (k < 1) return;
   
   mClusterGroup = k;
-  mClusterUpdatable = true;
+  mFlag |= DO_CLUSTER;
 }
 
 template<typename Cluster, typename Data>
@@ -58,7 +66,7 @@ inline void Recommender<Cluster, Data>::SetPrecision(const float percent)
   if (percent <= 0.0f) return;
   
   mPrecision = percent;
-  mRecommendUpdatable = true;
+  mFlag |= DO_RECOMMEND;
 }
 
 template<typename Cluster, typename Data>
@@ -67,20 +75,46 @@ inline float Recommender<Cluster, Data>::GetPrecision() const
   return mPrecision;
 }
 
+template<typename Cluster, typename Data>
+inline void Recommender<Cluster, Data>::SetFavoriteList(std::vector<int> & favoritelist)
+{
+  mfavoriteList = favoritelist;
+  
+  for (auto & i : mfavoriteList)
+  {
+    auto copiable = mTable.GetInstance(i);
+    auto instance = favorites.CreateInstance();
+    
+    for (int i = 0, size = copiable.GetAttributeCount(); i < size; ++i)
+      instance->AddAttribute(copiable.GetAttribute(i));
+  }
+
+  mFlag |= DO_CENTROID;
+}
 
 template<typename Cluster, typename Data>
 inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 {
-  if (mClusterUpdatable) mRecommendUpdatable = true;
-  if (!mRecommendUpdatable) return mRecommendList;
+  if (mFlag & DO_CENTROID)
+  {
+    if (pCluster) delete pCluster;
+    pCluster = new Cluster(favorites, mIgnores);
+    mFlag |= (DO_CLUSTER | DO_RECOMMEND);
+  }
+  else if (mFlag & DO_CLUSTER)
+    mFlag |= DO_RECOMMEND;
+  else if ((mFlag & DO_RECOMMEND) == 0x00)
+    return mRecommendList;
 
-  if(mClusterUpdatable)
-    clustered = mCluster.Cluster(mClusterGroup);
+  // calculate cluster
+  if(mFlag & DO_CLUSTER)
+    clustered = pCluster->Cluster(mClusterGroup);
 
   Answers mRecommends;
 
   IndexList ignores(mIgnores.size());
 
+  // put ignore attribute's indices
   for (auto & i : mIgnores)
     ignores.push_back(mTable.GetAttributeIndex(i));
 
@@ -95,9 +129,10 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
 
     for (unsigned index = 0; index < instances.size(); ++index)
     {
-      DataPoint point = mCluster.ToDataPoint(instances[index]);
+      DataPoint point = pCluster->ToDataPoint(instances[index]);
       double point_len = KMeansClustering::Length(point, ignores);
 
+      // calculate cosine similarity on N dimensions 
       for (int i = 0, size = static_cast<int>(clustered.size());
         i < size; ++i)
       {
@@ -107,6 +142,7 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
         double similarity = sqrtl(point_len * cluster_len[i]);
         similarity = KMeansClustering::Dot(cluster, point, ignores) / similarity;
 
+        // pick when the similarity is greater than or equal to a specific precision
         if (similarity >= mPrecision)
           mRecommends[i].emplace_back(index, similarity);
       }
@@ -124,7 +160,8 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
   }
   
   mRecommendList.resize(mRecommends.size());
-
+  
+  // find the highest quality 
   if (quality >= 0)
   {
     for (int index = 0; index < static_cast<int>(mRecommends.size()); ++index)
@@ -145,7 +182,8 @@ inline Answers & Recommender<Cluster, Data>::Recommend(IndexList & favorList)
     }
   }
 
-  mClusterUpdatable = mRecommendUpdatable = false;
+  
+  mFlag = 0;
   return mRecommendList;
 }
 
@@ -156,7 +194,7 @@ inline void Recommender<Cluster, Data>::AddIgnoreAttribute(std::string & attribu
   if (result == mIgnores.end())
   {
     mIgnores.emplace_back(attribute);
-    mCluster.AddIgnore(attribute);
+    pCluster->AddIgnore(attribute);
   }
 }
 
@@ -167,7 +205,7 @@ inline void Recommender<Cluster, Data>::RemoveIgnoreAttribute(std::string & attr
   if (result != mIgnores.end())
   {
     mIgnores.erase(result);
-    mCluster.RemoveIgnore(attribute);
+    pCluster->RemoveIgnore(attribute);
   }
 }
 

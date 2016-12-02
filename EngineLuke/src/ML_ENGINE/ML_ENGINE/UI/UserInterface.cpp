@@ -34,6 +34,7 @@ UI::UI(void)
   mUpdatable(true)
 {
 }
+
 UI::~UI(void)
 {
   if (mRecommender->pRecommender)
@@ -443,29 +444,43 @@ void UI::RecommenderSystem(void)
       mUpdatable = false;
     }
 
-    ImGui::SetNextWindowSize(ImVec2(350, 100), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(750, 500), ImGuiSetCond_FirstUseEver);
     if (ImGui::Begin("Recommender System", &RecWindow, ImVec2(0, 0)))
     {
-      mRecommender->pRecommender->AddIgnoreAttribute(std::string("quality"));
+      auto pRecommender = mRecommender->pRecommender;
+      pRecommender->AddIgnoreAttribute(std::string("quality"));
+      bool both = false;
       size_t pick = curr_filepath.find("both");
       if (pick != std::string::npos)
       {
-        mRecommender->pRecommender->AddIgnoreAttribute(std::string("wine type"));
+        both = true;
+        pRecommender->AddIgnoreAttribute(std::string("wine type"));
         ImGui::Text("Both White and Red wines are selected.");
       }
       else if (std::string::npos != curr_filepath.find("white"))
       {
-        mRecommender->pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
+        pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
         ImGui::Text("White wine data set is selected.");
       }
       else
       {
-        mRecommender->pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
+        pRecommender->RemoveIgnoreAttribute(std::string("wine type"));
         ImGui::Text("Red wine data set is selected.");
       }
 
-      auto result = mRecommender->pRecommender->Recommend();
+#     define MAX_CLUSTER 10
+      /*
+      volatile acidity
+      citric acid
+      chlorides
+      alcohol
+      */
 
+      EditItemsUI();
+            
+      auto result = pRecommender->Recommend();
+
+      // print results
       for (int i = 0; i < static_cast<int>(result.size()); ++i)
       {
         for (const auto & att : result[i])
@@ -473,12 +488,89 @@ void UI::RecommenderSystem(void)
           ImGui::Text(std::string("Group" + std::to_string(i)).data());
           ImGui::SameLine();
           ImGui::Text((std::to_string(att.first) + "th Wine With "
-            + std::to_string(att.second * 100.0) + "%").data());
+            + std::to_string(att.second * 100.0) + "%%").data());
+          ImGui::SameLine();
+          ImGui::Text(" Similiarity!");
         }
       }
       ImGui::End();
     }
   }
+}
+
+void UI::EditItemsUI()
+{
+  if (ImGui::TreeNode("Items"))
+  {
+    bool addItem = ImGui::Button("Add"); ImGui::SameLine();
+    bool isListEdited = false;
+    ImGui::PushItemWidth(static_cast<float>(mFavoriteList.size() + 40));
+    static int itemId = 0;
+    ImGui::InputInt("##Item", &itemId, 0, 0);
+    if (addItem)
+    {
+      if (!(itemId < 0 || itemId >= m_dataframe->GetInstanceCount()))
+      {
+        auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
+        if (result == mFavoriteList.end())
+        {
+          mFavoriteList.push_back(itemId);
+          std::qsort(mFavoriteList.data(), mFavoriteList.size(),
+            sizeof(mFavoriteList.front()), compareMyType);
+          isListEdited = true;
+        }
+      }
+    }
+
+    ImGui::SameLine();
+
+    bool removeItem = ImGui::Button("Remove");
+
+    if (removeItem)
+    {
+      auto result = std::find(mFavoriteList.begin(), mFavoriteList.end(), itemId);
+      if (result != mFavoriteList.end())
+      {
+        mFavoriteList.erase(result);
+        isListEdited = true;
+      }
+    }
+
+    if (isListEdited)
+      mRecommender->pRecommender->SetFavoriteList(mFavoriteList);
+
+    ImGui::PopItemWidth();
+
+    ImGui::Text("Peference Wines");
+    ImGui::BeginChild("Items", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.5f, 300), false, ImGuiWindowFlags_HorizontalScrollbar);
+    for (const auto & i : mFavoriteList)
+      ImGui::Text("%04dth Wine", i);
+    ImGui::EndChild();
+
+#     define MAX(a, b) ( (a >= b) ? a : b )
+#     define MIN(a, b) ( (a <= b) ? a : b )
+
+    static int group = 1;
+    ImGui::SliderInt("Number of Cluster groups",
+      &group, 1,
+      MIN(MAX_CLUSTER, MAX(1, static_cast<int>(mFavoriteList.size()))));
+    auto pRecommender = mRecommender->pRecommender;
+    if (group != pRecommender->GetGroupNumber())
+      pRecommender->SetGroupNumber(group);
+    static float precision = 0.8f;
+    ImGui::SliderFloat("Similarity Precision",
+      &precision, 0.75f,
+      0.9999f);
+
+    float diff_precision =
+      precision - pRecommender->GetPrecision();
+
+    if (diff_precision > FLT_EPSILON ||
+      diff_precision < -FLT_EPSILON)
+      pRecommender->SetPrecision(precision);
+    ImGui::TreePop();
+  }
+
 }
 
 void UI::AddString(int index, std::string string)

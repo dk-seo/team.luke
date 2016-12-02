@@ -16,6 +16,7 @@
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
+#pragma warning (disable: 4312) // 'reinterpret_cast': conversion from 'int' to 'void *' of greater size
 #define snprintf _snprintf
 #endif
 #ifdef __clang__
@@ -216,7 +217,7 @@ void ImGui::ShowTestWindow(bool* opened)
             {
                 ImFont* font = atlas->Fonts[i];
                 ImGui::BulletText("Font %d: \'%s\', %.2f px, %d glyphs", i, font->ConfigData ? font->ConfigData[0].Name : "", font->FontSize, font->Glyphs.Size);
-                ImGui::TreePush((void*)i);
+                ImGui::TreePush(reinterpret_cast<void*>(i));
                 if (i > 0) { ImGui::SameLine(); if (ImGui::SmallButton("Set as default")) { atlas->Fonts[i] = atlas->Fonts[0]; atlas->Fonts[0] = font; } }
                 ImGui::PushFont(font);
                 ImGui::Text("The quick brown fox jumps over the lazy dog");
@@ -254,7 +255,7 @@ void ImGui::ShowTestWindow(bool* opened)
         {
             for (int i = 0; i < 5; i++)
             {
-                if (ImGui::TreeNode((void*)i, "Child %d", i))
+                if (ImGui::TreeNode(reinterpret_cast<void*>(i), "Child %d", i))
                 {
                     ImGui::Text("blah blah");
                     ImGui::SameLine();
@@ -952,7 +953,7 @@ void ImGui::ShowTestWindow(bool* opened)
                 if (i > 0) ImGui::SameLine();
                 ImGui::BeginGroup();
                 ImGui::Text("%s", i == 0 ? "Top" : i == 1 ? "25%" : i == 2 ? "Center" : i == 3 ? "75%" : "Bottom");
-                ImGui::BeginChild(ImGui::GetID((void*)i), ImVec2(ImGui::GetWindowWidth() * 0.17f, 200.0f), true);
+                ImGui::BeginChild(ImGui::GetID(reinterpret_cast<void*>(i)), ImVec2(ImGui::GetWindowWidth() * 0.17f, 200.0f), true);
                 if (scroll_to)
                     ImGui::SetScrollFromPosY(ImGui::GetCursorStartPos().y + scroll_to_px, i * 0.25f);
                 for (int line = 0; line < 100; line++)

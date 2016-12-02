@@ -74,8 +74,8 @@ private:
   void Q1Q2(void);
   void Q3(void);
   void RecommenderSystem(void);
+  void EditItemsUI();
   ///////////////////////
-
 
   Dataframe *m_dataframe;
   int         i_selected_att;
@@ -89,4 +89,5 @@ private:
   struct pImpl;
   std::unique_ptr<pImpl> mRecommender;
   bool mUpdatable; // who cares about memory layout?
+  std::vector<int> mFavoriteList;
 };

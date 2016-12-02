@@ -177,7 +177,7 @@ void ImGui_ImplDX11_RenderDrawLists(ImDrawData* draw_data)
 
 IMGUI_API LRESULT ImGui_ImplDX11_WndProcHandler(HWND, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	bool altPressed = GetAsyncKeyState(164);
+	bool altPressed = ((GetAsyncKeyState(164) ^ (0x00)) != 0x00); // to avoid warning
 
 	if (altPressed)
 		return false;

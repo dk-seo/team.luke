@@ -85,6 +85,9 @@ public:
   // get current precision of similiarity
   float GetPrecision() const;
 
+  // add favorite items
+  void SetFavoriteList(std::vector<int> & favoritelist);
+
   // recommend possible choices
   Answers & Recommend(IndexList & favorList = Dummy::indexDummy);
 
@@ -99,6 +102,7 @@ public:
 
   // check if a specific attribute is on ignore list
   bool IsInIgnoreList(const std::string & attribute);
+
 private:
   // return double vector that consists only with attributes of given indices
   std::vector<double> GetFeatureVector(
@@ -108,16 +112,21 @@ private:
   void PrintAttributes(const std::vector<int>& attIndices);
 
 private:
+#  define DO_CENTROID   0001
+#  define DO_CLUSTER    0002
+#  define DO_RECOMMEND  0004
+private:
   Dataframe & mTable;
-  Cluster mCluster;
+  Cluster* pCluster;
   std::vector<std::string> mIgnores;
   std::ostream * pOStream;
   int   mClusterGroup;
   float mPrecision;
-  bool  mClusterUpdatable;
-  bool  mRecommendUpdatable;
+  unsigned int mFlag;
   Answers mRecommendList;
   Data clustered;
+  Dataframe favorites;
+  std::vector<int> mfavoriteList;
 };
 
 #include "RecommenderSystem.inl"

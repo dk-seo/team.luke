@@ -49,7 +49,7 @@ public:
   Attribute& GetAttribute(size_t idx);
   const Attribute& GetAttribute(size_t idx) const;
   void AddAttribute(const std::string& attribute);
-
+  void AddAttribute(Attribute & attr);
 private:
   std::vector<Attribute> _attributes;
 };
@@ -120,7 +120,7 @@ public:
   void ToCsv(std::ostream& o);
 
 
-private:
+//private:
   Instance* CreateInstance();
 
 private:
